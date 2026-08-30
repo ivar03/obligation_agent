@@ -1,4 +1,4 @@
-# Continuity Guardian (Obligation Agent)
+# Obligation Agent
 
 > **AI-Powered Reciprocal Obligation & Commitment Intelligence System**  
 > *Where the Obligation — who owes what, to whom, by when, under what conditions, with evidence and source reference — is the atomic unit.*
@@ -7,7 +7,7 @@
 
 ## 🌟 Executive Summary & Core Philosophy
 
-Conventional productivity tools operate on isolated, directionless "todo lists" and task checkboxes. **Continuity Guardian** reconceptualizes commitments around **the Obligation as the atomic unit of work and relationship**.
+Conventional productivity tools operate on isolated, directionless "todo lists" and task checkboxes. **obligation agent** reconceptualizes commitments around **the Obligation as the atomic unit of work and relationship**.
 
 ### 1. The Obligation is the Atomic Unit
 A task is merely an obligation rendered from the perspective of the duty bearer. Every obligation contains:
