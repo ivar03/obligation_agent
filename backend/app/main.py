@@ -8,7 +8,9 @@ from app.core.logging import setup_logging, logger
 from app.core.database import engine, Base
 from app.core.status_machine import InvalidStatusTransitionError
 from app.core.intervention_status import InvalidInterventionStatusTransitionError
-from app.api.routes import health, obligations, dashboard, events, risk, interventions, webhooks
+from app.api.routes import health, auth, workspaces, obligations, dashboard, events, risk, interventions, webhooks, integrations, reconciliation, intelligence
+from app.api.routes import audit as audit_router
+from app.core.request_context import RequestContextMiddleware
 
 
 @asynccontextmanager
@@ -32,6 +34,9 @@ app = FastAPI(
     redoc_url="/redoc",
 )
 
+# Request Correlation Context Middleware (Phase 15)
+app.add_middleware(RequestContextMiddleware)
+
 # CORS Configuration
 origins = settings.cors_origins
 app.add_middleware(
@@ -47,7 +52,7 @@ app.add_middleware(
 @app.exception_handler(InvalidStatusTransitionError)
 async def invalid_status_handler(request: Request, exc: InvalidStatusTransitionError):
     return JSONResponse(
-        status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         content={"detail": str(exc), "error_type": "InvalidStatusTransition"},
     )
 
@@ -55,7 +60,7 @@ async def invalid_status_handler(request: Request, exc: InvalidStatusTransitionE
 @app.exception_handler(InvalidInterventionStatusTransitionError)
 async def invalid_intervention_status_handler(request: Request, exc: InvalidInterventionStatusTransitionError):
     return JSONResponse(
-        status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         content={"detail": str(exc), "error_type": "InvalidInterventionStatusTransition"},
     )
 
@@ -71,12 +76,18 @@ async def generic_exception_handler(request: Request, exc: Exception):
 
 # Mount Routers under /api
 app.include_router(health.router, prefix="/api")
+app.include_router(auth.router, prefix="/api")
+app.include_router(workspaces.router, prefix="/api")
 app.include_router(obligations.router, prefix="/api")
 app.include_router(dashboard.router, prefix="/api")
 app.include_router(events.router, prefix="/api")
 app.include_router(webhooks.router, prefix="/api")
 app.include_router(risk.router, prefix="/api")
 app.include_router(interventions.router, prefix="/api")
+app.include_router(integrations.router, prefix="/api")
+app.include_router(reconciliation.router, prefix="/api")
+app.include_router(intelligence.router, prefix="/api")
+app.include_router(audit_router.router)
 
 
 @app.get("/")

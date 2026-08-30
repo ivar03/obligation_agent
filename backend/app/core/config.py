@@ -32,5 +32,29 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: str = ""
     GEMINI_API_KEY: str = ""
 
+    # Phase 8: Slack Integration Settings
+    SLACK_ENABLED: bool = False
+    SLACK_SIGNING_SECRET: str = ""
+    SLACK_BOT_TOKEN: str = ""
+    SLACK_CLIENT_ID: str = ""
+    SLACK_CLIENT_SECRET: str = ""
+    SLACK_REDIRECT_URI: str = "http://localhost:8000/api/integrations/slack/callback"
+    SLACK_SIGNATURE_TOLERANCE_SECONDS: int = 300  # 5 minutes against replay attacks
+
+    # Phase 9: Gmail Integration Settings
+    GMAIL_ENABLED: bool = False
+    GMAIL_CLIENT_ID: str = ""
+    GMAIL_CLIENT_SECRET: str = ""
+    GMAIL_REDIRECT_URI: str = "http://localhost:8000/api/integrations/gmail/callback"
+    GMAIL_PUBSUB_TOPIC: str = ""
+    GMAIL_PUBSUB_VERIFICATION_TOKEN: str = ""
+
+    # Phase 10: Google Calendar Integration Settings
+    GOOGLE_CALENDAR_ENABLED: bool = False
+    GOOGLE_CALENDAR_CLIENT_ID: str = ""
+    GOOGLE_CALENDAR_CLIENT_SECRET: str = ""
+    GOOGLE_CALENDAR_REDIRECT_URI: str = "http://localhost:8000/api/integrations/google_calendar/callback"
+    GOOGLE_CALENDAR_WEBHOOK_SECRET: str = ""
+
 
 settings = Settings()

@@ -12,9 +12,12 @@ import {
   Search,
   Inbox,
   AlertTriangle,
+  Flame,
+  Radio,
+  Scale,
   Activity,
   ArrowRight,
-  Flame,
+  Brain,
 } from "lucide-react";
 import {
   DashboardSummaryResponse,
@@ -23,12 +26,15 @@ import {
   InterventionQueueResponse,
   Intervention,
   IngestedEvent,
+  IntegrationConnection,
+  ReconciliationRecord,
+  IntelligenceOverviewResponse,
 } from "@/lib/types/obligation";
 import { ObligationCard } from "@/components/obligations/ObligationCard";
 import { RiskCard } from "@/components/obligations/RiskCard";
 import { InterventionCard } from "@/components/interventions/InterventionCard";
 import { InterventionReviewModal } from "@/components/interventions/InterventionReviewModal";
-import { obligationsApi, interventionsApi, eventsApi } from "@/lib/api/obligations";
+import { obligationsApi, interventionsApi, eventsApi, integrationsApi, reconciliationApi, intelligenceApi } from "@/lib/api/obligations";
 import { useToast } from "@/components/ui/ToastContext";
 
 export default function DashboardPage() {
@@ -37,6 +43,9 @@ export default function DashboardPage() {
   const [riskData, setRiskData] = useState<BulkRiskResponse | null>(null);
   const [queueData, setQueueData] = useState<InterventionQueueResponse | null>(null);
   const [recentEvents, setRecentEvents] = useState<IngestedEvent[]>([]);
+  const [connections, setConnections] = useState<IntegrationConnection[]>([]);
+  const [reconciliations, setReconciliations] = useState<ReconciliationRecord[]>([]);
+  const [intelligence, setIntelligence] = useState<IntelligenceOverviewResponse | null>(null);
   const [selectedIntervention, setSelectedIntervention] = useState<Intervention | null>(null);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -46,16 +55,22 @@ export default function DashboardPage() {
 
   const loadData = useCallback(async () => {
     try {
-      const [summaryRes, riskRes, queueRes, eventsRes] = await Promise.all([
+      const [summaryRes, riskRes, queueRes, eventsRes, integrationsRes, recRes, intelRes] = await Promise.all([
         obligationsApi.getDashboardSummary(),
         obligationsApi.getBulkRisks().catch(() => null),
         interventionsApi.getQueue(10).catch(() => null),
         eventsApi.list({ limit: 4 }).catch(() => null),
+        integrationsApi.list().catch(() => null),
+        reconciliationApi.list({ limit: 4 }).catch(() => null),
+        intelligenceApi.getOverview().catch(() => null),
       ]);
       setSummary(summaryRes);
       setRiskData(riskRes);
       setQueueData(queueRes);
       if (eventsRes?.items) setRecentEvents(eventsRes.items);
+      if (integrationsRes?.connections) setConnections(integrationsRes.connections);
+      if (recRes?.items) setReconciliations(recRes.items);
+      if (intelRes) setIntelligence(intelRes);
       setError(null);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Failed to load dashboard data.";
@@ -129,6 +144,90 @@ export default function DashboardPage() {
             <span>Capture New Obligation</span>
           </Link>
         </div>
+      </div>
+
+      {/* Connected Sources Status Indicator (Phase 8) */}
+      <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 rounded-xl bg-zinc-900/70 border border-zinc-800 text-xs">
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="text-zinc-400 font-semibold flex items-center gap-1.5">
+            <Radio className="w-3.5 h-3.5 text-purple-400" />
+            Connected Sources:
+          </span>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/integrations"
+              className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-zinc-800 hover:bg-zinc-750 text-zinc-300 font-medium transition"
+            >
+              <span
+                className={`h-2 w-2 rounded-full ${
+                  connections.some((c) => c.provider === "slack" && c.status === "CONNECTED")
+                    ? "bg-emerald-400 animate-pulse"
+                    : "bg-zinc-500"
+                }`}
+              ></span>
+              Slack{" "}
+              {connections.some((c) => c.provider === "slack" && c.status === "CONNECTED")
+                ? "● Connected"
+                : "○ Not Connected"}
+            </Link>
+            <Link
+              href="/integrations"
+              className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-zinc-800 hover:bg-zinc-750 text-zinc-300 font-medium transition"
+            >
+              <span
+                className={`h-2 w-2 rounded-full ${
+                  connections.some((c) => c.provider === "gmail" && c.status === "CONNECTED")
+                    ? "bg-emerald-400 animate-pulse"
+                    : "bg-zinc-500"
+                }`}
+              ></span>
+              Gmail{" "}
+              {connections.some((c) => c.provider === "gmail" && c.status === "CONNECTED")
+                ? "● Connected"
+                : "○ Not Connected"}
+            </Link>
+            <Link
+              href="/integrations"
+              className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-zinc-800 hover:bg-zinc-750 text-zinc-300 font-medium transition"
+            >
+              <span
+                className={`h-2 w-2 rounded-full ${
+                  connections.some((c) => (c.provider === "google_calendar" || c.provider === "calendar") && c.status === "CONNECTED")
+                    ? "bg-emerald-400 animate-pulse"
+                    : "bg-zinc-500"
+                }`}
+              ></span>
+              Calendar{" "}
+              {connections.some((c) => (c.provider === "google_calendar" || c.provider === "calendar") && c.status === "CONNECTED")
+                ? "● Connected"
+                : "○ Not Connected"}
+            </Link>
+            <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-zinc-800 text-zinc-300 font-medium">
+              <span className="h-2 w-2 rounded-full bg-emerald-400"></span>
+              Mock Provider (Dev)
+            </span>
+          </div>
+        </div>
+
+        {recentEvents.length > 0 && (
+          <div className="flex items-center gap-2 text-zinc-400 text-xs">
+            <span className="text-zinc-500">Recent Event:</span>
+            <span className="text-zinc-200 font-medium max-w-sm truncate">
+              &ldquo;{recentEvents[0].content}&rdquo;
+            </span>
+            {recentEvents[0].semantic_role === "COMPLETION_SIGNAL" && (
+              <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-800/60 shrink-0">
+                Completion candidate detected (Human review required)
+              </span>
+            )}
+            <Link
+              href="/events"
+              className="text-blue-400 hover:text-blue-300 font-semibold ml-1 shrink-0"
+            >
+              View &rarr;
+            </Link>
+          </div>
+        )}
       </div>
 
       {/* Metric Cards */}
@@ -290,6 +389,173 @@ export default function DashboardPage() {
                 }}
               />
             ))}
+          </div>
+        </section>
+      )}
+
+      {/* PHASE 11: CROSS-PROVIDER RECONCILIATION & CONTRADICTION INTELLIGENCE */}
+      {reconciliations.length > 0 && (
+        <section className="space-y-4 rounded-2xl border border-indigo-500/30 bg-gradient-to-b from-indigo-950/20 via-zinc-900/60 to-zinc-950 p-5 shadow-xl">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-indigo-400">
+                <Scale className="w-4 h-4" />
+              </div>
+              <div>
+                <h2 className="text-sm font-bold text-white tracking-tight flex items-center gap-2">
+                  <span>Cross-Provider Contradiction & Evidence Intelligence</span>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">
+                    Phase 11
+                  </span>
+                </h2>
+                <p className="text-xs text-zinc-400">
+                  Cross-referencing Slack, Gmail, and Calendar signals for multi-source consensus and contradiction detection.
+                </p>
+              </div>
+            </div>
+
+            <Link
+              href="/reconciliation"
+              className="text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
+            >
+              <span>View All ({reconciliations.length})</span>
+              <span>&rarr;</span>
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {reconciliations.slice(0, 2).map((rec) => {
+              const isConflicting = rec.status === "CONFLICTING";
+              return (
+                <div
+                  key={rec.id}
+                  className={`p-4 rounded-xl border transition-all ${
+                    isConflicting
+                      ? "bg-rose-950/20 border-rose-500/30"
+                      : "bg-zinc-900/80 border-zinc-800"
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span
+                      className={`px-2 py-0.5 text-[11px] font-semibold rounded-md ${
+                        isConflicting
+                          ? "bg-rose-500/20 text-rose-300 border border-rose-500/40"
+                          : "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
+                      }`}
+                    >
+                      {rec.status.replace("_", " ")}
+                    </span>
+                    <span className="text-[11px] text-zinc-400">
+                      Consistency: {(rec.consistency_score * 100).toFixed(0)}%
+                    </span>
+                  </div>
+
+                  <p className="text-xs font-semibold text-zinc-200 line-clamp-1 mb-1">
+                    {rec.obligation_action || "Target Obligation"}
+                  </p>
+
+                  <p className="text-[11px] text-zinc-400 line-clamp-2 mb-3">
+                    {rec.explanation && rec.explanation.length > 0 ? rec.explanation[0] : "Evidence reconciled."}
+                  </p>
+
+                  <Link
+                    href={`/reconciliation/${rec.id}`}
+                    className="text-xs font-medium text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
+                  >
+                    <span>Inspect Timeline & Adjudicate</span>
+                    <span>&rarr;</span>
+                  </Link>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {/* PHASE 12: PREDICTIVE OBLIGATION INTELLIGENCE */}
+      {intelligence && intelligence.predictions.length > 0 && (
+        <section className="space-y-4 rounded-2xl border border-indigo-500/30 bg-gradient-to-b from-indigo-950/20 via-zinc-900/70 to-zinc-950 p-5 shadow-xl">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-indigo-400">
+                <Brain className="w-4 h-4" />
+              </div>
+              <div>
+                <h2 className="text-sm font-bold text-white tracking-tight flex items-center gap-2">
+                  <span>Predictive Obligation Intelligence</span>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">
+                    Phase 12
+                  </span>
+                </h2>
+                <p className="text-xs text-zinc-400">
+                  {intelligence.high_predicted_failure_count} obligations likely to require intervention • {intelligence.likely_to_miss_deadline_count} projected late • {intelligence.high_blockage_risk_count} at blockage risk
+                </p>
+              </div>
+            </div>
+
+            <Link
+              href="/intelligence"
+              className="text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
+            >
+              <span>View All Predictions ({intelligence.predictions.length})</span>
+              <span>&rarr;</span>
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {intelligence.predictions.slice(0, 2).map((pred) => {
+              const failPct = Math.round(pred.failure_probability * 100);
+              const isHigh = failPct >= 55;
+              return (
+                <div
+                  key={pred.obligation_id}
+                  className="p-4 rounded-xl bg-zinc-900/80 border border-zinc-800 hover:border-slate-700 transition-all flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span
+                        className={`px-2 py-0.5 text-[11px] font-semibold rounded-md border ${
+                          isHigh
+                            ? "bg-rose-500/20 text-rose-300 border-rose-500/30"
+                            : "bg-amber-500/20 text-amber-300 border-amber-500/30"
+                        }`}
+                      >
+                        {isHigh ? "High Failure Risk" : "Moderate Risk"} ({failPct}%)
+                      </span>
+                      <span className="text-[11px] text-zinc-400 font-mono">
+                        {pred.expected_delay_hours > 0 ? `+${pred.expected_delay_hours}h delay` : "On Time"}
+                      </span>
+                    </div>
+
+                    <p className="text-xs font-semibold text-zinc-200 line-clamp-1 mb-1">
+                      {pred.action || `Obligation ${pred.obligation_id.slice(0, 8)}`}
+                    </p>
+                    <p className="text-[11px] text-zinc-400 mb-2">
+                      Owner: <span className="text-zinc-300 font-medium">{pred.owner || "Unassigned"}</span>
+                    </p>
+
+                    {pred.reasons && pred.reasons.length > 0 && (
+                      <div className="p-2 rounded bg-zinc-950/40 border border-zinc-800/80 text-[11px] text-zinc-400 line-clamp-2 mb-3">
+                        <span className="text-indigo-400 font-semibold">Why: </span>
+                        {pred.reasons[0].explanation}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="pt-2 border-t border-zinc-800 flex items-center justify-between text-xs">
+                    <span className="text-zinc-400 truncate text-[11px]">
+                      {pred.preventative_recommendation || "Monitor progress"}
+                    </span>
+                    <Link
+                      href={`/obligations/${pred.obligation_id}`}
+                      className="text-indigo-400 hover:text-indigo-300 font-medium shrink-0 ml-2"
+                    >
+                      Details &rarr;
+                    </Link>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </section>
       )}

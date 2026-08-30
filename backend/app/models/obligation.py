@@ -22,6 +22,7 @@ from app.core.status_machine import (
     EvidenceType,
     CorrelationStatus,
     EventSemanticRole,
+    ReconciliationStatus,
 )
 from app.core.intervention_status import (
     InterventionType,
@@ -41,6 +42,15 @@ class Obligation(Base):
         String(36),
         primary_key=True,
         default=lambda: str(uuid.uuid4()),
+        index=True
+    )
+    
+    # Phase 14: Multi-tenant Workspace Scope
+    workspace_id: Mapped[str] = mapped_column(
+        String(36),
+        ForeignKey("workspaces.id", ondelete="CASCADE"),
+        nullable=False,
+        default="ws-default",
         index=True
     )
     
@@ -120,6 +130,35 @@ class Obligation(Base):
         order_by="desc(Intervention.created_at)",
     )
 
+    # Phase 11: Cross-Provider Reconciliation Records
+    reconciliation_records: Mapped[List["ReconciliationRecord"]] = relationship(
+        "ReconciliationRecord",
+        back_populates="obligation",
+        cascade="all, delete-orphan",
+        order_by="desc(ReconciliationRecord.created_at)",
+    )
+
+    # Phase 12: Historical Outcome Snapshots & Predictions
+    outcome_snapshots: Mapped[List["ObligationOutcomeSnapshot"]] = relationship(
+        "ObligationOutcomeSnapshot",
+        back_populates="obligation",
+        cascade="all, delete-orphan",
+        order_by="desc(ObligationOutcomeSnapshot.created_at)",
+    )
+    prediction_snapshots: Mapped[List["PredictionSnapshot"]] = relationship(
+        "PredictionSnapshot",
+        back_populates="obligation",
+        cascade="all, delete-orphan",
+        order_by="desc(PredictionSnapshot.created_at)",
+    )
+    prediction_feedbacks: Mapped[List["PredictionFeedback"]] = relationship(
+        "PredictionFeedback",
+        back_populates="obligation",
+        cascade="all, delete-orphan",
+        order_by="desc(PredictionFeedback.created_at)",
+    )
+
+
 
 class ObligationEdge(Base):
     __tablename__ = "obligation_edges"
@@ -131,6 +170,14 @@ class ObligationEdge(Base):
         String(36),
         primary_key=True,
         default=lambda: str(uuid.uuid4()),
+        index=True
+    )
+    
+    workspace_id: Mapped[str] = mapped_column(
+        String(36),
+        ForeignKey("workspaces.id", ondelete="CASCADE"),
+        nullable=False,
+        default="ws-default",
         index=True
     )
     
@@ -182,10 +229,23 @@ class Evidence(Base):
         default=lambda: str(uuid.uuid4()),
         index=True
     )
+    workspace_id: Mapped[str] = mapped_column(
+        String(36),
+        ForeignKey("workspaces.id", ondelete="CASCADE"),
+        nullable=False,
+        default="ws-default",
+        index=True
+    )
     obligation_id: Mapped[str] = mapped_column(
         String(36),
         ForeignKey("obligations.id", ondelete="CASCADE"),
         nullable=False,
+        index=True
+    )
+    actor_user_id: Mapped[Optional[str]] = mapped_column(
+        String(36),
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True,
         index=True
     )
     evidence_type: Mapped[EvidenceType] = mapped_column(
@@ -262,10 +322,23 @@ class Intervention(Base):
         default=lambda: str(uuid.uuid4()),
         index=True
     )
+    workspace_id: Mapped[str] = mapped_column(
+        String(36),
+        ForeignKey("workspaces.id", ondelete="CASCADE"),
+        nullable=False,
+        default="ws-default",
+        index=True
+    )
     obligation_id: Mapped[str] = mapped_column(
         String(36),
         ForeignKey("obligations.id", ondelete="CASCADE"),
         nullable=False,
+        index=True
+    )
+    actor_user_id: Mapped[Optional[str]] = mapped_column(
+        String(36),
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True,
         index=True
     )
     intervention_type: Mapped[InterventionType] = mapped_column(
@@ -333,6 +406,13 @@ class IngestedEventRecord(Base):
         default=lambda: str(uuid.uuid4()),
         index=True
     )
+    workspace_id: Mapped[str] = mapped_column(
+        String(36),
+        ForeignKey("workspaces.id", ondelete="CASCADE"),
+        nullable=False,
+        default="ws-default",
+        index=True
+    )
     provider: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
     source_type: Mapped[str] = mapped_column(String(64), nullable=False, default="message")
     source_ref: Mapped[Optional[str]] = mapped_column(String(255), nullable=True, index=True)
@@ -384,4 +464,76 @@ class IngestedEventRecord(Base):
         default=utc_now,
         nullable=False
     )
+
+
+class ReconciliationRecord(Base):
+    __tablename__ = "reconciliation_records"
+
+    id: Mapped[str] = mapped_column(
+        String(36),
+        primary_key=True,
+        default=lambda: str(uuid.uuid4()),
+        index=True
+    )
+    workspace_id: Mapped[str] = mapped_column(
+        String(36),
+        ForeignKey("workspaces.id", ondelete="CASCADE"),
+        nullable=False,
+        default="ws-default",
+        index=True
+    )
+    obligation_id: Mapped[str] = mapped_column(
+        String(36),
+        ForeignKey("obligations.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True
+    )
+    actor_user_id: Mapped[Optional[str]] = mapped_column(
+        String(36),
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True
+    )
+    status: Mapped[ReconciliationStatus] = mapped_column(
+        SQLEnum(ReconciliationStatus, name="reconciliation_status_enum", native_enum=False),
+        nullable=False,
+        default=ReconciliationStatus.AMBIGUOUS,
+        index=True
+    )
+    confidence: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
+    consistency_score: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
+    contradiction_score: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
+
+    supporting_evidence_ids: Mapped[Optional[List[str]]] = mapped_column(JSON, nullable=True, default=list)
+    conflicting_evidence_ids: Mapped[Optional[List[str]]] = mapped_column(JSON, nullable=True, default=list)
+    supporting_event_ids: Mapped[Optional[List[str]]] = mapped_column(JSON, nullable=True, default=list)
+    conflicting_event_ids: Mapped[Optional[List[str]]] = mapped_column(JSON, nullable=True, default=list)
+
+    explanation: Mapped[Optional[List[str]]] = mapped_column(JSON, nullable=True, default=list)
+    recommended_action: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
+
+    resolution: Mapped[Optional[Dict[str, Any]]] = mapped_column(JSON, nullable=True)
+    resolved_by: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    resolved_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=utc_now,
+        nullable=False,
+        index=True
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=utc_now,
+        onupdate=utc_now,
+        nullable=False
+    )
+
+    # ORM relationship
+    obligation: Mapped["Obligation"] = relationship(
+        "Obligation",
+        back_populates="reconciliation_records"
+    )
+
+
 

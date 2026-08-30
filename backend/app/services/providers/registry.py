@@ -2,6 +2,9 @@ from typing import Dict, List, Any, Optional
 from app.core.logging import logger
 from app.services.providers.base_provider import BaseProvider
 from app.services.providers.mock_provider import MockProvider
+from app.services.providers.slack_provider import SlackProvider
+from app.services.providers.gmail_provider import GmailProvider
+from app.services.providers.google_calendar_provider import GoogleCalendarProvider
 
 
 class ProviderRegistry:
@@ -12,8 +15,11 @@ class ProviderRegistry:
 
     def __init__(self):
         self._providers: Dict[str, BaseProvider] = {}
-        # Automatically register the built-in mock provider
+        # Automatically register built-in providers
         self.register(MockProvider())
+        self.register(SlackProvider())
+        self.register(GmailProvider())
+        self.register(GoogleCalendarProvider())
 
     def register(self, provider: BaseProvider) -> None:
         """Registers a provider adapter."""

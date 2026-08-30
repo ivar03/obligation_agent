@@ -4,6 +4,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_db
 from app.core.intervention_status import InterventionStatus, InterventionType
+from app.core.status_machine import WorkspaceRole
+from app.models.auth import User, Workspace, WorkspaceMembership
+from app.core.auth_deps import (
+    get_current_user,
+    get_current_membership,
+    get_current_workspace,
+    require_role,
+    require_permission,
+)
 from app.schemas.intervention import (
     InterventionPlanRequest,
     InterventionApproveRequest,
@@ -23,12 +32,15 @@ router = APIRouter(prefix="/interventions", tags=["interventions"])
 async def plan_intervention(
     payload: InterventionPlanRequest,
     db: AsyncSession = Depends(get_db),
+    workspace: Workspace = Depends(get_current_workspace),
+    membership: WorkspaceMembership = Depends(require_role(WorkspaceRole.MEMBER)),
+    user: User = Depends(get_current_user),
 ):
     """
     Generate or retrieve a structured intervention plan for an obligation.
     """
     res = await InterventionService.plan(
-        session=db, obligation_id=payload.obligation_id, force=payload.force
+        session=db, obligation_id=payload.obligation_id, force=payload.force, workspace_id=workspace.id
     )
     if not res:
         raise HTTPException(
@@ -47,9 +59,11 @@ async def list_interventions(
     limit: int = Query(50, ge=1, le=100),
     offset: int = Query(0, ge=0),
     db: AsyncSession = Depends(get_db),
+    workspace: Workspace = Depends(get_current_workspace),
+    user: User = Depends(get_current_user),
 ):
     """
-    List all interventions with multi-dimensional filtering.
+    List all interventions with multi-dimensional filtering for active workspace.
     """
     return await InterventionService.list_all(
         session=db,
@@ -59,6 +73,7 @@ async def list_interventions(
         urgency=urgency,
         limit=limit,
         offset=offset,
+        workspace_id=workspace.id,
     )
 
 
@@ -66,22 +81,26 @@ async def list_interventions(
 async def get_intervention_queue(
     limit: int = Query(50, ge=1, le=100),
     db: AsyncSession = Depends(get_db),
+    workspace: Workspace = Depends(get_current_workspace),
+    user: User = Depends(get_current_user),
 ):
     """
     Get the prioritized intervention action queue requiring human attention.
     """
-    return await InterventionService.get_queue(session=db, limit=limit)
+    return await InterventionService.get_queue(session=db, limit=limit, workspace_id=workspace.id)
 
 
 @router.get("/{id}", response_model=InterventionResponse)
 async def get_intervention_by_id(
     id: str,
     db: AsyncSession = Depends(get_db),
+    workspace: Workspace = Depends(get_current_workspace),
+    user: User = Depends(get_current_user),
 ):
     """
     Get detailed intervention record with audit trail and context packet.
     """
-    res = await InterventionService.get_by_id(session=db, intervention_id=id)
+    res = await InterventionService.get_by_id(session=db, intervention_id=id, workspace_id=workspace.id)
     if not res:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -95,12 +114,15 @@ async def update_intervention_draft(
     id: str,
     payload: InterventionUpdate,
     db: AsyncSession = Depends(get_db),
+    workspace: Workspace = Depends(get_current_workspace),
+    membership: WorkspaceMembership = Depends(require_role(WorkspaceRole.MEMBER)),
+    user: User = Depends(get_current_user),
 ):
     """
     Edit draft message, target, scheduled time, or urgency before approval.
     """
     res = await InterventionService.update_draft(
-        session=db, intervention_id=id, data=payload
+        session=db, intervention_id=id, data=payload, workspace_id=workspace.id
     )
     if not res:
         raise HTTPException(
@@ -115,12 +137,15 @@ async def approve_intervention(
     id: str,
     payload: Optional[InterventionApproveRequest] = None,
     db: AsyncSession = Depends(get_db),
+    workspace: Workspace = Depends(get_current_workspace),
+    membership: WorkspaceMembership = Depends(require_role(WorkspaceRole.MEMBER)),
+    user: User = Depends(get_current_user),
 ):
     """
     Explicit human approval of an intervention plan.
     """
     return await InterventionService.approve(
-        session=db, intervention_id=id, req=payload
+        session=db, intervention_id=id, req=payload, workspace_id=workspace.id, actor_user_id=user.id
     )
 
 
@@ -129,12 +154,15 @@ async def schedule_intervention(
     id: str,
     payload: InterventionScheduleRequest,
     db: AsyncSession = Depends(get_db),
+    workspace: Workspace = Depends(get_current_workspace),
+    membership: WorkspaceMembership = Depends(require_role(WorkspaceRole.MEMBER)),
+    user: User = Depends(get_current_user),
 ):
     """
     Schedule an approved intervention for future execution.
     """
     return await InterventionService.schedule(
-        session=db, intervention_id=id, req=payload
+        session=db, intervention_id=id, req=payload, workspace_id=workspace.id, actor_user_id=user.id
     )
 
 
@@ -142,11 +170,16 @@ async def schedule_intervention(
 async def execute_intervention(
     id: str,
     db: AsyncSession = Depends(get_db),
+    workspace: Workspace = Depends(get_current_workspace),
+    membership: WorkspaceMembership = Depends(require_role(WorkspaceRole.MEMBER)),
+    user: User = Depends(get_current_user),
 ):
     """
     Explicitly trigger simulated execution of an approved intervention.
     """
-    return await InterventionService.execute(session=db, intervention_id=id)
+    return await InterventionService.execute(
+        session=db, intervention_id=id, workspace_id=workspace.id, actor_user_id=user.id
+    )
 
 
 @router.post("/{id}/outcome", response_model=InterventionResponse)
@@ -154,12 +187,15 @@ async def record_intervention_outcome(
     id: str,
     payload: InterventionOutcomeRequest,
     db: AsyncSession = Depends(get_db),
+    workspace: Workspace = Depends(get_current_workspace),
+    membership: WorkspaceMembership = Depends(require_role(WorkspaceRole.MEMBER)),
+    user: User = Depends(get_current_user),
 ):
     """
     Record observed or human-entered outcome for an intervention.
     """
     return await InterventionService.record_outcome(
-        session=db, intervention_id=id, req=payload
+        session=db, intervention_id=id, req=payload, workspace_id=workspace.id, actor_user_id=user.id
     )
 
 
@@ -168,12 +204,15 @@ async def cancel_intervention(
     id: str,
     reason: Optional[str] = Query(None, description="Reason for cancellation"),
     db: AsyncSession = Depends(get_db),
+    workspace: Workspace = Depends(get_current_workspace),
+    membership: WorkspaceMembership = Depends(require_role(WorkspaceRole.MEMBER)),
+    user: User = Depends(get_current_user),
 ):
     """
     Cancel an active intervention.
     """
     return await InterventionService.cancel(
-        session=db, intervention_id=id, reason=reason
+        session=db, intervention_id=id, reason=reason, workspace_id=workspace.id, actor_user_id=user.id
     )
 
 
@@ -182,10 +221,13 @@ async def resolve_intervention(
     id: str,
     reason: Optional[str] = Query(None, description="Reason for resolution"),
     db: AsyncSession = Depends(get_db),
+    workspace: Workspace = Depends(get_current_workspace),
+    membership: WorkspaceMembership = Depends(require_role(WorkspaceRole.MEMBER)),
+    user: User = Depends(get_current_user),
 ):
     """
     Mark an intervention resolved.
     """
     return await InterventionService.resolve(
-        session=db, intervention_id=id, reason=reason
+        session=db, intervention_id=id, reason=reason, workspace_id=workspace.id, actor_user_id=user.id
     )

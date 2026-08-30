@@ -11,6 +11,8 @@ from app.core.status_machine import (
     EventSemanticRole,
     RiskLevel,
     ActionType,
+    ReconciliationStatus,
+    ReconciliationResolutionAction,
 )
 from app.core.confidence import AmbiguityDetail
 
@@ -396,3 +398,74 @@ class BulkRiskResponse(BaseModel):
     medium_count: int
     low_count: int
     items: List[RiskAssessmentResponse] = Field(default_factory=list)
+
+
+# ==========================================
+# PHASE 11: CROSS-PROVIDER RECONCILIATION SCHEMAS
+# ==========================================
+
+class EvidenceProvenanceDetail(BaseModel):
+    evidence_id: str
+    source_type: str
+    source_ref: Optional[str] = None
+    provider: str
+    actor: Optional[str] = None
+    recipients: Optional[List[str]] = Field(default_factory=list)
+    semantic_role: EventSemanticRole
+    correlation_confidence: float
+    content: str
+    observed_at: datetime
+    is_supporting: bool = True
+    is_conflicting: bool = False
+    reasoning: Optional[Any] = None
+
+
+class ReconciliationRecordResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    obligation_id: str
+    status: ReconciliationStatus
+    confidence: float
+    consistency_score: float
+    contradiction_score: float
+    supporting_evidence_ids: List[str] = Field(default_factory=list)
+    conflicting_evidence_ids: List[str] = Field(default_factory=list)
+    supporting_event_ids: List[str] = Field(default_factory=list)
+    conflicting_event_ids: List[str] = Field(default_factory=list)
+    explanation: List[str] = Field(default_factory=list)
+    recommended_action: Optional[str] = None
+    resolution: Optional[Dict[str, Any]] = None
+    resolved_by: Optional[str] = None
+    resolved_at: Optional[datetime] = None
+    created_at: datetime
+    updated_at: datetime
+
+    # Optional enriched context for detailed view
+    evidence_timeline: Optional[List[EvidenceProvenanceDetail]] = Field(default_factory=list)
+    obligation_action: Optional[str] = None
+    obligation_owner: Optional[str] = None
+    obligation_beneficiary: Optional[str] = None
+    obligation_status: Optional[ObligationStatus] = None
+
+
+class ReconciliationListResponse(BaseModel):
+    items: List[ReconciliationRecordResponse] = Field(default_factory=list)
+    total: int
+    conflicting_count: int = 0
+    consistent_count: int = 0
+    ambiguous_count: int = 0
+    resolved_count: int = 0
+
+
+class ReconciliationResolutionRequest(BaseModel):
+    action: ReconciliationResolutionAction = Field(..., description="Operator decision: CONFIRM_COMPLETION, CONFIRM_NOT_COMPLETED, DISMISS_CONTRADICTION, MARK_AS_STALE, KEEP_OBLIGATION_ACTIVE, REOPEN_OBLIGATION")
+    notes: Optional[str] = Field(None, description="Human operator justification notes")
+    operator: Optional[str] = Field("Operator", description="Identity of the operator making the decision")
+    selected_evidence_id: Optional[str] = Field(None, description="Specific evidence ID used to confirm completion if applicable")
+
+
+class ReconciliationDismissRequest(BaseModel):
+    reason: Optional[str] = Field("Dismissed by operator", description="Reason for dismissing the contradiction")
+    operator: Optional[str] = Field("Operator", description="Identity of the operator")
+

@@ -24,6 +24,11 @@ import {
   Sparkles,
   Activity,
   Flame,
+  Calendar,
+  Scale,
+  Brain,
+  Shield,
+  ShieldCheck,
 } from "lucide-react";
 import {
   Obligation,
@@ -34,12 +39,20 @@ import {
   EdgeType,
   RiskAssessmentResponse,
   Intervention,
+  ReconciliationRecord,
+  ObligationPredictionResponse,
+  SimilarObligationItem,
+  OwnerPatternMetric,
+  ModelComparisonResponse,
+  PredictionHistoryItem,
+  AuditEvent,
 } from "@/lib/types/obligation";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { ConfidenceBadge } from "@/components/ui/ConfidenceBadge";
 import { InterventionCard } from "@/components/interventions/InterventionCard";
 import { InterventionReviewModal } from "@/components/interventions/InterventionReviewModal";
-import { obligationsApi, interventionsApi } from "@/lib/api/obligations";
+import { ReconciliationReviewModal } from "@/components/reconciliation/ReconciliationReviewModal";
+import { obligationsApi, interventionsApi, reconciliationApi, intelligenceApi, auditApi } from "@/lib/api/obligations";
 import { useToast } from "@/components/ui/ToastContext";
 
 interface PageProps {
@@ -58,8 +71,16 @@ export default function ObligationDetailPage({ params }: PageProps) {
   const [evidenceList, setEvidenceList] = useState<EvidenceResponse[]>([]);
   const [riskAssessment, setRiskAssessment] = useState<RiskAssessmentResponse | null>(null);
   const [interventions, setInterventions] = useState<Intervention[]>([]);
+  const [reconciliation, setReconciliation] = useState<ReconciliationRecord | null>(null);
+  const [prediction, setPrediction] = useState<ObligationPredictionResponse | null>(null);
+  const [similarObligations, setSimilarObligations] = useState<SimilarObligationItem[]>([]);
+  const [ownerContext, setOwnerContext] = useState<OwnerPatternMetric | null>(null);
+  const [modelComparison, setModelComparison] = useState<ModelComparisonResponse | null>(null);
+  const [predictionHistory, setPredictionHistory] = useState<PredictionHistoryItem[]>([]);
+  const [auditTrail, setAuditTrail] = useState<AuditEvent[]>([]);
   const [selectedIntervention, setSelectedIntervention] = useState<Intervention | null>(null);
   const [showInterventionModal, setShowInterventionModal] = useState(false);
+  const [showReconciliationModal, setShowReconciliationModal] = useState(false);
   const [planningIntervention, setPlanningIntervention] = useState(false);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
@@ -88,18 +109,32 @@ export default function ObligationDetailPage({ params }: PageProps) {
 
   const loadData = useCallback(async () => {
     try {
-      const [obData, graphData, evData, riskData, invData] = await Promise.all([
+      const [obData, graphData, evData, riskData, invData, recData, dossierData, compData, histData, auditData] = await Promise.all([
         obligationsApi.getById(obligationId),
         obligationsApi.getGraph(obligationId),
         obligationsApi.getEvidence(obligationId),
         obligationsApi.getRiskAssessment(obligationId).catch(() => null),
         interventionsApi.list({ obligation_id: obligationId }).catch(() => ({ items: [], total: 0 })),
+        reconciliationApi.getByObligationId(obligationId).catch(() => null),
+        intelligenceApi.getDossier(obligationId).catch(() => null),
+        intelligenceApi.compareModels(obligationId).catch(() => null),
+        intelligenceApi.getPredictionHistory(obligationId).catch(() => null),
+        auditApi.getEntityHistory("obligation", obligationId).catch(() => []),
       ]);
       setObligation(obData);
       setGraph(graphData);
       setEvidenceList(evData);
       setRiskAssessment(riskData);
       setInterventions(invData.items || []);
+      setReconciliation(recData);
+      setAuditTrail(auditData || []);
+      if (dossierData) {
+        setPrediction(dossierData.prediction);
+        setSimilarObligations(dossierData.similar_obligations.items || []);
+        setOwnerContext(dossierData.owner_context || null);
+      }
+      if (compData) setModelComparison(compData);
+      if (histData) setPredictionHistory(histData.history || []);
 
       // Sync edit form
       setEditAction(obData.action);
@@ -1139,6 +1174,480 @@ export default function ObligationDetailPage({ params }: PageProps) {
             )}
           </div>
 
+          {/* PHASE 10: TEMPORAL CONTEXT & RELATED MEETINGS */}
+          {(() => {
+            const calendarEvs = evidenceList.filter(
+              (e) =>
+                e.source_type === "google_calendar" ||
+                (e.extra_metadata && (e.extra_metadata as Record<string, unknown>).source_provider === "google_calendar")
+            );
+            if (calendarEvs.length === 0) return null;
+
+            return (
+              <div className="bg-gradient-to-r from-emerald-950/30 via-slate-900 to-slate-900 border border-emerald-800/40 rounded-2xl p-6 space-y-4 shadow-md">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="space-y-0.5">
+                    <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                      <Calendar className="w-4 h-4 text-emerald-400" />
+                      <span>Temporal Context &amp; Related Meetings ({calendarEvs.length})</span>
+                    </h3>
+                    <p className="text-[11px] text-zinc-400">
+                      Observed Google Calendar meetings correlating with this commitment.
+                    </p>
+                  </div>
+                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-950/80 text-emerald-300 border border-emerald-800/60">
+                    Temporal Intelligence Active
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 gap-3">
+                  {calendarEvs.map((cev) => {
+                    const cmeta = (cev.extra_metadata as Record<string, unknown>) || {};
+                    const mStatus = (cmeta.meeting_status as string) || "MEETING_SCHEDULED";
+                    const startTime = cmeta.start_time as string | undefined;
+                    const attendees = (cmeta.attendees as string[]) || [];
+                    const summary = (cmeta.summary as string) || "Calendar Event";
+                    const organizer = (cmeta.organizer as string) || "Unknown";
+
+                    return (
+                      <div
+                        key={cev.id}
+                        className="p-4 rounded-xl bg-zinc-950/90 border border-emerald-900/40 space-y-2.5 text-xs"
+                      >
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <div className="flex items-center gap-2">
+                            <span
+                              className={`px-2 py-0.5 rounded-full font-bold uppercase text-[10px] ${
+                                mStatus === "MEETING_COMPLETED"
+                                  ? "bg-blue-950/80 text-blue-300 border border-blue-800/60"
+                                  : mStatus === "MEETING_CANCELLED"
+                                  ? "bg-rose-950/80 text-rose-300 border border-rose-800/60"
+                                  : mStatus === "MEETING_RESCHEDULED"
+                                  ? "bg-amber-950/80 text-amber-300 border border-amber-800/60"
+                                  : "bg-emerald-950/80 text-emerald-300 border border-emerald-800/60"
+                              }`}
+                            >
+                              {mStatus.replace("MEETING_", "")}
+                            </span>
+                            <span className="font-semibold text-zinc-200">
+                              {summary}
+                            </span>
+                          </div>
+
+                          {startTime && (
+                            <span className="text-zinc-400 flex items-center gap-1 font-mono text-[11px]">
+                              <Clock className="w-3 h-3 text-emerald-400" />
+                              {new Date(startTime).toLocaleString(undefined, {
+                                month: "short",
+                                day: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </span>
+                          )}
+                        </div>
+
+                        <p className="text-zinc-300 bg-zinc-900/60 p-2.5 rounded-lg border border-zinc-800/80">
+                          {cev.content}
+                        </p>
+
+                        <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-zinc-400">
+                          <span>
+                            Organizer: <strong className="text-zinc-300">{cev.actor || organizer}</strong>
+                          </span>
+                          {attendees.length > 0 && (
+                            <span>
+                              Attendees: <strong className="text-zinc-300">{attendees.join(", ")}</strong>
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <p className="text-[11px] text-zinc-400 italic">
+                  Note: Calendar meetings provide temporal context and meeting proximity signals to the Risk Engine. They do not automatically overwrite this obligation&apos;s deadline or mark it completed without human approval.
+                </p>
+              </div>
+            );
+          })()}
+
+          {/* PHASE 11: CROSS-PROVIDER EVIDENCE RECONCILIATION */}
+          {reconciliation && (
+            <div
+              className={`border rounded-2xl p-6 space-y-4 shadow-md transition-all ${
+                reconciliation.status === "CONFLICTING"
+                  ? "bg-gradient-to-r from-rose-950/30 via-zinc-900 to-zinc-900 border-rose-800/40"
+                  : reconciliation.status === "CONSISTENT"
+                  ? "bg-gradient-to-r from-emerald-950/30 via-zinc-900 to-zinc-900 border-emerald-800/40"
+                  : "bg-zinc-900 border-zinc-800"
+              }`}
+            >
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="space-y-0.5">
+                  <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                    <Scale className="w-4 h-4 text-indigo-400" />
+                    <span>Cross-Provider Reconciliation &amp; Contradiction Status</span>
+                  </h3>
+                  <p className="text-[11px] text-zinc-400">
+                    Continuous cross-source consistency analysis synthesized across Slack, Gmail, and Google Calendar.
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${
+                      reconciliation.status === "CONFLICTING"
+                        ? "bg-rose-500/20 text-rose-300 border border-rose-500/40"
+                        : reconciliation.status === "CONSISTENT"
+                        ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
+                        : "bg-amber-500/20 text-amber-300 border border-amber-500/40"
+                    }`}
+                  >
+                    {reconciliation.status.replace("_", " ")}
+                  </span>
+                  <button
+                    onClick={() => setShowReconciliationModal(true)}
+                    className="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-lg shadow-sm transition-all"
+                  >
+                    Adjudicate Decision
+                  </button>
+                </div>
+              </div>
+
+              {/* Consistency vs Contradiction Meters */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                <div className="p-3 bg-zinc-950/60 rounded-xl border border-zinc-800 space-y-1.5">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-zinc-400">Consistency Score</span>
+                    <span className="text-emerald-400 font-bold">
+                      {(reconciliation.consistency_score * 100).toFixed(0)}%
+                    </span>
+                  </div>
+                  <div className="w-full bg-zinc-800 rounded-full h-1.5 overflow-hidden">
+                    <div
+                      className="bg-emerald-500 h-1.5 rounded-full"
+                      style={{ width: `${Math.min(100, reconciliation.consistency_score * 100)}%` }}
+                    />
+                  </div>
+                </div>
+
+                <div className="p-3 bg-zinc-950/60 rounded-xl border border-zinc-800 space-y-1.5">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-zinc-400">Contradiction Score</span>
+                    <span className="text-rose-400 font-bold">
+                      {(reconciliation.contradiction_score * 100).toFixed(0)}%
+                    </span>
+                  </div>
+                  <div className="w-full bg-zinc-800 rounded-full h-1.5 overflow-hidden">
+                    <div
+                      className="bg-rose-500 h-1.5 rounded-full"
+                      style={{ width: `${Math.min(100, reconciliation.contradiction_score * 100)}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Finding notes */}
+              {reconciliation.explanation && reconciliation.explanation.length > 0 && (
+                <div className="p-3 bg-zinc-950/70 rounded-xl border border-zinc-800 text-xs text-zinc-300 space-y-1">
+                  <span className="text-zinc-400 font-medium text-[11px] uppercase tracking-wider block mb-1">
+                    Intelligence Findings:
+                  </span>
+                  {reconciliation.explanation.map((exp: string, idx: number) => (
+                    <p key={idx} className="text-zinc-300 flex items-start gap-1.5">
+                      <span className="text-indigo-400 font-mono">•</span>
+                      <span>{exp}</span>
+                    </p>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex items-center justify-between text-xs text-zinc-400 pt-1">
+                <span>
+                  Recommended Action: <strong className="text-indigo-300">{reconciliation.recommended_action || "REVIEW"}</strong>
+                </span>
+                <Link
+                  href={`/reconciliation/${reconciliation.id}`}
+                  className="text-indigo-400 hover:text-indigo-300 font-medium flex items-center gap-1"
+                >
+                  <span>Full Evidence Timeline &rarr;</span>
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {/* PHASE 12: PREDICTIVE INTELLIGENCE & PATTERN LEARNING */}
+          {prediction && (
+            <div className="bg-gradient-to-r from-indigo-950/30 via-slate-900 to-slate-900 border border-indigo-500/30 rounded-2xl p-6 space-y-6 shadow-md">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="w-8 h-8 rounded-lg bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-indigo-400">
+                      <Brain className="w-4 h-4" />
+                    </span>
+                    <div>
+                      <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                        <span>Predictive Intelligence &amp; Pattern Learning</span>
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">
+                          {prediction.model_version}
+                        </span>
+                      </h3>
+                      <p className="text-[11px] text-zinc-400">
+                        Historical pattern learning, explainable delay forecasting, and calibrated predictive signals.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="text-right">
+                  <div className="text-xl font-bold font-mono text-indigo-300">
+                    {Math.round(prediction.failure_probability * 100)}% Failure Prob.
+                  </div>
+                  <div className="text-[11px] text-zinc-400">
+                    Confidence: {Math.round(prediction.confidence * 100)}%
+                  </div>
+                </div>
+              </div>
+
+              {/* Progress Bar */}
+              <div className="space-y-1.5">
+                <div className="flex justify-between text-xs font-medium text-zinc-400">
+                  <span className="text-emerald-400 flex items-center gap-1">
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    Completion Likelihood: {Math.round(prediction.completion_probability * 100)}%
+                  </span>
+                  <span className="text-rose-400 flex items-center gap-1">
+                    <AlertCircle className="w-3.5 h-3.5" />
+                    Failure / Delay Likelihood: {Math.round(prediction.failure_probability * 100)}%
+                  </span>
+                </div>
+                <div className="w-full bg-zinc-800 rounded-full h-2 overflow-hidden flex">
+                  <div
+                    className="bg-rose-500 h-full transition-all duration-500"
+                    style={{ width: `${Math.round(prediction.failure_probability * 100)}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* Projections Matrix */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="p-3 bg-zinc-950/60 rounded-xl border border-zinc-800 space-y-1">
+                  <div className="text-[11px] text-zinc-400">Expected Delay Latency</div>
+                  <div className="text-base font-bold text-amber-300 font-mono">
+                    {prediction.expected_delay_hours > 0 ? `+${prediction.expected_delay_hours}h` : "On Schedule"}
+                  </div>
+                  <div className="text-[10px] text-zinc-500">Derived from historical priors</div>
+                </div>
+
+                <div className="p-3 bg-zinc-950/60 rounded-xl border border-zinc-800 space-y-1">
+                  <div className="text-[11px] text-zinc-400">Intervention Likelihood</div>
+                  <div className="text-base font-bold text-indigo-300 font-mono">
+                    {Math.round(prediction.intervention_likelihood * 100)}%
+                  </div>
+                  <div className="text-[10px] text-zinc-500">Likely to need check-in</div>
+                </div>
+
+                <div className="p-3 bg-zinc-950/60 rounded-xl border border-zinc-800 space-y-1">
+                  <div className="text-[11px] text-zinc-400">Blockage Risk</div>
+                  <div className="text-base font-bold text-rose-300 font-mono">
+                    {Math.round(prediction.blockage_likelihood * 100)}%
+                  </div>
+                  <div className="text-[10px] text-zinc-500">Prerequisite bottleneck risk</div>
+                </div>
+              </div>
+
+              {/* Explainable Causal Reasons */}
+              {prediction.reasons && prediction.reasons.length > 0 && (
+                <div className="space-y-2">
+                  <div className="text-xs font-semibold text-zinc-300 uppercase tracking-wider">
+                    Explainable Predictive Signals (Why?):
+                  </div>
+                  <div className="space-y-1.5">
+                    {prediction.reasons.map((r, i) => (
+                      <div
+                        key={i}
+                        className="flex items-start gap-2.5 p-2.5 rounded-lg bg-zinc-950/50 border border-zinc-800/80 text-xs"
+                      >
+                        <span
+                          className={`font-mono text-[10px] font-bold px-1.5 py-0.5 rounded shrink-0 ${
+                            r.impact > 0 ? "bg-rose-500/20 text-rose-300 border border-rose-500/30" : "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                          }`}
+                        >
+                          {r.impact > 0 ? `+${r.impact}` : r.impact}
+                        </span>
+                        <span className="text-zinc-300 leading-relaxed">{r.explanation}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Owner Context Insights */}
+              {ownerContext && ownerContext.total_obligations >= 2 && (
+                <div className="p-3 bg-zinc-950/40 rounded-xl border border-zinc-800 text-xs space-y-1.5">
+                  <div className="flex items-center justify-between text-zinc-300">
+                    <span className="font-semibold">Owner Delivery Profile ({ownerContext.owner}):</span>
+                    <span className="text-[10px] text-zinc-400">
+                      {Math.round(ownerContext.on_time_rate * 100)}% On-Time • Avg Delay: ~{ownerContext.avg_delay_hours}h
+                    </span>
+                  </div>
+                  <p className="text-zinc-400 text-[11px]">{ownerContext.insights[0]}</p>
+                </div>
+              )}
+
+              {/* Similar Past Obligations */}
+              {similarObligations.length > 0 && (
+                <div className="space-y-2 pt-2 border-t border-zinc-800/80">
+                  <div className="text-xs font-semibold text-zinc-300 uppercase tracking-wider flex items-center justify-between">
+                    <span>Historically Similar Commitments ({similarObligations.length}):</span>
+                    <span className="text-[10px] text-zinc-500 font-normal">Ranked by feature similarity</span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    {similarObligations.map((sim) => (
+                      <div
+                        key={sim.obligation_id}
+                        className="p-3 bg-zinc-950/40 rounded-lg border border-zinc-800 text-xs space-y-1.5"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-semibold text-zinc-200 truncate max-w-[180px]">
+                            {sim.owner}
+                          </span>
+                          <span
+                            className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                              sim.outcome_type.includes("ON_TIME")
+                                ? "bg-emerald-500/20 text-emerald-300"
+                                : "bg-amber-500/20 text-amber-300"
+                            }`}
+                          >
+                            {sim.outcome_type.replace(/_/g, " ")}
+                          </span>
+                        </div>
+                        <p className="text-zinc-400 line-clamp-1">{sim.action}</p>
+                        <div className="text-[10px] text-zinc-500">
+                          Similarity: {Math.round(sim.similarity_score * 100)}% • {sim.shared_features[0] || "Shared pattern"}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* PHASE 13: MODEL COMPARISON BREAKDOWN */}
+              {modelComparison && (
+                <div className="space-y-3 pt-3 border-t border-indigo-500/20">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-xs font-semibold text-slate-200 uppercase tracking-wider flex items-center gap-1.5">
+                      <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+                      <span>Model Comparison: predictive-v1 vs adaptive-v1</span>
+                    </h4>
+                    <span className="text-[11px] font-mono text-indigo-300 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/30">
+                      Variance: {modelComparison.probability_variance >= 0 ? `+${(modelComparison.probability_variance * 100).toFixed(1)}%` : `${(modelComparison.probability_variance * 100).toFixed(1)}%`}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="p-3 bg-slate-950/50 rounded-xl border border-slate-800 space-y-1">
+                      <div className="flex items-center justify-between text-[11px]">
+                        <span className="font-semibold text-slate-300">predictive-v1 (Baseline)</span>
+                        <span className="font-mono text-slate-400">
+                          {Math.round(modelComparison.predictive_v1.failure_probability * 100)}% Failure
+                        </span>
+                      </div>
+                      <div className="text-[11px] text-slate-500">
+                        Expected Delay: ~{modelComparison.predictive_v1.expected_delay_hours}h • Conf: {Math.round(modelComparison.predictive_v1.confidence * 100)}%
+                      </div>
+                    </div>
+
+                    <div className="p-3 bg-slate-950/50 rounded-xl border border-indigo-500/40 space-y-1">
+                      <div className="flex items-center justify-between text-[11px]">
+                        <span className="font-semibold text-indigo-300">adaptive-v1 (Calibrated)</span>
+                        <span className="font-mono text-indigo-400 font-bold">
+                          {Math.round(modelComparison.adaptive_v1.failure_probability * 100)}% Failure
+                        </span>
+                      </div>
+                      <div className="text-[11px] text-slate-400">
+                        Expected Delay: ~{modelComparison.adaptive_v1.expected_delay_hours}h • Conf: {Math.round(modelComparison.adaptive_v1.confidence * 100)}%
+                      </div>
+                    </div>
+                  </div>
+
+                  {modelComparison.adjustment_reasons.length > 0 && (
+                    <div className="p-2.5 bg-slate-950/40 rounded-lg text-[11px] text-slate-400 space-y-0.5">
+                      {modelComparison.adjustment_reasons.map((r, i) => (
+                        <div key={i} className="flex items-center gap-1.5 text-slate-300">
+                          <span className="text-indigo-400">•</span>
+                          <span>{r}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* PHASE 13: PREDICTION HISTORY TIMELINE */}
+              {predictionHistory.length > 0 && (
+                <div className="space-y-3 pt-3 border-t border-indigo-500/20">
+                  <h4 className="text-xs font-semibold text-slate-200 uppercase tracking-wider flex items-center gap-1.5">
+                    <Clock className="w-3.5 h-3.5 text-amber-400" />
+                    <span>Prediction & Feedback History ({predictionHistory.length})</span>
+                  </h4>
+
+                  <div className="space-y-2">
+                    {predictionHistory.map((item) => (
+                      <div
+                        key={item.prediction_id}
+                        className="p-3 bg-slate-950/40 rounded-xl border border-slate-800 text-xs flex flex-wrap items-center justify-between gap-2"
+                      >
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono text-indigo-300 font-semibold">{item.model_version}</span>
+                            <span className="text-slate-500 text-[10px]">
+                              {new Date(item.predicted_at).toLocaleString()}
+                            </span>
+                          </div>
+                          <div className="text-[11px] text-slate-400 mt-0.5">
+                            Failure Prob: <span className="text-slate-200 font-mono font-semibold">{Math.round(item.failure_probability * 100)}%</span> •
+                            Exp Delay: <span className="text-amber-300 font-mono">~{item.expected_delay_hours}h</span>
+                          </div>
+                        </div>
+
+                        {item.observed_outcome && (
+                          <div className="text-right text-[11px]">
+                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-300">
+                              Observed: {item.observed_outcome}
+                            </span>
+                            {item.prediction_error !== null && item.prediction_error !== undefined && (
+                              <div className="text-[10px] text-slate-500 mt-0.5">
+                                Error: {item.prediction_error.toFixed(2)}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Preventative Advisory Recommendation */}
+              <div className="p-3.5 bg-indigo-950/40 rounded-xl border border-indigo-500/30 flex items-start gap-3 text-xs">
+                <ShieldAlert className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />
+                <div>
+                  <div className="font-semibold text-indigo-200">
+                    Recommended Preventative Action:
+                  </div>
+                  <div className="text-zinc-300 mt-0.5">
+                    {prediction.preventative_recommendation || "Maintain standard monitoring."}
+                  </div>
+                  <div className="text-[10px] text-zinc-500 mt-1 italic">
+                    Safety Invariant: Predictive intelligence is strictly advisory. It never automatically completes obligations or alters lifecycle states.
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* PHASE 4: EVIDENCE & CONTINUITY TIMELINE */}
           <div className="space-y-4 pt-6 border-t border-zinc-800">
             <div className="flex items-center justify-between">
@@ -1225,6 +1734,100 @@ export default function ObligationDetailPage({ params }: PageProps) {
                           ))}
                         </div>
                       )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* PHASE 15: ENTERPRISE AUDIT & GOVERNANCE PROVENANCE TIMELINE */}
+          <div className="space-y-4 pt-6 border-t border-zinc-800">
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-indigo-400" />
+                  <span>Authoritative Audit & Provenance History ({auditTrail.length})</span>
+                </h3>
+                <p className="text-[11px] text-zinc-400">
+                  Cryptographic SHA-256 hash-chained lifecycle record with operator attribution & zero-secret state diffs.
+                </p>
+              </div>
+
+              <Link
+                href="/audit"
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white text-xs font-semibold transition-colors"
+              >
+                <span>Governance Center</span>
+                <ArrowRight className="w-3 h-3" />
+              </Link>
+            </div>
+
+            {auditTrail.length === 0 ? (
+              <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/60 text-xs text-zinc-500 italic">
+                No audit events recorded for this obligation yet.
+              </div>
+            ) : (
+              <div className="space-y-3 relative before:absolute before:left-3 before:top-3 before:bottom-3 before:w-0.5 before:bg-indigo-950">
+                {auditTrail.map((item) => (
+                  <div key={item.id} className="pl-8 relative space-y-2 text-xs">
+                    {/* Timeline dot */}
+                    <div className="absolute left-1.5 top-2 -translate-x-1/2 w-3.5 h-3.5 rounded-full border-2 border-indigo-500 bg-zinc-950" />
+
+                    <div className="p-4 rounded-xl bg-zinc-950/80 border border-zinc-800/80 space-y-2">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-indigo-950/60 text-indigo-300 border border-indigo-500/30 font-mono">
+                            {item.action}
+                          </span>
+                          <span className="text-zinc-400 font-semibold">
+                            {item.actor_name || (item.source === "SYSTEM_WORKER" ? "System Worker" : "Anonymous")}
+                          </span>
+                          {item.actor_role && (
+                            <span className="px-1.5 py-0.2 rounded text-[10px] bg-zinc-800 text-zinc-400 border border-zinc-700">
+                              {item.actor_role}
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="flex items-center gap-2 font-mono text-[11px] text-zinc-500">
+                          <Clock className="w-3 h-3" />
+                          <span>{new Date(item.timestamp).toLocaleString()}</span>
+                        </div>
+                      </div>
+
+                      {item.reason && (
+                        <p className="text-zinc-300 italic text-[11px]">&ldquo;{item.reason}&rdquo;</p>
+                      )}
+
+                      {/* State Changes Diff (if present) */}
+                      {(item.before_state || item.after_state) && (
+                        <div className="p-2.5 rounded-lg bg-zinc-900/90 border border-zinc-800/60 space-y-1.5 text-[11px] font-mono">
+                          {item.before_state && (
+                            <div className="text-zinc-400">
+                              <span className="text-zinc-500 font-sans">Before: </span>
+                              <span>{JSON.stringify(item.before_state)}</span>
+                            </div>
+                          )}
+                          {item.after_state && (
+                            <div className="text-emerald-400">
+                              <span className="text-zinc-500 font-sans">After: </span>
+                              <span>{JSON.stringify(item.after_state)}</span>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Cryptographic SHA-256 Provenance Proof */}
+                      <div className="flex items-center justify-between pt-1 border-t border-zinc-900 text-[10px] font-mono text-zinc-500">
+                        <div className="flex items-center gap-1.5 text-emerald-400/80">
+                          <Shield className="w-3 h-3" />
+                          <span>Hash: {item.event_hash.slice(0, 16)}...</span>
+                        </div>
+                        {item.request_id && (
+                          <span>Req: {item.request_id.slice(0, 12)}...</span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -1564,6 +2167,18 @@ export default function ObligationDetailPage({ params }: PageProps) {
           loadData();
         }}
       />
+
+      {/* Phase 11: Reconciliation Review & Adjudication Modal */}
+      {reconciliation && (
+        <ReconciliationReviewModal
+          reconciliation={reconciliation}
+          isOpen={showReconciliationModal}
+          onClose={() => setShowReconciliationModal(false)}
+          onResolved={() => {
+            loadData();
+          }}
+        />
+      )}
     </div>
   );
 }

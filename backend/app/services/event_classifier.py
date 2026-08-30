@@ -17,13 +17,14 @@ class EventClassifier:
     NON_COMPLETION_PATTERNS = [
         r"\b(?:couldn'?t|could\s+not|can'?t|cannot|failed\s+to|unable\s+to)\s+(?:send|submit|finish|complete|review|deliver|export|provide|share|deploy|generate)\b",
         r"\b(?:haven'?t|have\s+not)\s+(?:sent|submitted|finished|completed|received|reviewed|exported|provided)\b",
-        r"\b(?:still\s+haven'?t|still\s+waiting\s+for|not\s+yet\s+sent|delayed|rejected|blocked\s+by|export\s+failed|failed\s+because)\b",
-        r"\b(?:client\s+rejected|proposal\s+rejected|did\s+not\s+send)\b",
+        r"\b(?:still\s+haven'?t|still\s+waiting\s+for|not\s+yet\s+sent|delayed|rejected|blocked\s+by|blocked\s+on|is\s+blocked|export\s+failed|failed\s+because)\b",
+        r"\b(?:client\s+rejected|proposal\s+rejected|did\s+not\s+send|meeting\s+cancelled|meeting_cancelled|cancelled\s+meeting|found\s+discrepancies|discrepancies\s+in|not\s+ready)\b",
     ]
 
     COMMITMENT_PATTERNS = [
         r"\b(?:i\s+will|i'll|will|i'm\s+going\s+to|going\s+to|plan\s+to|promise\s+to)\s+(?:send|submit|finish|complete|review|share|upload|provide|write|export)\b",
         r"\b(?:tomorrow|next\s+week|later\s+today|by\s+friday|by\s+monday|soon)\b",
+        r"\b(?:calendar\s+meeting|meeting_scheduled|meeting_rescheduled|rescheduled\s+project|moved\s+to)\b",
     ]
 
     REQUEST_PATTERNS = [
@@ -32,17 +33,18 @@ class EventClassifier:
     ]
 
     PROGRESS_PATTERNS = [
-        r"\b(?:working\s+on|currently\s+drafting|in\s+progress|drafting|almost\s+done|making\s+progress)\b",
+        r"\b(?:working\s+on|currently\s+drafting|in\s+progress|drafting|almost\s+done|making\s+progress|accepted\s+the\s+project|attendee_response|meeting\s+concluded|meeting_completed)\b",
     ]
 
     COMPLETION_PATTERNS = [
         r"\b(?:sent|submitted|finished|completed|reviewed|uploaded|delivered|signed|deployed|published|provided|exported)\b",
-        r"\b(?:attached|attaching|here\s+is|here\s+are|all\s+done|task\s+complete|done\s+with)\b",
+        r"\b(?:attached|attaching|here\s+is|here\s+are|all\s+done|task\s+complete|done\s+with|discrepancies\s+resolved|all\s+resolved)\b",
         r"\b(?:csv\s+sent|docs\s+sent|report\s+sent|numbers\s+sent|email\s+sent)\b",
     ]
 
     IRRELEVANT_PATTERNS = [
         r"^(?:hi|hello|hey|good\s+morning|good\s+afternoon|good\s+evening|thanks|thank\s+you|cool|ok|okay|sounds\s+good|got\s+it)[.!]?$",
+        r"\b(?:personal\s+lunch|lunch\s+with\s+friend)\b",
     ]
 
     @classmethod

@@ -233,6 +233,7 @@ class InterventionPlanner:
         cooldown_until = now + timedelta(hours=cls.COOLDOWN_HOURS)
 
         intervention = Intervention(
+            workspace_id=obligation.workspace_id,
             obligation_id=obligation.id,
             intervention_type=intervention_type,
             target_owner=target_owner,

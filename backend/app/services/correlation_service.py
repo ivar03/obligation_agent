@@ -78,33 +78,64 @@ class EvidenceCorrelationService:
             matched_signals.append("Progress update detected")
             reasoning.append("Event indicates active progress on task.")
 
-        # 2. Owner vs. Sender Alignment
+        # 2. Participant Alignment (Sender / Organizer & Recipients / Attendees)
         norm_sender = normalize_name(event.sender)
         norm_owner = normalize_name(obligation.owner)
-
-        if norm_sender and norm_owner:
-            if norm_sender == norm_owner or (norm_sender == "you" and norm_owner in ["ravi", "you"]) or (norm_owner == "you" and norm_sender in ["ravi", "you"]):
-                base_score += 0.35
-                matched_signals.append(f"Owner matches sender ({obligation.owner})")
-                reasoning.append(f"Event sender '{event.sender}' matches obligation owner '{obligation.owner}'")
-            else:
-                base_score -= 0.25
-                unmatched_signals.append(f"Sender '{event.sender}' does not match owner '{obligation.owner}'")
-                reasoning.append(f"Sender '{event.sender}' differs from expected owner '{obligation.owner}'")
-        else:
-            reasoning.append("Sender metadata not provided for strict owner alignment.")
-
-        # 3. Beneficiary vs. Recipients Alignment
         norm_recipients = [normalize_name(r) for r in event.recipients]
         norm_beneficiary = normalize_name(obligation.beneficiary)
 
-        if norm_beneficiary and norm_recipients:
-            if norm_beneficiary in norm_recipients or (norm_beneficiary == "you" and any(r in ["ravi", "you"] for r in norm_recipients)) or (norm_beneficiary in ["ravi", "team"] and "you" in norm_recipients):
-                base_score += 0.20
-                matched_signals.append(f"Beneficiary matches recipient ({obligation.beneficiary})")
-                reasoning.append(f"Event recipient list includes obligation beneficiary '{obligation.beneficiary}'")
+        is_calendar = event.source_type == "google_calendar" or (
+            isinstance(event.metadata, dict) and event.metadata.get("source_provider") == "google_calendar"
+        )
+
+        if is_calendar:
+            # Calendar event attendee/organizer matching
+            all_participants = [norm_sender] + norm_recipients
+            owner_in_meeting = norm_owner in all_participants or (
+                norm_owner in ["ravi", "you"] and any(p in ["ravi", "you"] for p in all_participants)
+            )
+            beneficiary_in_meeting = norm_beneficiary in all_participants or (
+                norm_beneficiary in ["ravi", "you"] and any(p in ["ravi", "you"] for p in all_participants)
+            ) or (norm_beneficiary in ["team", "executive team"] and len(all_participants) >= 2)
+
+            if owner_in_meeting and beneficiary_in_meeting:
+                base_score += 0.40
+                matched_signals.append(f"Meeting participants include owner ({obligation.owner}) and beneficiary ({obligation.beneficiary})")
+                reasoning.append(f"Calendar meeting participants include obligation owner '{obligation.owner}' and beneficiary '{obligation.beneficiary}'")
+            elif owner_in_meeting:
+                base_score += 0.25
+                matched_signals.append(f"Meeting attendee includes obligation owner ({obligation.owner})")
+                reasoning.append(f"Obligation owner '{obligation.owner}' is an attendee of this calendar meeting.")
+            elif beneficiary_in_meeting:
+                base_score += 0.15
+                matched_signals.append(f"Meeting organizer/attendee includes beneficiary ({obligation.beneficiary})")
+                reasoning.append(f"Obligation beneficiary '{obligation.beneficiary}' is a participant in this calendar meeting.")
             else:
-                unmatched_signals.append("Recipient does not explicitly match beneficiary")
+                base_score -= 0.20
+                unmatched_signals.append("Neither owner nor beneficiary is listed on calendar event")
+                reasoning.append("Calendar event participants do not match obligation parties.")
+        else:
+            # Standard message sender vs owner alignment
+            if norm_sender and norm_owner:
+                if norm_sender == norm_owner or (norm_sender == "you" and norm_owner in ["ravi", "you"]) or (norm_owner == "you" and norm_sender in ["ravi", "you"]):
+                    base_score += 0.35
+                    matched_signals.append(f"Owner matches sender ({obligation.owner})")
+                    reasoning.append(f"Event sender '{event.sender}' matches obligation owner '{obligation.owner}'")
+                else:
+                    base_score -= 0.25
+                    unmatched_signals.append(f"Sender '{event.sender}' does not match owner '{obligation.owner}'")
+                    reasoning.append(f"Sender '{event.sender}' differs from expected owner '{obligation.owner}'")
+            else:
+                reasoning.append("Sender metadata not provided for strict owner alignment.")
+
+            # Standard message recipient vs beneficiary alignment
+            if norm_beneficiary and norm_recipients:
+                if norm_beneficiary in norm_recipients or (norm_beneficiary == "you" and any(r in ["ravi", "you"] for r in norm_recipients)) or (norm_beneficiary in ["ravi", "team"] and "you" in norm_recipients):
+                    base_score += 0.20
+                    matched_signals.append(f"Beneficiary matches recipient ({obligation.beneficiary})")
+                    reasoning.append(f"Event recipient list includes obligation beneficiary '{obligation.beneficiary}'")
+                else:
+                    unmatched_signals.append("Recipient does not explicitly match beneficiary")
         
         # 4. Action Text / Entity Similarity
         action_tokens = tokenize_action(obligation.action)
@@ -136,8 +167,11 @@ class EvidenceCorrelationService:
         # Cap confidence score between 0.05 and 0.98
         score = max(0.05, min(0.98, base_score))
 
-        # Commitments, requests, and negative signals cannot be high-confidence completion candidates
-        if semantic_role in [EventSemanticRole.COMMITMENT, EventSemanticRole.REQUEST, EventSemanticRole.NON_COMPLETION_SIGNAL, EventSemanticRole.IRRELEVANT]:
+        # Commitments, requests, negative signals, and calendar scheduled events cannot be completion candidates
+        if is_calendar:
+            # Calendar events are temporal context / evidence, never auto-completion
+            is_candidate = False
+        elif semantic_role in [EventSemanticRole.COMMITMENT, EventSemanticRole.REQUEST, EventSemanticRole.NON_COMPLETION_SIGNAL, EventSemanticRole.IRRELEVANT]:
             score = min(0.40, score)
             is_candidate = False
         else:

@@ -40,8 +40,8 @@ class EventIngestionService:
     """
 
     @staticmethod
-    async def get_candidate_obligations(session: AsyncSession) -> List[Obligation]:
-        """Fetches active obligations eligible for evidence correlation."""
+    async def get_candidate_obligations(session: AsyncSession, workspace_id: Optional[str] = None) -> List[Obligation]:
+        """Fetches active obligations eligible for evidence correlation in the specified workspace."""
         stmt = (
             select(Obligation)
             .where(
@@ -50,18 +50,20 @@ class EventIngestionService:
                     ObligationStatus.CANCELLED,
                 ])
             )
-            .order_by(desc(Obligation.created_at))
         )
+        if workspace_id:
+            stmt = stmt.where(Obligation.workspace_id == workspace_id)
+        stmt = stmt.order_by(desc(Obligation.created_at))
         result = await session.execute(stmt)
         return list(result.scalars().all())
 
     @staticmethod
-    async def analyze_event(session: AsyncSession, event: ExternalEvent) -> EventAnalysisResponse:
+    async def analyze_event(session: AsyncSession, event: ExternalEvent, workspace_id: Optional[str] = None) -> EventAnalysisResponse:
         """
         Stateless event analysis.
         Scores correlation against active obligations without saving to the database.
         """
-        candidates = await EventIngestionService.get_candidate_obligations(session)
+        candidates = await EventIngestionService.get_candidate_obligations(session, workspace_id=workspace_id)
         return EvidenceCorrelationService.correlate(event, candidates)
 
     @classmethod
@@ -70,6 +72,7 @@ class EventIngestionService:
         session: AsyncSession,
         provider_name: str,
         raw_payload: Dict[str, Any],
+        workspace_id: str = "ws-default",
     ) -> IngestionResultResponse:
         """
         Ingests an event from a specific registered provider (Mock, Slack, Webhook, etc.).
@@ -82,6 +85,7 @@ class EventIngestionService:
             event=normalized_event,
             provider_name=provider.provider_name,
             raw_payload=raw_payload,
+            workspace_id=workspace_id,
         )
 
     @classmethod
@@ -91,6 +95,7 @@ class EventIngestionService:
         event: ExternalEvent,
         provider_name: str = "direct",
         raw_payload: Optional[Dict[str, Any]] = None,
+        workspace_id: str = "ws-default",
     ) -> IngestionResultResponse:
         """
         Core idempotent ingestion pipeline:
@@ -138,6 +143,7 @@ class EventIngestionService:
         if event.source_ref:
             dup_stmt = select(IngestedEventRecord).where(
                 and_(
+                    IngestedEventRecord.workspace_id == workspace_id,
                     IngestedEventRecord.provider == provider_name,
                     IngestedEventRecord.source_ref == event.source_ref,
                 )
@@ -146,10 +152,15 @@ class EventIngestionService:
             existing_event = dup_res.scalar_one_or_none()
             if existing_event:
                 logger.info(
-                    f"Duplicate event ignored: Provider={provider_name}, Ref={event.source_ref} (Event ID={existing_event.id})"
+                    f"Duplicate event ignored: Workspace={workspace_id}, Provider={provider_name}, Ref={event.source_ref} (Event ID={existing_event.id})"
                 )
                 # Retrieve existing evidence records for this source_ref
-                existing_ev_stmt = select(Evidence).where(Evidence.source_ref == event.source_ref)
+                existing_ev_stmt = select(Evidence).where(
+                    and_(
+                        Evidence.workspace_id == workspace_id,
+                        Evidence.source_ref == event.source_ref,
+                    )
+                )
                 existing_ev_res = await session.execute(existing_ev_stmt)
                 existing_evs = [EvidenceResponse.model_validate(e) for e in existing_ev_res.scalars().all()]
 
@@ -166,7 +177,7 @@ class EventIngestionService:
                 )
 
         # 3. Correlation & Classification
-        candidates = await cls.get_candidate_obligations(session)
+        candidates = await cls.get_candidate_obligations(session, workspace_id=workspace_id)
         analysis = EvidenceCorrelationService.correlate(event, candidates)
 
         # Map source_type to EvidenceType enum
@@ -197,6 +208,7 @@ class EventIngestionService:
                 if event.source_ref:
                     ev_dup_stmt = select(Evidence).where(
                         and_(
+                            Evidence.workspace_id == workspace_id,
                             Evidence.source_type == event.source_type,
                             Evidence.source_ref == event.source_ref,
                             Evidence.obligation_id == match.obligation_id,
@@ -212,6 +224,7 @@ class EventIngestionService:
 
                 # Create suggested evidence record
                 new_evidence = Evidence(
+                    workspace_id=workspace_id,
                     obligation_id=match.obligation_id,
                     evidence_type=ev_type,
                     source_type=event.source_type,
@@ -236,6 +249,7 @@ class EventIngestionService:
                 # 5. Closed-Loop Intervention Integration
                 inv_stmt = select(Intervention).where(
                     and_(
+                        Intervention.workspace_id == workspace_id,
                         Intervention.obligation_id == match.obligation_id,
                         Intervention.status.in_([
                             InterventionStatus.PENDING_REVIEW,
@@ -276,13 +290,15 @@ class EventIngestionService:
                         updated_intervention_ids.append(active_inv.id)
 
         # 6. Determine Audit Processing Status & Action Taken
-        processing_status = "PROCESSED" if (len(created_evidence) > 0 or len(analysis.matches) > 0) else "NO_MATCH"
+        has_meaningful_match = any(m.correlation_confidence >= 0.50 for m in analysis.matches)
+        processing_status = "PROCESSED" if (len(created_evidence) > 0 or has_meaningful_match or len(updated_intervention_ids) > 0) else "NO_MATCH"
         action_taken = "SUGGESTED_EVIDENCE_CREATED" if len(created_evidence) > 0 else (
             "INTERVENTION_UPDATED" if len(updated_intervention_ids) > 0 else "NONE"
         )
 
         # 7. Persist IngestedEventRecord
         audit_record = IngestedEventRecord(
+            workspace_id=workspace_id,
             provider=provider_name,
             source_type=event.source_type,
             source_ref=event.source_ref,
@@ -306,8 +322,16 @@ class EventIngestionService:
         await session.refresh(audit_record)
 
         logger.info(
-            f"Event ingested successfully: ID={audit_record.id} Provider={provider_name} Role={analysis.semantic_role.value} Status={processing_status}"
+            f"Event ingested successfully: ID={audit_record.id} Workspace={workspace_id} Provider={provider_name} Role={analysis.semantic_role.value} Status={processing_status}"
         )
+
+        # Phase 11: Trigger Cross-Provider Reconciliation for affected obligations
+        from app.services.reconciliation_service import ReconciliationService
+        for ob_id in set(affected_obligation_ids):
+            try:
+                await ReconciliationService.reconcile_obligation(session, ob_id, workspace_id=workspace_id)
+            except Exception as e:
+                logger.error(f"Reconciliation error for obligation [{ob_id}]: {e}")
 
         return IngestionResultResponse(
             status=processing_status,
@@ -330,10 +354,13 @@ class EventIngestionService:
         source_ref: Optional[str] = None,
         limit: int = 50,
         offset: int = 0,
+        workspace_id: Optional[str] = None,
     ) -> IngestedEventListResponse:
         """Queries historical ingested event audit records with filtering."""
         query = select(IngestedEventRecord)
 
+        if workspace_id:
+            query = query.where(IngestedEventRecord.workspace_id == workspace_id)
         if provider:
             query = query.where(IngestedEventRecord.provider == provider.lower())
         if semantic_role:
@@ -359,15 +386,17 @@ class EventIngestionService:
         )
 
     @staticmethod
-    async def get_event_by_id(session: AsyncSession, event_id: str) -> IngestedEventResponse:
+    async def get_event_by_id(session: AsyncSession, event_id: str, workspace_id: Optional[str] = None) -> IngestedEventResponse:
         """Retrieves a single ingested event audit record by ID."""
         stmt = select(IngestedEventRecord).where(IngestedEventRecord.id == event_id)
+        if workspace_id:
+            stmt = stmt.where(IngestedEventRecord.workspace_id == workspace_id)
         res = await session.execute(stmt)
         record = res.scalar_one_or_none()
         if not record:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Ingested event '{event_id}' not found.",
+                detail=f"Ingested event '{event_id}' not found in active workspace.",
             )
         return IngestedEventResponse.model_validate(record)
 
@@ -376,6 +405,7 @@ class EventIngestionService:
         cls,
         session: AsyncSession,
         payload: EventSimulateRequest,
+        workspace_id: str = "ws-default",
     ) -> IngestionResultResponse:
         """
         Triggers a development simulation of a canonical scenario using MockProvider.
@@ -391,11 +421,12 @@ class EventIngestionService:
             session=session,
             provider_name="mock",
             raw_payload=raw,
+            workspace_id=workspace_id,
         )
 
     # Legacy method for backwards compatibility with Phase 4 tests
     @staticmethod
-    async def ingest_event(session: AsyncSession, event: ExternalEvent) -> EventIngestionResponse:
+    async def ingest_event(session: AsyncSession, event: ExternalEvent, workspace_id: str = "ws-default") -> EventIngestionResponse:
         """
         Backwards-compatible bridge for Phase 4 legacy endpoints and tests.
         """
@@ -403,6 +434,7 @@ class EventIngestionService:
             session=session,
             event=event,
             provider_name="direct",
+            workspace_id=workspace_id,
         )
         return EventIngestionResponse(
             ingested=len(result.evidence_records) > 0,

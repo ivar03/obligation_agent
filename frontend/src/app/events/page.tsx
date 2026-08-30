@@ -452,7 +452,17 @@ export default function EventsActivityCenterPage() {
                 >
                   <div className="space-y-2 flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="px-2 py-0.5 text-[11px] font-bold rounded bg-slate-800 text-slate-300 border border-slate-700">
+                      <span
+                        className={`px-2.5 py-0.5 text-[11px] font-bold rounded border ${
+                          evt.provider.toLowerCase() === "slack"
+                            ? "bg-purple-950/80 text-purple-300 border-purple-800/80 shadow-sm"
+                            : evt.provider.toLowerCase() === "gmail"
+                            ? "bg-red-950/80 text-red-300 border-red-800/80 shadow-sm"
+                            : evt.provider.toLowerCase() === "google_calendar" || evt.provider.toLowerCase() === "calendar"
+                            ? "bg-emerald-950/80 text-emerald-300 border-emerald-800/80 shadow-sm"
+                            : "bg-slate-800 text-slate-300 border-slate-700"
+                        }`}
+                      >
                         {evt.provider.toUpperCase()}
                       </span>
                       {getStatusBadge(evt.processing_status)}
@@ -554,6 +564,8 @@ export default function EventsActivityCenterPage() {
                   <option value="mock">Mock Provider (Default)</option>
                   <option value="direct">Direct Normalized</option>
                   <option value="slack">Slack Mock Adapter</option>
+                  <option value="gmail">Gmail Email Adapter</option>
+                  <option value="google_calendar">Google Calendar Adapter</option>
                 </select>
               </div>
 

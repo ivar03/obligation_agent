@@ -11,8 +11,9 @@ from app.core.status_machine import (
     ActionType,
     EventSemanticRole,
     CorrelationStatus,
+    ReconciliationStatus,
 )
-from app.models.obligation import Obligation, Evidence, Intervention
+from app.models.obligation import Obligation, Evidence, Intervention, ReconciliationRecord
 from app.core.intervention_status import InterventionStatus, InterventionOutcome
 from app.schemas.obligation import (
     RiskSignal,
@@ -51,12 +52,14 @@ class RiskEngine:
 
     @classmethod
     async def assess_obligation(
-        cls, session: AsyncSession, obligation_id: str
+        cls, session: AsyncSession, obligation_id: str, workspace_id: Optional[str] = None
     ) -> Optional[RiskAssessmentResponse]:
         from app.services.graph_service import GraphService
 
         obligation = await session.get(Obligation, obligation_id)
         if not obligation:
+            return None
+        if workspace_id and obligation.workspace_id != workspace_id:
             return None
 
         # Fetch blockers and dependents from GraphService
@@ -81,12 +84,22 @@ class RiskEngine:
         inv_result = await session.execute(inv_stmt)
         interventions = list(inv_result.scalars().all())
 
+        # Phase 11: Fetch reconciliation record
+        rec_stmt = (
+            select(ReconciliationRecord)
+            .where(ReconciliationRecord.obligation_id == obligation_id)
+            .order_by(desc(ReconciliationRecord.updated_at))
+        )
+        rec_result = await session.execute(rec_stmt)
+        reconciliation = rec_result.scalars().first()
+
         return cls.calculate_assessment(
             obligation=obligation,
             blockers=blockers,
             dependents=dependents,
             evidence_records=evidence_records,
             interventions=interventions,
+            reconciliation=reconciliation,
         )
 
     @classmethod
@@ -97,6 +110,7 @@ class RiskEngine:
         dependents: List[Any],
         evidence_records: List[Evidence],
         interventions: Optional[List[Intervention]] = None,
+        reconciliation: Optional[ReconciliationRecord] = None,
     ) -> RiskAssessmentResponse:
         now = utc_now()
         signals: List[RiskSignal] = []
@@ -418,6 +432,120 @@ class RiskEngine:
             reasons.append("No single accountable owner has been confirmed.")
 
         # ==========================================
+        # SIGNAL 6: TEMPORAL & CALENDAR SIGNALS (0.0 to +0.20)
+        # ==========================================
+        temporal_risk_pts = 0.0
+        cal_evs = [
+            e for e in evidence_records
+            if e.source_type == "google_calendar"
+            or (isinstance(e.extra_metadata, dict) and e.extra_metadata.get("source_provider") == "google_calendar")
+        ]
+
+        for cev in cal_evs:
+            cmeta = cev.extra_metadata if isinstance(cev.extra_metadata, dict) else {}
+            m_status = cmeta.get("meeting_status", "")
+            summary = cmeta.get("summary") or "Project Review"
+            start_raw = cmeta.get("start_time")
+            end_raw = cmeta.get("end_time")
+
+            # 1. Check meeting completed without evidence
+            if m_status == "MEETING_COMPLETED" or cmeta.get("completed"):
+                if not has_completion_candidate and obligation.status in [ObligationStatus.CONFIRMED, ObligationStatus.IN_PROGRESS]:
+                    temporal_risk_pts += 0.15
+                    signals.append(
+                        RiskSignal(
+                            signal_type="RELATED_MEETING_COMPLETED_WITHOUT_COMPLETION",
+                            severity="HIGH",
+                            contribution=0.15,
+                            explanation=f"Associated meeting '{summary}' has concluded without confirmed deliverable evidence.",
+                        )
+                    )
+                    reasons.append(f"Associated meeting '{summary}' completed without fulfillment proof.")
+            # 2. Check upcoming meeting proximity
+            elif start_raw and (m_status == "MEETING_SCHEDULED" or not m_status):
+                try:
+                    sdt = datetime.fromisoformat(str(start_raw).replace("Z", "+00:00"))
+                    if sdt.tzinfo is None:
+                        sdt = sdt.replace(tzinfo=timezone.utc)
+                    if now < sdt <= now + timedelta(hours=36):
+                        if not any(s.signal_type == "UPCOMING_RELATED_MEETING" for s in signals):
+                            temporal_risk_pts += 0.10
+                            signals.append(
+                                RiskSignal(
+                                    signal_type="UPCOMING_RELATED_MEETING",
+                                    severity="MEDIUM",
+                                    contribution=0.10,
+                                    explanation=f"Related meeting '{summary}' is scheduled within 36h ({sdt.strftime('%b %d, %H:%M')}).",
+                                )
+                            )
+                            reasons.append(f"Upcoming meeting '{summary}' approaching soon.")
+                except Exception:
+                    pass
+            # 3. Check rescheduled meeting
+            elif m_status == "MEETING_RESCHEDULED" or cmeta.get("rescheduled"):
+                if not any(s.signal_type == "RELATED_MEETING_RESCHEDULED" for s in signals):
+                    signals.append(
+                        RiskSignal(
+                            signal_type="RELATED_MEETING_RESCHEDULED",
+                            severity="MEDIUM",
+                            contribution=0.05,
+                            explanation=f"Related meeting '{summary}' was rescheduled.",
+                        )
+                    )
+                    reasons.append(f"Related meeting '{summary}' was rescheduled.")
+            # 4. Check cancelled meeting
+            elif m_status == "MEETING_CANCELLED" or cmeta.get("cancelled"):
+                if not any(s.signal_type == "RELATED_MEETING_CANCELLED" for s in signals):
+                    signals.append(
+                        RiskSignal(
+                            signal_type="RELATED_MEETING_CANCELLED",
+                            severity="MEDIUM",
+                            contribution=0.05,
+                            explanation=f"Associated meeting '{summary}' was cancelled.",
+                        )
+                    )
+                    reasons.append(f"Associated meeting '{summary}' was cancelled.")
+
+        # ==========================================
+        # SIGNAL 7: CROSS-PROVIDER RECONCILIATION SIGNALS (-0.15 to +0.20)
+        # ==========================================
+        reconciliation_risk_pts = 0.0
+        if reconciliation:
+            if reconciliation.status == ReconciliationStatus.CONFLICTING:
+                reconciliation_risk_pts += 0.20
+                signals.append(
+                    RiskSignal(
+                        signal_type="CONFLICTING_EVIDENCE",
+                        severity="HIGH",
+                        contribution=0.20,
+                        explanation="Contradiction detected across independent providers (e.g. reported completion vs. negative blocker or ongoing progress).",
+                    )
+                )
+                reasons.append("Cross-provider contradiction detected requiring human review.")
+            elif reconciliation.status == ReconciliationStatus.CONSISTENT and reconciliation.consistency_score >= 0.85:
+                # Strong consistent evidence reduces risk
+                reconciliation_risk_pts -= 0.15
+                signals.append(
+                    RiskSignal(
+                        signal_type="STRONG_SUPPORTING_EVIDENCE",
+                        severity="LOW",
+                        contribution=-0.15,
+                        explanation=f"Multiple consistent observations support completion (consistency: {reconciliation.consistency_score*100:.0f}%).",
+                    )
+                )
+            elif reconciliation.status == ReconciliationStatus.AMBIGUOUS:
+                reconciliation_risk_pts += 0.10
+                signals.append(
+                    RiskSignal(
+                        signal_type="AMBIGUOUS_RECONCILIATION",
+                        severity="MEDIUM",
+                        contribution=0.10,
+                        explanation="Evidence signals across providers are ambiguous or contain conditional conflicts.",
+                    )
+                )
+                reasons.append("Ambiguous evidence state across providers.")
+
+        # ==========================================
         # AGGREGATE TOTAL SCORE & BOUNDING
         # ==========================================
         raw_score = (
@@ -426,6 +554,8 @@ class RiskEngine:
             + progress_risk_pts
             + ownership_risk_pts
             + evidence_risk_pts
+            + temporal_risk_pts
+            + reconciliation_risk_pts
         )
         final_score = max(0.05, min(0.98, raw_score))
         risk_level = cls.classify_risk_level(final_score)

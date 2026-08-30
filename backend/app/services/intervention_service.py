@@ -40,20 +40,47 @@ class InterventionService:
 
     @staticmethod
     async def plan(
-        session: AsyncSession, obligation_id: str, force: bool = False
+        session: AsyncSession, obligation_id: str, force: bool = False, workspace_id: Optional[str] = None
     ) -> Optional[InterventionResponse]:
+        if workspace_id:
+            ob = await session.get(Obligation, obligation_id)
+            if not ob or ob.workspace_id != workspace_id:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Obligation not found in workspace.")
         intervention = await InterventionPlanner.plan_intervention(
             session=session, obligation_id=obligation_id, force=force
         )
         if not intervention:
             return None
+
+        from app.services.audit_service import AuditService
+        from app.core.status_machine import AuditAction, AuditSource
+        await AuditService.record(
+            session=session,
+            workspace_id=intervention.workspace_id,
+            action=AuditAction.INTERVENTION_CREATED,
+            actor_user_id=None,
+            actor_role="SYSTEM",
+            entity_type="intervention",
+            entity_id=intervention.id,
+            source=AuditSource.SYSTEM_WORKER,
+            after_state={
+                "intervention_type": intervention.intervention_type.value,
+                "obligation_id": intervention.obligation_id,
+                "target_owner": intervention.target_owner,
+                "status": intervention.status.value,
+            },
+            reason="Automated intervention planned by risk recommendation engine",
+        )
+
         return to_intervention_dto(intervention)
 
     @staticmethod
     async def get_by_id(
-        session: AsyncSession, intervention_id: str
+        session: AsyncSession, intervention_id: str, workspace_id: Optional[str] = None
     ) -> Optional[InterventionResponse]:
         query = select(Intervention).where(Intervention.id == intervention_id)
+        if workspace_id:
+            query = query.where(Intervention.workspace_id == workspace_id)
         result = await session.execute(query)
         intervention = result.scalar_one_or_none()
         if not intervention:
@@ -69,9 +96,12 @@ class InterventionService:
         urgency: Optional[str] = None,
         limit: int = 50,
         offset: int = 0,
+        workspace_id: Optional[str] = None,
     ) -> InterventionListResponse:
         query = select(Intervention)
 
+        if workspace_id:
+            query = query.where(Intervention.workspace_id == workspace_id)
         if status:
             query = query.where(Intervention.status == status)
         if intervention_type:
@@ -92,7 +122,7 @@ class InterventionService:
         return InterventionListResponse(items=paginated, total=total)
 
     @staticmethod
-    async def get_queue(session: AsyncSession, limit: int = 50) -> InterventionQueueResponse:
+    async def get_queue(session: AsyncSession, limit: int = 50, workspace_id: Optional[str] = None) -> InterventionQueueResponse:
         # Prioritize active interventions needing review or execution
         now = utc_now()
         query = (
@@ -105,8 +135,10 @@ class InterventionService:
                     InterventionStatus.SCHEDULED,
                 ])
             )
-            .order_by(desc(Intervention.created_at))
         )
+        if workspace_id:
+            query = query.where(Intervention.workspace_id == workspace_id)
+        query = query.order_by(desc(Intervention.created_at))
         result = await session.execute(query)
         items = list(result.scalars().all())
 
@@ -149,10 +181,10 @@ class InterventionService:
 
     @staticmethod
     async def update_draft(
-        session: AsyncSession, intervention_id: str, data: InterventionUpdate
+        session: AsyncSession, intervention_id: str, data: InterventionUpdate, workspace_id: Optional[str] = None
     ) -> Optional[InterventionResponse]:
         intervention = await session.get(Intervention, intervention_id)
-        if not intervention:
+        if not intervention or (workspace_id and intervention.workspace_id != workspace_id):
             return None
 
         update_dict = data.model_dump(exclude_unset=True)
@@ -177,13 +209,17 @@ class InterventionService:
 
     @staticmethod
     async def approve(
-        session: AsyncSession, intervention_id: str, req: Optional[InterventionApproveRequest] = None
+        session: AsyncSession,
+        intervention_id: str,
+        req: Optional[InterventionApproveRequest] = None,
+        workspace_id: Optional[str] = None,
+        actor_user_id: Optional[str] = None,
     ) -> InterventionResponse:
         intervention = await session.get(Intervention, intervention_id)
-        if not intervention:
+        if not intervention or (workspace_id and intervention.workspace_id != workspace_id):
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Intervention not found.",
+                detail="Intervention not found in active workspace.",
             )
 
         validate_intervention_transition(intervention.status, InterventionStatus.APPROVED)
@@ -196,32 +232,56 @@ class InterventionService:
         intervention.status = InterventionStatus.APPROVED
         intervention.approved_at = now
         intervention.approved_by = actor
+        if actor_user_id:
+            intervention.actor_user_id = actor_user_id
 
         current_audit = list(intervention.audit_trail or [])
-        current_audit.append({
+        audit_entry = {
             "event": "APPROVED",
             "actor": actor,
             "timestamp": now.isoformat(),
             "details": {
                 "approved_message": intervention.approved_message,
             },
-        })
+        }
+        if actor_user_id:
+            audit_entry["actor_user_id"] = actor_user_id
+        current_audit.append(audit_entry)
         intervention.audit_trail = current_audit
 
         await session.flush()
         await session.refresh(intervention)
+
+        from app.services.audit_service import AuditService
+        from app.core.status_machine import AuditAction
+        await AuditService.record(
+            session=session,
+            workspace_id=intervention.workspace_id,
+            action=AuditAction.INTERVENTION_APPROVED,
+            actor_user_id=actor_user_id,
+            entity_type="intervention",
+            entity_id=intervention.id,
+            before_state={"status": InterventionStatus.PENDING_REVIEW.value},
+            after_state={"status": InterventionStatus.APPROVED.value, "approved_by": actor},
+            reason="Intervention approved by user",
+        )
+
         logger.info(f"InterventionApproved: Intervention [{intervention_id}] approved by [{actor}].")
         return to_intervention_dto(intervention)
 
     @staticmethod
     async def schedule(
-        session: AsyncSession, intervention_id: str, req: InterventionScheduleRequest
+        session: AsyncSession,
+        intervention_id: str,
+        req: InterventionScheduleRequest,
+        workspace_id: Optional[str] = None,
+        actor_user_id: Optional[str] = None,
     ) -> InterventionResponse:
         intervention = await session.get(Intervention, intervention_id)
-        if not intervention:
+        if not intervention or (workspace_id and intervention.workspace_id != workspace_id):
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Intervention not found.",
+                detail="Intervention not found in active workspace.",
             )
 
         validate_intervention_transition(intervention.status, InterventionStatus.SCHEDULED)
@@ -235,20 +295,39 @@ class InterventionService:
         intervention.scheduled_for = req.scheduled_for
         intervention.approved_at = now
         intervention.approved_by = actor
+        if actor_user_id:
+            intervention.actor_user_id = actor_user_id
 
         current_audit = list(intervention.audit_trail or [])
-        current_audit.append({
+        audit_entry = {
             "event": "SCHEDULED",
             "actor": actor,
             "timestamp": now.isoformat(),
             "details": {
                 "scheduled_for": req.scheduled_for.isoformat(),
             },
-        })
+        }
+        if actor_user_id:
+            audit_entry["actor_user_id"] = actor_user_id
+        current_audit.append(audit_entry)
         intervention.audit_trail = current_audit
 
         await session.flush()
         await session.refresh(intervention)
+
+        from app.services.audit_service import AuditService
+        from app.core.status_machine import AuditAction
+        await AuditService.record(
+            session=session,
+            workspace_id=intervention.workspace_id,
+            action=AuditAction.INTERVENTION_SCHEDULED,
+            actor_user_id=actor_user_id,
+            entity_type="intervention",
+            entity_id=intervention.id,
+            after_state={"status": InterventionStatus.SCHEDULED.value, "scheduled_for": req.scheduled_for.isoformat()},
+            reason="Intervention scheduled",
+        )
+
         logger.info(f"InterventionScheduled: Intervention [{intervention_id}] scheduled for [{req.scheduled_for}].")
         return to_intervention_dto(intervention)
 
@@ -257,12 +336,14 @@ class InterventionService:
         session: AsyncSession,
         intervention_id: str,
         executor: Optional[BaseInterventionExecutor] = None,
+        workspace_id: Optional[str] = None,
+        actor_user_id: Optional[str] = None,
     ) -> InterventionResponse:
         intervention = await session.get(Intervention, intervention_id)
-        if not intervention:
+        if not intervention or (workspace_id and intervention.workspace_id != workspace_id):
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Intervention not found.",
+                detail="Intervention not found in active workspace.",
             )
 
         # Explicit Human Control Enforcement (Step 14 & 39)
@@ -273,7 +354,7 @@ class InterventionService:
             InterventionStatus.SCHEDULED,
         ]:
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail=f"Execution rejected: Intervention status is '{intervention.status.value}'. Explicit human approval is required before execution.",
             )
 
@@ -289,18 +370,37 @@ class InterventionService:
         intervention.execution_mode = exec_res.get("mode", "MOCK_DEMO")
         intervention.cooldown_until = now + timedelta(hours=24)
         intervention.follow_up_at = now + timedelta(hours=48)
+        if actor_user_id:
+            intervention.actor_user_id = actor_user_id
 
         current_audit = list(intervention.audit_trail or [])
-        current_audit.append({
+        audit_entry = {
             "event": "EXECUTED",
             "actor": "USER",
             "timestamp": now.isoformat(),
             "details": exec_res,
-        })
+        }
+        if actor_user_id:
+            audit_entry["actor_user_id"] = actor_user_id
+        current_audit.append(audit_entry)
         intervention.audit_trail = current_audit
 
         await session.flush()
         await session.refresh(intervention)
+
+        from app.services.audit_service import AuditService
+        from app.core.status_machine import AuditAction
+        await AuditService.record(
+            session=session,
+            workspace_id=intervention.workspace_id,
+            action=AuditAction.INTERVENTION_EXECUTED,
+            actor_user_id=actor_user_id,
+            entity_type="intervention",
+            entity_id=intervention.id,
+            after_state={"status": InterventionStatus.EXECUTED.value, "execution_mode": intervention.execution_mode},
+            reason="Intervention executed by authorized user",
+        )
+
         logger.info(
             f"InterventionExecuted: Intervention [{intervention_id}] executed via [{intervention.execution_mode}] (Ref: {intervention.execution_reference})."
         )
@@ -308,17 +408,23 @@ class InterventionService:
 
     @staticmethod
     async def record_outcome(
-        session: AsyncSession, intervention_id: str, req: InterventionOutcomeRequest
+        session: AsyncSession,
+        intervention_id: str,
+        req: InterventionOutcomeRequest,
+        workspace_id: Optional[str] = None,
+        actor_user_id: Optional[str] = None,
     ) -> InterventionResponse:
         intervention = await session.get(Intervention, intervention_id)
-        if not intervention:
+        if not intervention or (workspace_id and intervention.workspace_id != workspace_id):
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Intervention not found.",
+                detail="Intervention not found in active workspace.",
             )
 
         now = utc_now()
         intervention.outcome = req.outcome
+        if actor_user_id:
+            intervention.actor_user_id = actor_user_id
 
         # If outcome is COMPLETED or NOT_NEEDED, transition status to RESOLVED
         if req.outcome in [InterventionOutcome.COMPLETED, InterventionOutcome.NOT_NEEDED]:
@@ -329,7 +435,7 @@ class InterventionService:
                 intervention.status = InterventionStatus.ACKNOWLEDGED
 
         current_audit = list(intervention.audit_trail or [])
-        current_audit.append({
+        audit_entry = {
             "event": "OUTCOME_RECORDED",
             "actor": "USER",
             "timestamp": now.isoformat(),
@@ -337,7 +443,10 @@ class InterventionService:
                 "outcome": req.outcome.value,
                 "notes": req.notes,
             },
-        })
+        }
+        if actor_user_id:
+            audit_entry["actor_user_id"] = actor_user_id
+        current_audit.append(audit_entry)
         intervention.audit_trail = current_audit
 
         await session.flush()
@@ -349,60 +458,106 @@ class InterventionService:
 
     @staticmethod
     async def cancel(
-        session: AsyncSession, intervention_id: str, reason: Optional[str] = None
+        session: AsyncSession,
+        intervention_id: str,
+        reason: Optional[str] = None,
+        workspace_id: Optional[str] = None,
+        actor_user_id: Optional[str] = None,
     ) -> InterventionResponse:
         intervention = await session.get(Intervention, intervention_id)
-        if not intervention:
+        if not intervention or (workspace_id and intervention.workspace_id != workspace_id):
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Intervention not found.",
+                detail="Intervention not found in active workspace.",
             )
 
         validate_intervention_transition(intervention.status, InterventionStatus.CANCELLED)
 
         now = utc_now()
         intervention.status = InterventionStatus.CANCELLED
+        if actor_user_id:
+            intervention.actor_user_id = actor_user_id
 
         current_audit = list(intervention.audit_trail or [])
-        current_audit.append({
+        audit_entry = {
             "event": "CANCELLED",
             "actor": "USER",
             "timestamp": now.isoformat(),
             "details": {"reason": reason or "User cancelled intervention."},
-        })
+        }
+        if actor_user_id:
+            audit_entry["actor_user_id"] = actor_user_id
+        current_audit.append(audit_entry)
         intervention.audit_trail = current_audit
 
         await session.flush()
         await session.refresh(intervention)
+
+        from app.services.audit_service import AuditService
+        from app.core.status_machine import AuditAction
+        await AuditService.record(
+            session=session,
+            workspace_id=intervention.workspace_id,
+            action=AuditAction.INTERVENTION_CANCELLED,
+            actor_user_id=actor_user_id,
+            entity_type="intervention",
+            entity_id=intervention.id,
+            after_state={"status": InterventionStatus.CANCELLED.value},
+            reason=reason or "User cancelled intervention",
+        )
+
         logger.info(f"InterventionCancelled: Intervention [{intervention_id}] marked CANCELLED.")
         return to_intervention_dto(intervention)
 
     @staticmethod
     async def resolve(
-        session: AsyncSession, intervention_id: str, reason: Optional[str] = None
+        session: AsyncSession,
+        intervention_id: str,
+        reason: Optional[str] = None,
+        workspace_id: Optional[str] = None,
+        actor_user_id: Optional[str] = None,
     ) -> InterventionResponse:
         intervention = await session.get(Intervention, intervention_id)
-        if not intervention:
+        if not intervention or (workspace_id and intervention.workspace_id != workspace_id):
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Intervention not found.",
+                detail="Intervention not found in active workspace.",
             )
 
         now = utc_now()
         intervention.status = InterventionStatus.RESOLVED
         intervention.outcome = InterventionOutcome.COMPLETED
+        if actor_user_id:
+            intervention.actor_user_id = actor_user_id
 
         current_audit = list(intervention.audit_trail or [])
-        current_audit.append({
+        audit_entry = {
             "event": "RESOLVED",
             "actor": "USER",
             "timestamp": now.isoformat(),
             "details": {"reason": reason or "Intervention resolved."},
-        })
+        }
+        if actor_user_id:
+            audit_entry["actor_user_id"] = actor_user_id
+        current_audit.append(audit_entry)
         intervention.audit_trail = current_audit
 
         await session.flush()
         await session.refresh(intervention)
+
+        from app.services.audit_service import AuditService
+        from app.core.status_machine import AuditAction
+        await AuditService.record(
+            session=session,
+            workspace_id=intervention.workspace_id,
+            action=AuditAction.INTERVENTION_RESOLVED,
+            actor_user_id=actor_user_id,
+            entity_type="intervention",
+            entity_id=intervention.id,
+            after_state={"status": InterventionStatus.RESOLVED.value, "outcome": InterventionOutcome.COMPLETED.value},
+            reason=reason or "Intervention resolved",
+        )
+
         logger.info(f"InterventionResolved: Intervention [{intervention_id}] marked RESOLVED.")
         return to_intervention_dto(intervention)
 
@@ -446,3 +601,4 @@ class InterventionService:
         logger.info(
             f"InterventionsAutoResolved: Resolved {len(active_interventions)} active interventions for obligation [{obligation_id}]."
         )
+

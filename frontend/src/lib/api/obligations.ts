@@ -35,18 +35,86 @@ import {
   EventSimulateRequest,
   ProviderInfo,
   EventSemanticRole,
+  IntegrationConnection,
+  IntegrationListResponse,
+  IntegrationTestResponse,
+  OAuthConnectResponse,
+  ReconciliationRecord,
+  ReconciliationListResponse,
+  ReconciliationResolutionRequest,
+  IntelligenceOverviewResponse,
+  ObligationPredictionResponse,
+  SimilarObligationsResponse,
+  OwnerPatternMetric,
+  DerivedProvenanceInfo,
+  HistoricalPatternsResponse,
+  PredictionEvaluationMetrics,
+  OutcomeSnapshotResponse,
+  AdaptiveOverviewResponse,
+  AdaptiveFeaturePatternsResponse,
+  AdaptiveCalibrationResponse,
+  ModelComparisonResponse,
+  PredictionHistoryResponse,
+  InterventionEffectivenessMetric,
+  Workspace,
+  WorkspaceMembership,
+  AuthResponse,
+  RegisterRequest,
+  LoginRequest,
+  WorkspaceCreateRequest,
+  WorkspaceUpdateRequest,
+  AddMemberRequest,
+  UpdateMemberRoleRequest,
+  AuditEvent,
+  AuditListResponse,
+  AuditVerificationResponse,
+  GovernanceSummaryResponse,
 } from "../types/obligation";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
+let activeWorkspaceId: string | null = null;
+let authToken: string | null = null;
+
+if (typeof window !== "undefined") {
+  activeWorkspaceId = localStorage.getItem("obligation_active_workspace_id");
+  authToken = localStorage.getItem("obligation_auth_token");
+}
+
+export function setApiAuth(token: string | null, workspaceId: string | null) {
+  authToken = token;
+  activeWorkspaceId = workspaceId;
+  if (typeof window !== "undefined") {
+    if (token) localStorage.setItem("obligation_auth_token", token);
+    else localStorage.removeItem("obligation_auth_token");
+    if (workspaceId) localStorage.setItem("obligation_active_workspace_id", workspaceId);
+    else localStorage.removeItem("obligation_active_workspace_id");
+  }
+}
+
+export function getActiveWorkspaceId(): string | null {
+  return activeWorkspaceId;
+}
+
 async function apiClient<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const url = `${API_BASE_URL}${endpoint}`;
+  
+  const authHeaders: Record<string, string> = {};
+  if (authToken) {
+    authHeaders["Authorization"] = `Bearer ${authToken}`;
+  }
+  if (activeWorkspaceId) {
+    authHeaders["X-Workspace-Id"] = activeWorkspaceId;
+  }
+
   const headers = {
     "Content-Type": "application/json",
+    ...authHeaders,
     ...options.headers,
   };
 
   const response = await fetch(url, {
+    credentials: "include",
     ...options,
     headers,
   });
@@ -465,3 +533,387 @@ export const eventsApi = {
     });
   },
 };
+
+// ==========================================
+// PHASE 8: INTEGRATION SERVICE CLIENT
+// ==========================================
+
+export const integrationsApi = {
+  list: async (): Promise<IntegrationListResponse> => {
+    return apiClient("/api/integrations", {
+      method: "GET",
+    });
+  },
+
+  get: async (provider: string): Promise<IntegrationConnection> => {
+    return apiClient(`/api/integrations/${provider}`, {
+      method: "GET",
+    });
+  },
+
+  connect: async (provider: string, redirectUri?: string): Promise<OAuthConnectResponse> => {
+    const qs = redirectUri ? `?redirect_uri=${encodeURIComponent(redirectUri)}` : "";
+    return apiClient(`/api/integrations/${provider}/connect${qs}`, {
+      method: "GET",
+    });
+  },
+
+  test: async (provider: string): Promise<IntegrationTestResponse> => {
+    return apiClient(`/api/integrations/${provider}/test`, {
+      method: "POST",
+    });
+  },
+
+  disconnect: async (provider: string): Promise<IntegrationConnection> => {
+    return apiClient(`/api/integrations/${provider}/disconnect`, {
+      method: "POST",
+    });
+  },
+};
+
+// ==========================================
+// PHASE 11: RECONCILIATION API CLIENT
+// ==========================================
+
+export const reconciliationApi = {
+  list: async (params?: {
+    status?: string;
+    obligation_id?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<ReconciliationListResponse> => {
+    const query = new URLSearchParams();
+    if (params?.status && params.status !== "ALL") query.append("status", params.status);
+    if (params?.obligation_id) query.append("obligation_id", params.obligation_id);
+    if (params?.limit) query.append("limit", params.limit.toString());
+    if (params?.offset) query.append("offset", params.offset.toString());
+    const qs = query.toString() ? `?${query.toString()}` : "";
+    return apiClient(`/api/reconciliation${qs}`, {
+      method: "GET",
+    });
+  },
+
+  getById: async (id: string): Promise<ReconciliationRecord> => {
+    return apiClient(`/api/reconciliation/${id}`, {
+      method: "GET",
+    });
+  },
+
+  getByObligationId: async (obligationId: string): Promise<ReconciliationRecord | null> => {
+    return apiClient(`/api/obligations/${obligationId}/reconciliation`, {
+      method: "GET",
+    });
+  },
+
+  resolve: async (
+    id: string,
+    payload: ReconciliationResolutionRequest
+  ): Promise<ReconciliationRecord> => {
+    return apiClient(`/api/reconciliation/${id}/resolve`, {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  },
+
+  dismiss: async (
+    id: string,
+    payload?: { reason?: string; operator?: string }
+  ): Promise<ReconciliationRecord> => {
+    return apiClient(`/api/reconciliation/${id}/dismiss`, {
+      method: "POST",
+      body: JSON.stringify(payload || {}),
+    });
+  },
+};
+
+// ==========================================
+// PHASE 12: INTELLIGENCE & PREDICTIONS API
+// ==========================================
+
+export const intelligenceApi = {
+  getOverview: async (): Promise<IntelligenceOverviewResponse> => {
+    return apiClient("/api/intelligence/overview", {
+      method: "GET",
+    });
+  },
+
+  getDossier: async (
+    obligationId: string
+  ): Promise<{
+    prediction: ObligationPredictionResponse;
+    similar_obligations: SimilarObligationsResponse;
+    owner_context?: OwnerPatternMetric | null;
+    derived_provenance: DerivedProvenanceInfo;
+  }> => {
+    return apiClient(`/api/intelligence/obligations/${obligationId}`, {
+      method: "GET",
+    });
+  },
+
+  getPrediction: async (
+    obligationId: string
+  ): Promise<ObligationPredictionResponse> => {
+    return apiClient(`/api/intelligence/obligations/${obligationId}/prediction`, {
+      method: "GET",
+    });
+  },
+
+  getSimilar: async (
+    obligationId: string,
+    limit: number = 6
+  ): Promise<SimilarObligationsResponse> => {
+    return apiClient(
+      `/api/intelligence/obligations/${obligationId}/similar?limit=${limit}`,
+      {
+        method: "GET",
+      }
+    );
+  },
+
+  getPatterns: async (): Promise<HistoricalPatternsResponse> => {
+    return apiClient("/api/intelligence/patterns", {
+      method: "GET",
+    });
+  },
+
+  getOwners: async (): Promise<OwnerPatternMetric[]> => {
+    return apiClient("/api/intelligence/owners", {
+      method: "GET",
+    });
+  },
+
+  getEvaluation: async (
+    modelVersion: string = "predictive-v1"
+  ): Promise<PredictionEvaluationMetrics> => {
+    return apiClient(
+      `/api/intelligence/evaluation?model_version=${encodeURIComponent(
+        modelVersion
+      )}`,
+      {
+        method: "GET",
+      }
+    );
+  },
+
+  getHistory: async (
+    obligationId: string
+  ): Promise<OutcomeSnapshotResponse[]> => {
+    return apiClient(`/api/intelligence/history/${obligationId}`, {
+      method: "GET",
+    });
+  },
+
+  getAdaptiveOverview: async (): Promise<AdaptiveOverviewResponse> => {
+    return apiClient("/api/intelligence/adaptive/overview", {
+      method: "GET",
+    });
+  },
+
+  getAdaptiveFeatures: async (): Promise<AdaptiveFeaturePatternsResponse> => {
+    return apiClient("/api/intelligence/adaptive/features", {
+      method: "GET",
+    });
+  },
+
+  getAdaptiveCalibration: async (
+    modelVersion?: string
+  ): Promise<AdaptiveCalibrationResponse> => {
+    const query = modelVersion
+      ? `?model_version=${encodeURIComponent(modelVersion)}`
+      : "";
+    return apiClient(`/api/intelligence/adaptive/calibration${query}`, {
+      method: "GET",
+    });
+  },
+
+  compareModels: async (
+    obligationId: string
+  ): Promise<ModelComparisonResponse> => {
+    return apiClient(`/api/intelligence/compare/${obligationId}`, {
+      method: "GET",
+    });
+  },
+
+  getPredictionHistory: async (
+    obligationId: string
+  ): Promise<PredictionHistoryResponse> => {
+    return apiClient(
+      `/api/intelligence/obligations/${obligationId}/prediction-history`,
+      {
+        method: "GET",
+      }
+    );
+  },
+
+  getInterventionEffectiveness: async (): Promise<InterventionEffectivenessMetric> => {
+    return apiClient("/api/intelligence/intervention-effectiveness", {
+      method: "GET",
+    });
+  },
+};
+
+export const authApi = {
+  register: async (payload: RegisterRequest): Promise<AuthResponse> => {
+    return apiClient("/api/auth/register", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  },
+
+  login: async (payload: LoginRequest): Promise<AuthResponse> => {
+    return apiClient("/api/auth/login", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  },
+
+  logout: async (): Promise<{ message: string }> => {
+    return apiClient("/api/auth/logout", {
+      method: "POST",
+    });
+  },
+
+  getMe: async (): Promise<AuthResponse> => {
+    return apiClient("/api/auth/me", {
+      method: "GET",
+    });
+  },
+};
+
+export const workspacesApi = {
+  list: async (): Promise<Workspace[]> => {
+    return apiClient("/api/workspaces", {
+      method: "GET",
+    });
+  },
+
+  create: async (payload: WorkspaceCreateRequest): Promise<Workspace> => {
+    return apiClient("/api/workspaces", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  },
+
+  get: async (workspaceId: string): Promise<Workspace> => {
+    return apiClient(`/api/workspaces/${workspaceId}`, {
+      method: "GET",
+    });
+  },
+
+  update: async (workspaceId: string, payload: WorkspaceUpdateRequest): Promise<Workspace> => {
+    return apiClient(`/api/workspaces/${workspaceId}`, {
+      method: "PATCH",
+      body: JSON.stringify(payload),
+    });
+  },
+
+  listMembers: async (workspaceId: string): Promise<WorkspaceMembership[]> => {
+    return apiClient(`/api/workspaces/${workspaceId}/members`, {
+      method: "GET",
+    });
+  },
+
+  addMember: async (workspaceId: string, payload: AddMemberRequest): Promise<WorkspaceMembership> => {
+    return apiClient(`/api/workspaces/${workspaceId}/members`, {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  },
+
+  updateMemberRole: async (
+    workspaceId: string,
+    memberId: string,
+    payload: UpdateMemberRoleRequest
+  ): Promise<WorkspaceMembership> => {
+    return apiClient(`/api/workspaces/${workspaceId}/members/${memberId}`, {
+      method: "PATCH",
+      body: JSON.stringify(payload),
+    });
+  },
+
+  removeMember: async (workspaceId: string, memberId: string): Promise<void> => {
+    return apiClient(`/api/workspaces/${workspaceId}/members/${memberId}`, {
+      method: "DELETE",
+    });
+  },
+};
+
+export const auditApi = {
+  list: async (params?: {
+    action?: string;
+    actor_user_id?: string;
+    entity_type?: string;
+    entity_id?: string;
+    severity?: string;
+    result?: string;
+    request_id?: string;
+    date_from?: string;
+    date_to?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<AuditListResponse> => {
+    const query = new URLSearchParams();
+    if (params?.action) query.append("action", params.action);
+    if (params?.actor_user_id) query.append("actor_user_id", params.actor_user_id);
+    if (params?.entity_type) query.append("entity_type", params.entity_type);
+    if (params?.entity_id) query.append("entity_id", params.entity_id);
+    if (params?.severity) query.append("severity", params.severity);
+    if (params?.result) query.append("result", params.result);
+    if (params?.request_id) query.append("request_id", params.request_id);
+    if (params?.date_from) query.append("date_from", params.date_from);
+    if (params?.date_to) query.append("date_to", params.date_to);
+    if (params?.limit) query.append("limit", String(params.limit));
+    if (params?.offset) query.append("offset", String(params.offset));
+
+    const qs = query.toString();
+    return apiClient(`/api/audit${qs ? `?${qs}` : ""}`, {
+      method: "GET",
+    });
+  },
+
+  getSummary: async (): Promise<GovernanceSummaryResponse> => {
+    return apiClient("/api/audit/summary", {
+      method: "GET",
+    });
+  },
+
+  verify: async (): Promise<AuditVerificationResponse> => {
+    return apiClient("/api/audit/verify", {
+      method: "GET",
+    });
+  },
+
+  listSecurityEvents: async (params?: { limit?: number; offset?: number }): Promise<AuditListResponse> => {
+    const query = new URLSearchParams();
+    if (params?.limit) query.append("limit", String(params.limit));
+    if (params?.offset) query.append("offset", String(params.offset));
+    const qs = query.toString();
+    return apiClient(`/api/audit/security${qs ? `?${qs}` : ""}`, {
+      method: "GET",
+    });
+  },
+
+  getEntityHistory: async (entityType: string, entityId: string): Promise<AuditEvent[]> => {
+    return apiClient(`/api/audit/entity/${entityType}/${entityId}`, {
+      method: "GET",
+    });
+  },
+
+  getById: async (auditId: string): Promise<AuditEvent> => {
+    return apiClient(`/api/audit/${auditId}`, {
+      method: "GET",
+    });
+  },
+
+  getExportUrl: (format: "json" | "csv", params?: { action?: string; entity_type?: string; severity?: string }): string => {
+    const query = new URLSearchParams();
+    query.append("format", format);
+    if (params?.action) query.append("action", params.action);
+    if (params?.entity_type) query.append("entity_type", params.entity_type);
+    if (params?.severity) query.append("severity", params.severity);
+    return `/api/audit/export?${query.toString()}`;
+  },
+};
+
+
+

@@ -87,7 +87,7 @@ class GraphService:
         return False
 
     @staticmethod
-    async def create_edge(session: AsyncSession, data: ObligationEdgeCreate) -> ObligationEdgeResponse:
+    async def create_edge(session: AsyncSession, data: ObligationEdgeCreate, workspace_id: str = "ws-default") -> ObligationEdgeResponse:
         from_id = data.from_obligation_id
         to_id = data.to_obligation_id
         edge_type = data.edge_type
@@ -99,13 +99,18 @@ class GraphService:
                 detail="Self-referencing relationship not allowed: An obligation cannot depend on or link to itself.",
             )
 
-        # 2. Verify both obligations exist
+        # 2. Verify both obligations exist and belong to the same workspace
         from_ob = await session.get(Obligation, from_id)
         to_ob = await session.get(Obligation, to_id)
         if not from_ob or not to_ob:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="One or both obligation records not found.",
+            )
+        if from_ob.workspace_id != to_ob.workspace_id:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Cannot link obligations across different workspaces.",
             )
 
         # 3. Duplicate check
@@ -134,6 +139,7 @@ class GraphService:
 
         # 5. Insert edge
         edge = ObligationEdge(
+            workspace_id=from_ob.workspace_id,
             from_obligation_id=from_id,
             to_obligation_id=to_id,
             edge_type=edge_type,
@@ -142,7 +148,25 @@ class GraphService:
         await session.flush()
         await session.refresh(edge)
 
-        logger.info(f"GraphEdge created: [{from_id}] --{edge_type.value}--> [{to_id}]")
+        from app.services.audit_service import AuditService
+        from app.core.status_machine import AuditAction
+        await AuditService.record_mutation(
+            session=session,
+            workspace_id=from_ob.workspace_id,
+            action=AuditAction.EDGE_CREATED,
+            actor_user_id=None,
+            actor_role=None,
+            entity_type="edge",
+            entity_id=edge.id,
+            after_state={
+                "from_obligation_id": from_id,
+                "to_obligation_id": to_id,
+                "edge_type": edge_type.value,
+            },
+            reason="Dependency / linked edge created",
+        )
+
+        logger.info(f"GraphEdge created in workspace [{from_ob.workspace_id}]: [{from_id}] --{edge_type.value}--> [{to_id}]")
 
         # 6. If DEPENDS_ON, evaluate blocker state for from_obligation
         if edge_type == EdgeType.DEPENDS_ON:
@@ -151,16 +175,36 @@ class GraphService:
         return ObligationEdgeResponse.model_validate(edge)
 
     @staticmethod
-    async def remove_edge(session: AsyncSession, edge_id: str) -> bool:
+    async def remove_edge(session: AsyncSession, edge_id: str, workspace_id: Optional[str] = None) -> bool:
         edge = await session.get(ObligationEdge, edge_id)
         if not edge:
+            return False
+        if workspace_id and edge.workspace_id != workspace_id:
             return False
 
         from_id = edge.from_obligation_id
         edge_type = edge.edge_type
+        ws_id = edge.workspace_id
 
         await session.delete(edge)
         await session.flush()
+
+        from app.services.audit_service import AuditService
+        from app.core.status_machine import AuditAction
+        await AuditService.record_mutation(
+            session=session,
+            workspace_id=ws_id,
+            action=AuditAction.EDGE_DELETED,
+            actor_user_id=None,
+            actor_role=None,
+            entity_type="edge",
+            entity_id=edge_id,
+            before_state={
+                "from_obligation_id": from_id,
+                "edge_type": edge_type.value,
+            },
+            reason="Graph edge deleted",
+        )
 
         logger.info(f"GraphEdge deleted: {edge_id}")
 
@@ -336,12 +380,14 @@ class GraphService:
                     await GraphService.evaluate_and_propagate(session, dep.id, visited)
 
     @staticmethod
-    async def get_graph_for_obligation(session: AsyncSession, obligation_id: str) -> ObligationGraphResponse:
+    async def get_graph_for_obligation(
+        session: AsyncSession, obligation_id: str, workspace_id: Optional[str] = None
+    ) -> ObligationGraphResponse:
         """Returns a composite graph DTO for the obligation detail view."""
         from app.services.obligation_service import to_response_dto
 
         obligation = await session.get(Obligation, obligation_id)
-        if not obligation:
+        if not obligation or (workspace_id and obligation.workspace_id != workspace_id):
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=f"Obligation with ID '{obligation_id}' not found.",

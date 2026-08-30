@@ -38,6 +38,14 @@ export type ActionType =
   | "ASSIGN_OWNER"
   | "MONITOR_CONDITION"
   | "REVIEW_DEADLINE"
+  | "PREPARE_FOR_MEETING"
+  | "FOLLOW_UP_AFTER_MEETING"
+  | "REVIEW_RESCHEDULED_COMMITMENT"
+  | "REVIEW_CANCELLED_MEETING"
+  | "REVIEW_CONFLICTING_EVIDENCE"
+  | "CONFIRM_COMPLETION_EVIDENCE"
+  | "REVIEW_STALE_SIGNAL"
+  | "KEEP_ACTIVE"
   | "NO_ACTION";
 
 export interface FieldConfidence {
@@ -534,3 +542,576 @@ export interface IngestionResultResponse {
   message: string;
 }
 
+// ==========================================
+// PHASE 8: INTEGRATION & CONNECTION TYPES
+// ==========================================
+
+export interface IntegrationConnection {
+  id: string;
+  provider: string;
+  external_account_id?: string | null;
+  external_account_name?: string | null;
+  status: "CONNECTED" | "DISCONNECTED" | "ERROR" | string;
+  scopes?: string[];
+  capabilities: string[];
+  connection_metadata?: Record<string, unknown>;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface IntegrationListResponse {
+  connections: IntegrationConnection[];
+  registered_providers: ProviderInfo[];
+}
+
+export interface IntegrationTestResponse {
+  provider: string;
+  success: boolean;
+  status: string;
+  message: string;
+  account_name?: string | null;
+  tested_at: string;
+}
+
+export interface OAuthConnectResponse {
+  provider: string;
+  authorization_url: string;
+  state: string;
+  message: string;
+}
+
+// ==========================================
+// PHASE 11: CROSS-PROVIDER RECONCILIATION TYPES
+// ==========================================
+
+export type ReconciliationStatus =
+  | "CONSISTENT"
+  | "CONFLICTING"
+  | "AMBIGUOUS"
+  | "RESOLVED_SUPPORTING"
+  | "RESOLVED_CONFLICTING"
+  | "DISMISSED";
+
+export type ReconciliationResolutionAction =
+  | "CONFIRM_COMPLETION"
+  | "CONFIRM_NOT_COMPLETED"
+  | "DISMISS_CONTRADICTION"
+  | "MARK_AS_STALE"
+  | "KEEP_OBLIGATION_ACTIVE"
+  | "REOPEN_OBLIGATION";
+
+export interface EvidenceProvenanceDetail {
+  evidence_id: string;
+  source_type: string;
+  source_ref?: string | null;
+  provider: string;
+  actor?: string | null;
+  recipients?: string[];
+  semantic_role: EventSemanticRole;
+  correlation_confidence: number;
+  content: string;
+  observed_at: string;
+  is_supporting: boolean;
+  is_conflicting: boolean;
+  reasoning?: string | null;
+}
+
+export interface ReconciliationRecord {
+  id: string;
+  obligation_id: string;
+  status: ReconciliationStatus;
+  confidence: number;
+  consistency_score: number;
+  contradiction_score: number;
+  supporting_evidence_ids: string[];
+  conflicting_evidence_ids: string[];
+  supporting_event_ids: string[];
+  conflicting_event_ids: string[];
+  explanation: string[];
+  recommended_action?: string | null;
+  resolution?: {
+    action: string;
+    operator: string;
+    notes?: string;
+    previous_obligation_status?: string;
+    resulting_obligation_status?: string;
+    timestamp?: string;
+    selected_evidence_id?: string | null;
+    reason?: string;
+  } | null;
+  resolved_by?: string | null;
+  resolved_at?: string | null;
+  created_at: string;
+  updated_at: string;
+
+  // Enriched fields
+  evidence_timeline?: EvidenceProvenanceDetail[];
+  obligation_action?: string;
+  obligation_owner?: string;
+  obligation_beneficiary?: string;
+  obligation_status?: ObligationStatus;
+}
+
+export interface ReconciliationListResponse {
+  items: ReconciliationRecord[];
+  total: number;
+  conflicting_count: number;
+  consistent_count: number;
+  ambiguous_count: number;
+  resolved_count: number;
+}
+
+export interface ReconciliationResolutionRequest {
+  action: ReconciliationResolutionAction;
+  notes?: string;
+  operator?: string;
+  selected_evidence_id?: string;
+}
+
+// =============================================================================
+// PHASE 12: PREDICTIVE PATTERN LEARNING & INTELLIGENCE TYPES
+// =============================================================================
+
+export type ObligationOutcomeType =
+  | "COMPLETED_ON_TIME"
+  | "COMPLETED_LATE"
+  | "OVERDUE"
+  | "BLOCKED"
+  | "CANCELLED"
+  | "ABANDONED"
+  | "COMPLETED_AFTER_INTERVENTION"
+  | "COMPLETED_AFTER_FOLLOW_UP"
+  | "COMPLETED_AFTER_DEPENDENCY_RESOLUTION"
+  | "CONFLICTED_COMPLETION"
+  | "UNKNOWN";
+
+export type PredictiveActionType =
+  | "EARLY_FOLLOW_UP"
+  | "PREPARE_EVIDENCE_REVIEW"
+  | "RESOLVE_DEPENDENCY"
+  | "CLARIFY_OWNER"
+  | "CLARIFY_DEADLINE"
+  | "MONITOR_PROGRESS"
+  | "NO_PREVENTATIVE_ACTION";
+
+export interface PredictionReasonItem {
+  signal: string;
+  impact: number;
+  explanation: string;
+}
+
+export interface DerivedProvenanceInfo {
+  current_risk_evaluated: boolean;
+  historical_outcomes_count: number;
+  similar_obligations_count: number;
+  dependency_history_count: number;
+  intervention_history_count: number;
+}
+
+export interface ObligationPredictionResponse {
+  obligation_id: string;
+  action?: string | null;
+  owner?: string | null;
+  beneficiary?: string | null;
+  status?: ObligationStatus | null;
+  deadline?: string | null;
+  model_version: string;
+  failure_probability: number;
+  completion_probability: number;
+  expected_delay_hours: number;
+  intervention_likelihood: number;
+  blockage_likelihood: number;
+  confidence: number;
+  reasons: PredictionReasonItem[];
+  preventative_recommendation?: string | null;
+  recommended_action_type?: string | null;
+  derived_from: DerivedProvenanceInfo;
+  current_risk_score?: number | null;
+  current_risk_level?: RiskLevel | null;
+  predicted_at: string;
+}
+
+export interface SimilarObligationItem {
+  obligation_id: string;
+  action: string;
+  owner: string;
+  beneficiary: string;
+  status: string;
+  outcome_type: string;
+  delay_hours: number;
+  similarity_score: number;
+  shared_features: string[];
+  completed_at?: string | null;
+}
+
+export interface SimilarObligationsResponse {
+  obligation_id: string;
+  items: SimilarObligationItem[];
+  total_similar_count: number;
+  historical_summary: string;
+}
+
+export interface OwnerPatternMetric {
+  owner: string;
+  total_obligations: number;
+  completed_count: number;
+  on_time_count: number;
+  late_count: number;
+  overdue_count: number;
+  blocked_count: number;
+  on_time_rate: number;
+  late_rate: number;
+  avg_delay_hours: number;
+  median_delay_hours: number;
+  intervention_response_rate: number;
+  blocker_frequency: number;
+  insights: string[];
+}
+
+export interface HistoricalPatternsResponse {
+  total_historical_snapshots: number;
+  completion_rate: number;
+  on_time_completion_rate: number;
+  avg_delay_hours: number;
+  median_delay_hours: number;
+  dependency_bottleneck_rate: number;
+  intervention_success_rate: number;
+  frequent_blockers: Array<Record<string, unknown>>;
+  delay_distribution: Record<string, number>;
+  owner_metrics: OwnerPatternMetric[];
+}
+
+export interface PredictionEvaluationMetrics {
+  total_predictions_evaluated: number;
+  status: "EVALUATED" | "INSUFFICIENT_HISTORY";
+  mean_absolute_error_hours?: number | null;
+  brier_score?: number | null;
+  calibration_error?: number | null;
+  high_risk_precision?: number | null;
+  overdue_recall?: number | null;
+  accuracy?: number | null;
+  evaluated_at: string;
+  message: string;
+}
+
+export interface IntelligenceOverviewResponse {
+  active_obligations_evaluated: number;
+  high_predicted_failure_count: number;
+  likely_to_miss_deadline_count: number;
+  likely_to_require_intervention_count: number;
+  high_blockage_risk_count: number;
+  predictions: ObligationPredictionResponse[];
+  evaluation_summary: PredictionEvaluationMetrics;
+  model_version: string;
+}
+
+export interface OutcomeSnapshotResponse {
+  id: string;
+  obligation_id: string;
+  snapshot_time: string;
+  status: string;
+  outcome_type: string;
+  owner: string;
+  beneficiary: string;
+  action: string;
+  deadline?: string | null;
+  completed_at?: string | null;
+  delay_hours: number;
+  risk_score: number;
+  risk_level: string;
+  dependency_count: number;
+  blocker_count: number;
+  evidence_count: number;
+  intervention_count: number;
+  intervention_required: boolean;
+  intervention_successful: boolean;
+  reconciliation_conflict_occurred: boolean;
+  relevant_event_signals?: unknown[] | null;
+  created_at: string;
+}
+
+// ==============================================================================
+// PHASE 13: ADAPTIVE PREDICTION, CALIBRATION & INTELLIGENCE FEEDBACK
+// ==============================================================================
+
+export type CalibrationStatus =
+  | "INSUFFICIENT_HISTORY"
+  | "LOW_SAMPLE"
+  | "CALIBRATION_AVAILABLE";
+
+export type FeatureDirection =
+  | "INCREASES_RISK"
+  | "DECREASES_RISK"
+  | "NEUTRAL";
+
+export interface FeatureAttributionItem {
+  feature: string;
+  raw_value: number;
+  normalized_value: number;
+  contribution: number;
+  direction: "INCREASES_RISK" | "DECREASES_RISK" | "NEUTRAL" | string;
+  explanation: string;
+}
+
+export interface PredictionFeedbackResponse {
+  id: string;
+  prediction_snapshot_id: string;
+  obligation_id: string;
+  prediction_provider: string;
+  model_version: string;
+  predicted_failure_probability: number;
+  predicted_completion_probability: number;
+  predicted_expected_delay_hours: number;
+  predicted_intervention_likelihood: number;
+  predicted_confidence: number;
+  feature_attributions?: Record<string, unknown>[] | null;
+  observed_outcome: string;
+  observed_delay_hours: number;
+  absolute_delay_error: number;
+  probability_error: number;
+  was_high_risk_prediction_correct?: boolean | null;
+  intervention_recommended: boolean;
+  intervention_taken: boolean;
+  intervention_effective?: boolean | null;
+  created_at: string;
+}
+
+export interface FeatureEffectivenessItem {
+  feature: string;
+  observation_count: number;
+  average_contribution: number;
+  predictive_direction: string;
+  outcome_association: number;
+  reliability_score: number;
+  historical_usefulness: string;
+  confidence: number;
+}
+
+export interface AdaptiveFeaturePatternsResponse {
+  total_feedback_evaluated: number;
+  learned_weights: Record<string, number>;
+  features: FeatureEffectivenessItem[];
+}
+
+export interface AdaptiveCalibrationResponse {
+  status: CalibrationStatus | string;
+  total_evaluations: number;
+  minimum_required: number;
+  brier_score?: number | null;
+  calibration_error?: number | null;
+  mean_absolute_delay_error?: number | null;
+  high_risk_precision?: number | null;
+  high_risk_recall?: number | null;
+  false_positive_rate?: number | null;
+  false_negative_rate?: number | null;
+  evaluated_at: string;
+  message: string;
+}
+
+export interface ModelComparisonResponse {
+  obligation_id: string;
+  action?: string | null;
+  owner?: string | null;
+  predictive_v1: ObligationPredictionResponse;
+  adaptive_v1: ObligationPredictionResponse;
+  probability_variance: number;
+  delay_variance_hours: number;
+  adjustment_reasons: string[];
+  recommended_provider: string;
+}
+
+export interface PredictionHistoryItem {
+  prediction_id: string;
+  model_version: string;
+  predicted_at: string;
+  failure_probability: number;
+  expected_delay_hours: number;
+  confidence: number;
+  top_signals: string[];
+  observed_outcome?: string | null;
+  observed_delay_hours?: number | null;
+  prediction_error?: number | null;
+}
+
+export interface PredictionHistoryResponse {
+  obligation_id: string;
+  action?: string | null;
+  history: PredictionHistoryItem[];
+}
+
+export interface InterventionEffectivenessMetric {
+  total_interventions_recommended: number;
+  interventions_executed: number;
+  completed_after_intervention: number;
+  completed_without_intervention: number;
+  observed_completion_rate_with_intervention: number;
+  observed_completion_rate_without_intervention: number;
+  sample_size_status: string;
+  insights: string[];
+}
+
+export interface AdaptiveOverviewResponse {
+  active_evaluations: number;
+  calibration_status: string;
+  model_comparison_summary: Record<string, unknown>;
+  top_effective_features: FeatureEffectivenessItem[];
+  intervention_efficacy: InterventionEffectivenessMetric;
+  calibration_metrics: AdaptiveCalibrationResponse;
+}
+
+// ==============================================================================
+// PHASE 14: IDENTITY, WORKSPACE, AUTHENTICATION & AUTHORIZATION TYPES
+// ==============================================================================
+
+export type WorkspaceRole = "OWNER" | "ADMIN" | "MEMBER" | "VIEWER";
+
+export interface User {
+  id: string;
+  email: string;
+  display_name: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at?: string | null;
+}
+
+export interface WorkspaceMembership {
+  id: string;
+  user_id: string;
+  workspace_id: string;
+  email?: string | null;
+  display_name?: string | null;
+  role: WorkspaceRole;
+  joined_at?: string | null;
+}
+
+export interface Workspace {
+  id: string;
+  name: string;
+  slug: string;
+  role?: WorkspaceRole | string;
+  created_at: string;
+}
+
+export interface AuthResponse {
+  user: User;
+  workspaces: Workspace[];
+  active_workspace_id: string;
+  token?: string | null;
+  message?: string;
+}
+
+export interface RegisterRequest {
+  email: string;
+  password: string;
+  display_name: string;
+  workspace_name?: string;
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface WorkspaceCreateRequest {
+  name: string;
+  slug?: string;
+}
+
+export interface WorkspaceUpdateRequest {
+  name?: string;
+  slug?: string;
+}
+
+export interface AddMemberRequest {
+  email: string;
+  role: WorkspaceRole;
+}
+
+export interface UpdateMemberRoleRequest {
+  role: WorkspaceRole;
+}
+
+// ==============================================================================
+// PHASE 15: ENTERPRISE AUDIT, GOVERNANCE & COMPLIANCE
+// ==============================================================================
+
+export type AuditSeverity = "INFO" | "WARNING" | "ERROR" | "CRITICAL";
+export type AuditResult = "SUCCESS" | "DENIED" | "FAILED" | "VIOLATION";
+export type AuditSource = "API" | "WEBHOOK" | "SYSTEM_WORKER" | "INTEGRATION_SYNC";
+
+export interface AuditEvent {
+  id: string;
+  workspace_id: string;
+  actor_user_id?: string | null;
+  actor_name?: string | null;
+  actor_email?: string | null;
+  actor_role?: string | null;
+  action: string;
+  entity_type?: string | null;
+  entity_id?: string | null;
+  timestamp: string;
+  request_id?: string | null;
+  source: string;
+  ip_address?: string | null;
+  user_agent?: string | null;
+  before_state?: Record<string, unknown> | null;
+  after_state?: Record<string, unknown> | null;
+  audit_metadata?: Record<string, unknown> | null;
+  reason?: string | null;
+  severity: AuditSeverity | string;
+  result: AuditResult | string;
+  previous_event_hash?: string | null;
+  event_hash: string;
+}
+
+export interface AuditListResponse {
+  items: AuditEvent[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface AuditVerificationResponse {
+  workspace_id: string;
+  chain_valid: boolean;
+  status: string;
+  verified_event_count: number;
+  broken_at_event_id?: string | null;
+  expected_hash?: string | null;
+  actual_hash?: string | null;
+  verified_at: string;
+  message: string;
+}
+
+export interface TopActorMetric {
+  actor_user_id?: string | null;
+  actor_name: string;
+  actor_email?: string | null;
+  mutation_count: number;
+}
+
+export interface EntityTypeMetric {
+  entity_type: string;
+  mutation_count: number;
+}
+
+export interface GovernanceSummaryResponse {
+  workspace_id: string;
+  total_audit_events: number;
+  events_today: number;
+  mutations_today: number;
+  security_events_count: number;
+  permission_denials_count: number;
+  failed_logins_count: number;
+  human_actions_count: number;
+  system_events_count: number;
+  interventions_approved_count: number;
+  interventions_executed_count: number;
+  evidence_confirmations_count: number;
+  reconciliation_decisions_count: number;
+  top_actors: TopActorMetric[];
+  most_modified_entities: EntityTypeMetric[];
+  recent_security_events: AuditEvent[];
+  chain_integrity_status: string;
+  evaluated_at: string;
+}

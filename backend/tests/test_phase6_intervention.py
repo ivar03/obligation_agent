@@ -401,7 +401,7 @@ async def test_14_approval_required_before_execution(async_client: AsyncClient, 
 
     # Direct execution without approval must be rejected with 422
     res = await async_client.post(f"/api/interventions/{plan.id}/execute")
-    assert res.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+    assert res.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
     assert "approval is required" in res.json()["detail"].lower()
 
 

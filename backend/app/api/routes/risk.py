@@ -1,5 +1,5 @@
 from typing import Optional
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Query, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import DatabaseSession
@@ -8,6 +8,8 @@ from app.core.status_machine import (
     ObligationType,
     RiskLevel,
 )
+from app.models.auth import User, Workspace
+from app.core.auth_deps import get_current_user, get_current_workspace
 from app.schemas.obligation import BulkRiskResponse
 from app.services.obligation_service import ObligationService
 
@@ -23,9 +25,11 @@ async def get_bulk_risks(
     limit: int = Query(50, ge=1, le=200),
     offset: int = Query(0, ge=0),
     db: AsyncSession = DatabaseSession,
+    workspace: Workspace = Depends(get_current_workspace),
+    user: User = Depends(get_current_user),
 ):
     """
-    Retrieve active obligations assessed by the Proactive Risk Engine,
+    Retrieve active obligations assessed by the Proactive Risk Engine for active workspace,
     prioritized by failure probability, deadline urgency, and graph fan-out impact.
     """
     return await ObligationService.get_bulk_risks(
@@ -36,4 +40,5 @@ async def get_bulk_risks(
         status=status,
         limit=limit,
         offset=offset,
+        workspace_id=workspace.id,
     )
