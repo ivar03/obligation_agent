@@ -11,6 +11,7 @@ import {
   ExternalLink,
   Trash2,
   Check,
+  Ban,
 } from "lucide-react";
 import { Obligation, ObligationStatus } from "@/lib/types/obligation";
 import { StatusBadge } from "../ui/StatusBadge";
@@ -33,6 +34,7 @@ export const ObligationCard: React.FC<ObligationCardProps> = ({
   const [updating, setUpdating] = useState(false);
 
   const isOwedByMe = obligation.obligation_type === "OWED_BY_ME";
+  const isBlocked = obligation.status === "BLOCKED";
 
   // Relationship description
   const relationshipText = isOwedByMe ? (
@@ -58,6 +60,15 @@ export const ObligationCard: React.FC<ObligationCardProps> = ({
       hour: "2-digit",
       minute: "2-digit",
     });
+  }
+
+  // Blocker description snippet
+  let blockerSummary = "";
+  if (isBlocked && obligation.block_reason && typeof obligation.block_reason === "object") {
+    const br = obligation.block_reason as { blocked_by?: Array<{ owner: string; action: string }> };
+    if (br.blocked_by && br.blocked_by.length > 0) {
+      blockerSummary = `Blocked by ${br.blocked_by[0].owner}'s prerequisite`;
+    }
   }
 
   const handleStatusTransition = async (newStatus: ObligationStatus) => {
@@ -105,7 +116,9 @@ export const ObligationCard: React.FC<ObligationCardProps> = ({
   return (
     <div
       className={`relative group bg-zinc-900/70 hover:bg-zinc-900 border rounded-xl p-5 transition-all duration-200 shadow-sm hover:shadow-md ${
-        obligation.is_at_risk
+        isBlocked
+          ? "border-rose-500/50 hover:border-rose-500/70 bg-rose-950/20"
+          : obligation.is_at_risk
           ? "border-rose-500/40 hover:border-rose-500/60 bg-rose-950/10"
           : "border-zinc-800 hover:border-zinc-700"
       }`}
@@ -122,12 +135,17 @@ export const ObligationCard: React.FC<ObligationCardProps> = ({
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
-          {obligation.is_at_risk && (
+          {isBlocked ? (
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/40 animate-pulse">
+              <Ban className="w-3 h-3" />
+              Blocked
+            </span>
+          ) : obligation.is_at_risk ? (
             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/30 animate-pulse">
               <ShieldAlert className="w-3 h-3" />
               At Risk
             </span>
-          )}
+          ) : null}
           <StatusBadge status={obligation.status} size="sm" />
         </div>
       </div>
@@ -143,8 +161,16 @@ export const ObligationCard: React.FC<ObligationCardProps> = ({
         </Link>
       </div>
 
+      {/* Blocker Callout if Blocked */}
+      {isBlocked && blockerSummary && (
+        <div className="mb-3 px-3 py-2 rounded-lg bg-rose-950/40 border border-rose-500/30 text-xs text-rose-300 flex items-center gap-2">
+          <Ban className="w-3.5 h-3.5 shrink-0 text-rose-400" />
+          <span className="font-medium truncate">{blockerSummary}</span>
+        </div>
+      )}
+
       {/* Next Action Callout if available */}
-      {obligation.next_action && (
+      {obligation.next_action && !isBlocked && (
         <div className="mb-3.5 px-3 py-2 rounded-lg bg-zinc-950/70 border border-zinc-800/80 text-xs">
           <span className="text-zinc-400 font-medium">Next Step: </span>
           <span className="text-zinc-200">{obligation.next_action}</span>

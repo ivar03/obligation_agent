@@ -11,8 +11,8 @@ class Settings(BaseSettings):
         extra="ignore"
     )
 
-    PROJECT_NAME: str = "Continuity Guardian API"
-    VERSION: str = "0.1.0"
+    PROJECT_NAME: str = "Obligation Agent API"
+    VERSION: str = "0.2.0"
     DEBUG: bool = True
     
     # Database

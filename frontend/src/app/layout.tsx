@@ -3,7 +3,7 @@ import "./globals.css";
 import { AppLayout } from "@/components/layout/AppLayout";
 
 export const metadata: Metadata = {
-  title: "Continuity Guardian | AI Obligation Intelligence",
+  title: "Obligation Agent | AI Reciprocal Commitment Intelligence",
   description:
     "An AI-powered obligation and commitment tracking platform where the Obligation is the atomic unit.",
 };

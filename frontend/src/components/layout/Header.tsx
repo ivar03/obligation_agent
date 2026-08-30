@@ -20,9 +20,9 @@ export const Header: React.FC = () => {
       <div className="flex items-center gap-3">
         <div className="md:hidden flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center font-bold text-white text-sm">
-            CG
+            OA
           </div>
-          <span className="font-bold text-white text-sm">Continuity Guardian</span>
+          <span className="font-bold text-white text-sm">Obligation Agent</span>
         </div>
       </div>
 

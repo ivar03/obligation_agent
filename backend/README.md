@@ -1,4 +1,4 @@
-# Continuity Guardian — Backend Engine
+# Obligation Agent — Backend Engine
 
 FastAPI backend with asynchronous SQLAlchemy ORM, Pydantic V2 validation, Alembic migrations, and an extensible extraction provider architecture.
 

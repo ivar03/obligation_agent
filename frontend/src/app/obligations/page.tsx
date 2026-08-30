@@ -147,7 +147,7 @@ function ObligationsContent() {
               <option value="CANCELLED">Cancelled</option>
             </select>
 
-            {/* At Risk Checkbox Toggle */}
+            {/* At Risk Toggle */}
             <button
               onClick={() => setAtRiskOnly(!atRiskOnly)}
               className={`px-3 py-1.5 rounded-xl text-xs font-medium border transition-colors ${
@@ -156,7 +156,7 @@ function ObligationsContent() {
                   : "bg-zinc-950 border-zinc-800 text-zinc-400 hover:text-zinc-200"
               }`}
             >
-              At Risk Only
+              🔥 At Risk Only
             </button>
 
             {/* Search Input */}

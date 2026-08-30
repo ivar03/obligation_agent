@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 from fastapi import APIRouter, HTTPException, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -18,6 +18,10 @@ from app.schemas.obligation import (
     ObligationListResponse,
     ObligationEdgeCreate,
     ObligationEdgeResponse,
+    ObligationGraphResponse,
+    EvidenceResponse,
+    EvidenceConfirmRequest,
+    RiskAssessmentResponse,
 )
 from app.services.obligation_service import ObligationService
 from app.services.extraction_service import ExtractionService
@@ -54,6 +58,7 @@ async def list_obligations(
     status: Optional[ObligationStatus] = Query(None, description="Filter by status"),
     search: Optional[str] = Query(None, description="Keyword search in action, owner, beneficiary"),
     is_at_risk: Optional[bool] = Query(None, description="Filter by risk criteria"),
+    is_blocked: Optional[bool] = Query(None, description="Filter by blocked status"),
     limit: int = Query(50, ge=1, le=200),
     offset: int = Query(0, ge=0),
     db: AsyncSession = DatabaseSession,
@@ -67,6 +72,7 @@ async def list_obligations(
         status=status,
         search=search,
         is_at_risk=is_at_risk,
+        is_blocked=is_blocked,
         limit=limit,
         offset=offset,
     )
@@ -87,6 +93,79 @@ async def get_obligation(
             detail=f"Obligation with ID '{obligation_id}' not found",
         )
     return obligation
+
+
+@router.get("/{obligation_id}/graph", response_model=ObligationGraphResponse)
+async def get_obligation_graph(
+    obligation_id: str,
+    db: AsyncSession = DatabaseSession,
+):
+    """
+    Retrieve composite graph dependencies, dependents, linked obligations, and active blockers.
+    """
+    return await ObligationService.get_graph(db, obligation_id)
+
+
+@router.get("/{obligation_id}/risk", response_model=RiskAssessmentResponse)
+async def get_obligation_risk(
+    obligation_id: str,
+    db: AsyncSession = DatabaseSession,
+):
+    """
+    Retrieve proactive multi-signal risk assessment, reasons, signals, and recommended action.
+    """
+    assessment = await ObligationService.get_risk_assessment(db, obligation_id)
+    if not assessment:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Obligation with ID '{obligation_id}' not found",
+        )
+    return assessment
+
+
+@router.get("/{obligation_id}/evidence", response_model=List[EvidenceResponse])
+async def get_obligation_evidence(
+    obligation_id: str,
+    db: AsyncSession = DatabaseSession,
+):
+    """
+    Retrieve all normalized evidence records associated with an obligation.
+    """
+    return await ObligationService.get_evidence(db, obligation_id)
+
+
+@router.post("/{obligation_id}/evidence/{evidence_id}/confirm", response_model=ObligationResponse)
+async def confirm_obligation_evidence(
+    obligation_id: str,
+    evidence_id: str,
+    payload: Optional[EvidenceConfirmRequest] = None,
+    db: AsyncSession = DatabaseSession,
+):
+    """
+    Confirm completion evidence. Transitions obligation to COMPLETED and unblocks dependent graph obligations.
+    """
+    try:
+        updated_ob, _ = await ObligationService.confirm_evidence(
+            db, obligation_id, evidence_id, notes=payload.notes if payload else None
+        )
+        return updated_ob
+    except InvalidStatusTransitionError as e:
+        raise HTTPException(
+            status_code=422,
+            detail=str(e),
+        )
+
+
+@router.post("/{obligation_id}/evidence/{evidence_id}/reject", response_model=EvidenceResponse)
+async def reject_obligation_evidence(
+    obligation_id: str,
+    evidence_id: str,
+    db: AsyncSession = DatabaseSession,
+):
+    """
+    Reject suggested evidence. Leaves obligation status untouched.
+    """
+    return await ObligationService.reject_evidence(db, obligation_id, evidence_id)
 
 
 @router.patch("/{obligation_id}", response_model=ObligationResponse)
@@ -114,7 +193,7 @@ async def update_obligation_status(
     db: AsyncSession = DatabaseSession,
 ):
     """
-    Execute a controlled status transition with domain-level validation.
+    Execute a controlled status transition with domain-level validation and authoritative graph propagation.
     """
     try:
         updated = await ObligationService.update_status(db, obligation_id, status_data)
@@ -126,7 +205,7 @@ async def update_obligation_status(
         return updated
     except InvalidStatusTransitionError as e:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=422,
             detail=str(e),
         )
 
@@ -137,7 +216,7 @@ async def delete_obligation(
     db: AsyncSession = DatabaseSession,
 ):
     """
-    Delete an obligation.
+    Delete an obligation and re-evaluate affected dependents.
     """
     deleted = await ObligationService.delete(db, obligation_id)
     if not deleted:
@@ -154,14 +233,24 @@ async def create_obligation_edge(
     db: AsyncSession = DatabaseSession,
 ):
     """
-    Create a bidirectional or dependency edge between two obligations.
+    Create a bidirectional (LINKED) or dependency (DEPENDS_ON) edge between two obligations.
+    Rejects self-referencing edges, duplicate edges, and dependency cycles.
     """
-    # Verify both exist
-    from_ob = await ObligationService.get_by_id(db, data.from_obligation_id)
-    to_ob = await ObligationService.get_by_id(db, data.to_obligation_id)
-    if not from_ob or not to_ob:
+    return await ObligationService.create_edge(db, data)
+
+
+@router.delete("/edges/{edge_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_obligation_edge(
+    edge_id: str,
+    db: AsyncSession = DatabaseSession,
+):
+    """
+    Remove a relationship edge and re-evaluate dependent blockers.
+    """
+    deleted = await ObligationService.delete_edge(db, edge_id)
+    if not deleted:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="One or both obligation IDs in edge not found",
+            detail=f"Obligation edge with ID '{edge_id}' not found",
         )
-    return await ObligationService.create_edge(db, data)
+    return None

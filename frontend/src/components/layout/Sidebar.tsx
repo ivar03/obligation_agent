@@ -11,6 +11,7 @@ import {
   ArrowUpRight,
   ArrowDownLeft,
   AlertTriangle,
+  Activity,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -43,6 +44,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ counts }) => {
       href: "/obligations",
       icon: Layers,
       active: pathname.startsWith("/obligations"),
+    },
+    {
+      name: "Activity Center",
+      href: "/events",
+      icon: Activity,
+      active: pathname.startsWith("/events"),
+      badge: "Phase 7",
     },
   ];
 
@@ -80,9 +88,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ counts }) => {
           </div>
           <div>
             <div className="text-sm font-bold tracking-tight text-white flex items-center gap-1.5">
-              Continuity<span className="text-blue-400">Guardian</span>
+              Obligation<span className="text-blue-400">Agent</span>
             </div>
-            <div className="text-[11px] text-zinc-400 font-medium">Obligation Intelligence</div>
+            <div className="text-[11px] text-zinc-400 font-medium">Reciprocal Commitment OS</div>
           </div>
         </div>
 

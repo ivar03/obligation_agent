@@ -1,4 +1,4 @@
-# Continuity Guardian — Frontend
+# Obligation Agent — Frontend
 
 Next.js 15 App Router web application built with TypeScript, Tailwind CSS, Lucide icons, and a typed API client.
 
