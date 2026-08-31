@@ -40,10 +40,11 @@ import {
 } from "@/lib/types/obligation";
 import { intelligenceApi, memoryApi } from "@/lib/api/obligations";
 import { PredictionCard } from "@/components/intelligence/PredictionCard";
+import { LLMIntelligencePanel } from "@/components/intelligence/LLMIntelligencePanel";
 
 export default function IntelligencePage() {
   const [activeTab, setActiveTab] = useState<
-    "FORECASTS" | "ROOT_CAUSE" | "PATTERNS" | "OWNERS" | "CALIBRATION" | "ADAPTIVE" | "MEMORY"
+    "FORECASTS" | "ROOT_CAUSE" | "PATTERNS" | "OWNERS" | "CALIBRATION" | "ADAPTIVE" | "MEMORY" | "LLM"
   >("FORECASTS");
   const [overview, setOverview] = useState<IntelligenceOverviewResponse | null>(null);
   const [patterns, setPatterns] = useState<HistoricalPatternsResponse | null>(null);
@@ -353,6 +354,18 @@ export default function IntelligencePage() {
           >
             <Brain className="w-4 h-4 text-purple-400" />
             Organizational Memory
+          </button>
+
+          <button
+            onClick={() => setActiveTab("LLM")}
+            className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${
+              activeTab === "LLM"
+                ? "border-cyan-500 text-cyan-400"
+                : "border-transparent text-slate-400 hover:text-slate-200"
+            }`}
+          >
+            <Sparkles className="w-4 h-4 text-cyan-400" />
+            LLM Intelligence
           </button>
         </div>
       </div>
@@ -1161,6 +1174,9 @@ export default function IntelligencePage() {
           </div>
         </div>
       )}
+
+      {/* LLM Intelligence Layer Tab */}
+      {activeTab === "LLM" && <LLMIntelligencePanel />}
     </div>
   );
 }

@@ -35,6 +35,9 @@ from app.schemas.execution import (
     ExecutionQueueItem,
     ExecutionQueueResponse,
 )
+import asyncio
+from app.core.config import settings
+from app.core.circuit_breaker import get_circuit_breaker, CircuitBreakerOpenError
 from app.services.execution.base_execution_provider import (
     BaseExecutionProvider,
     ExecutionActionPayload,
@@ -265,9 +268,55 @@ class ExecutionService:
             metadata=metadata,
         )
 
-        # 5. Dispatch to Provider Adapter
+        # 5. Dispatch to Provider Adapter with Circuit Breaker & Timeout Protection
         provider = cls.get_provider(exec_rec.provider)
-        receipt: ExecutionProviderReceipt = await provider.execute(action_payload)
+        cb = get_circuit_breaker(exec_rec.provider)
+
+        try:
+            async with cb.call():
+                receipt: ExecutionProviderReceipt = await asyncio.wait_for(
+                    provider.execute(action_payload),
+                    timeout=settings.PROVIDER_TIMEOUT_SECONDS,
+                )
+        except CircuitBreakerOpenError as exc:
+            logger.warning(f"Execution failed: Circuit breaker open for provider '{exec_rec.provider}'")
+            receipt = ExecutionProviderReceipt(
+                success=False,
+                provider=exec_rec.provider,
+                provider_version=getattr(provider, "provider_version", "1.0.0"),
+                provider_ref=f"CB-OPEN-{exec_rec.id[:8]}",
+                delivery_status="CIRCUIT_OPEN",
+                failure_code=ExecutionFailureCode.PROVIDER_ERROR,
+                failure_reason=f"Circuit breaker is OPEN for provider '{exec_rec.provider}'. Service is temporarily unavailable.",
+                is_transient_failure=True,
+                raw_metadata={"circuit_state": "OPEN"},
+            )
+        except asyncio.TimeoutError:
+            logger.error(f"Execution timed out after {settings.PROVIDER_TIMEOUT_SECONDS}s for provider '{exec_rec.provider}'")
+            receipt = ExecutionProviderReceipt(
+                success=False,
+                provider=exec_rec.provider,
+                provider_version=getattr(provider, "provider_version", "1.0.0"),
+                provider_ref=f"TIMEOUT-{exec_rec.id[:8]}",
+                delivery_status="TIMED_OUT",
+                failure_code=ExecutionFailureCode.PROVIDER_ERROR,
+                failure_reason=f"Execution request to provider '{exec_rec.provider}' timed out.",
+                is_transient_failure=True,
+                raw_metadata={"timeout_seconds": settings.PROVIDER_TIMEOUT_SECONDS},
+            )
+        except Exception as exc:
+            logger.error(f"Execution error for provider '{exec_rec.provider}': {exc}")
+            receipt = ExecutionProviderReceipt(
+                success=False,
+                provider=exec_rec.provider,
+                provider_version=getattr(provider, "provider_version", "1.0.0"),
+                provider_ref=f"ERR-{exec_rec.id[:8]}",
+                delivery_status="FAILED",
+                failure_code=ExecutionFailureCode.UNKNOWN_ERROR,
+                failure_reason=str(exc),
+                is_transient_failure=True,
+                raw_metadata={"error": str(exc)},
+            )
 
         now = utc_now()
         exec_rec.executed_at = now

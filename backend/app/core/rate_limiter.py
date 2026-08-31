@@ -1,16 +1,20 @@
 """
-Phase 17 In-Memory Sliding Window Rate Limiter.
+Phase 19 In-Memory Sliding Window Rate Limiter.
 
 Protects sensitive endpoints against abuse, brute-force, and runaway loops
 without interfering with legitimate provider retry semantics.
+Employs unified error responses and structured error codes.
 """
 
 import time
 from typing import Dict, List, Tuple, Optional
-from fastapi import Request, HTTPException, status
+from fastapi import Request, status
+from fastapi.responses import JSONResponse
 
 from app.core.config import settings
 from app.core.logging import logger
+from app.core.errors import ErrorCode, make_error_response
+from app.core.request_context import get_current_request_id
 
 
 class InMemoryRateLimiter:
@@ -92,11 +96,12 @@ def rate_limit(
         allowed, remaining, reset_after = limiter.check_rate_limit(key, max_requests=limit, window_seconds=window_seconds)
 
         if not allowed:
-            logger.warning(f"Rate limit exceeded for [{key}]: limit={limit}/min, retry_after={reset_after:.1f}s")
-            raise HTTPException(
-                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                detail=f"Rate limit exceeded. Maximum {limit} requests per {int(window_seconds)}s. Try again in {int(reset_after)+1} seconds.",
-                headers={"Retry-After": str(int(reset_after) + 1)},
+            logger.warning(
+                f"Rate limit exceeded for [{key}]: limit={limit}/min, retry_after={reset_after:.1f}s",
+                extra={"key": key, "limit": limit, "retry_after": reset_after}
             )
+            from app.core.errors import RateLimitError
+            raise RateLimitError(retry_after=int(reset_after) + 1)
 
     return dependency
+

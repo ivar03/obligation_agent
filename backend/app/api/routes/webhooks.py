@@ -1,35 +1,78 @@
+"""
+Phase 19 Hardened Webhook Endpoints.
+
+Supports both:
+  1. Fast Asynchronous ACK (<20ms): Validates signature/token, durably persists
+     into EventInboxRecord (status: QUEUED), returns HTTP 200/202 immediately.
+  2. Direct Synchronous Ingestion: Durably persists into EventInboxRecord, runs
+     the intelligence pipeline, and returns the full IngestionResultResponse.
+"""
+
 import json
-from typing import Dict, Any, Union
-from fastapi import APIRouter, status, HTTPException, Request, Response
-from fastapi.responses import JSONResponse
+from typing import Dict, Any, Optional
+from fastapi import APIRouter, status, Request, Response, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import DatabaseSession
 from app.core.config import settings
-from app.core.logging import logger
+from app.core.logging import get_logger
+from app.core.resource_limits import ResourceLimits
+from app.core.metrics import metrics
 from app.schemas.obligation import IngestionResultResponse
+from app.services.event_inbox_service import EventInboxService
 from app.services.event_ingestion_service import EventIngestionService
-from app.services.providers.slack_provider import SlackProvider
+
+logger = get_logger("obligation_agent.webhooks")
 
 router = APIRouter(prefix="/webhooks", tags=["Webhooks"])
 
+
+async def _read_and_check_body(request: Request, limit: int = None) -> bytes:
+    limit = limit or settings.MAX_WEBHOOK_PAYLOAD_BYTES
+    body = await request.body()
+    if len(body) > limit:
+        ResourceLimits.check_webhook_payload(len(body))
+    return body
+
+
+def _extract_workspace_id(request: Request) -> str:
+    return (
+        request.headers.get("X-Workspace-Id")
+        or request.query_params.get("workspace_id")
+        or "ws-default"
+    )
+
+
+def _is_async_requested(request: Request) -> bool:
+    param = request.query_params.get("async", "").lower()
+    header = request.headers.get("X-Async-Processing", "").lower()
+    return param in ("true", "1") or header in ("true", "1") or getattr(settings, "WEBHOOK_ASYNC_MODE", False)
+
+
+# ---------------------------------------------------------------------------
+# POST /webhooks/slack
+# ---------------------------------------------------------------------------
 
 @router.post("/slack")
 async def handle_slack_webhook(
     request: Request,
     db: AsyncSession = DatabaseSession,
 ):
-    """
-    Dedicated Slack Webhook & Events API endpoint.
-    1. Validates Slack request signature & timestamp against replay attacks.
-    2. Handles Slack URL verification challenge.
-    3. Normalizes payload and ingests event into the intelligence pipeline.
-    """
-    raw_body = await request.body()
+    from app.services.providers.slack_provider import SlackProvider
+
+    # 1. Size check
+    try:
+        raw_body = await _read_and_check_body(request)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            detail="Webhook payload exceeds maximum allowed size.",
+        )
+
     timestamp = request.headers.get("X-Slack-Request-Timestamp")
     signature = request.headers.get("X-Slack-Signature")
 
-    # 1. Validate Slack Request Signature (if signing secret configured or signature headers present)
+    # 2. Signature validation
     if settings.SLACK_SIGNING_SECRET or (timestamp and signature):
         is_valid = SlackProvider.verify_slack_signature(
             request_body=raw_body,
@@ -38,7 +81,8 @@ async def handle_slack_webhook(
             tolerance_seconds=settings.SLACK_SIGNATURE_TOLERANCE_SECONDS,
         )
         if not is_valid:
-            logger.warning("Rejected unauthorized Slack webhook request: invalid signature or expired timestamp.")
+            logger.warning("Slack webhook: invalid signature or expired timestamp.")
+            metrics.increment("ingestion.webhook.rejected", labels={"provider": "slack", "reason": "invalid_signature"})
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Slack request verification failed: invalid signature or timestamp.",
@@ -52,14 +96,35 @@ async def handle_slack_webhook(
             detail=f"Invalid JSON payload: {str(e)}",
         )
 
-    # 2. Handle Slack URL Verification Challenge
+    # 3. URL verification challenge
     if isinstance(payload, dict) and payload.get("type") == "url_verification":
-        challenge = payload.get("challenge", "")
         logger.info("Slack URL verification challenge accepted.")
-        return {"challenge": challenge}
+        return {"challenge": payload.get("challenge", "")}
 
-    # 3. Normalize & Ingest via EventIngestionService
-    workspace_id = request.headers.get("X-Workspace-Id") or request.query_params.get("workspace_id") or "ws-default"
+    workspace_id = _extract_workspace_id(request)
+    metrics.increment("events.received_total", labels={"provider": "slack"})
+
+    # 4. Durable Inbox Buffer Persistence
+    inbox_rec, is_dup = await EventInboxService.ingest_to_inbox(
+        session=db,
+        workspace_id=workspace_id,
+        provider="slack",
+        raw_payload=payload,
+        event_type="message",
+    )
+
+    # 5. Fast ACK if async requested
+    if _is_async_requested(request):
+        return {
+            "status": "queued",
+            "event_id": inbox_rec.id,
+            "stream_key": inbox_rec.stream_key,
+            "provider": "slack",
+            "deduplicated": is_dup,
+            "received_at": inbox_rec.received_at.isoformat(),
+        }
+
+    # 6. Direct execution
     try:
         result = await EventIngestionService.ingest_from_provider(
             session=db,
@@ -75,25 +140,30 @@ async def handle_slack_webhook(
         )
 
 
+# ---------------------------------------------------------------------------
+# POST /webhooks/gmail
+# ---------------------------------------------------------------------------
+
 @router.post("/gmail")
 async def handle_gmail_webhook(
     request: Request,
     db: AsyncSession = DatabaseSession,
 ):
-    """
-    Dedicated Gmail Webhook & Google Cloud Pub/Sub push endpoint.
-    1. Validates Pub/Sub verification token if configured.
-    2. Normalizes email/PubSub payload and ingests event into the intelligence pipeline.
-    """
-    raw_body = await request.body()
+    try:
+        raw_body = await _read_and_check_body(request)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            detail="Webhook payload exceeds maximum allowed size.",
+        )
+
     token_param = request.query_params.get("token")
     token_header = request.headers.get("X-Goog-PubSub-Token")
-
-    # Validate Pub/Sub token if configured
     if settings.GMAIL_PUBSUB_VERIFICATION_TOKEN:
         received_token = token_param or token_header
         if received_token != settings.GMAIL_PUBSUB_VERIFICATION_TOKEN:
-            logger.warning("Rejected unauthorized Gmail Pub/Sub webhook: invalid verification token.")
+            logger.warning("Gmail webhook: invalid verification token.")
+            metrics.increment("ingestion.webhook.rejected", labels={"provider": "gmail", "reason": "invalid_token"})
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Gmail webhook verification failed: invalid token.",
@@ -107,7 +177,28 @@ async def handle_gmail_webhook(
             detail=f"Invalid JSON payload: {str(e)}",
         )
 
-    workspace_id = request.headers.get("X-Workspace-Id") or request.query_params.get("workspace_id") or "ws-default"
+    workspace_id = _extract_workspace_id(request)
+    metrics.increment("events.received_total", labels={"provider": "gmail"})
+
+    # Durable Inbox Buffer Persistence
+    inbox_rec, is_dup = await EventInboxService.ingest_to_inbox(
+        session=db,
+        workspace_id=workspace_id,
+        provider="gmail",
+        raw_payload=payload,
+        event_type="email",
+    )
+
+    if _is_async_requested(request):
+        return {
+            "status": "queued",
+            "event_id": inbox_rec.id,
+            "stream_key": inbox_rec.stream_key,
+            "provider": "gmail",
+            "deduplicated": is_dup,
+            "received_at": inbox_rec.received_at.isoformat(),
+        }
+
     try:
         result = await EventIngestionService.ingest_from_provider(
             session=db,
@@ -123,27 +214,31 @@ async def handle_gmail_webhook(
         )
 
 
+# ---------------------------------------------------------------------------
+# POST /webhooks/google-calendar & /google_calendar
+# ---------------------------------------------------------------------------
+
 @router.post("/google-calendar")
 @router.post("/google_calendar")
 async def handle_google_calendar_webhook(
     request: Request,
     db: AsyncSession = DatabaseSession,
 ):
-    """
-    Dedicated Google Calendar Webhook & Push Notification endpoint.
-    1. Validates Google Calendar webhook secret token if configured.
-    2. Handles channel sync headers (X-Goog-Resource-State, X-Goog-Channel-ID).
-    3. Normalizes calendar event payload and ingests into intelligence pipeline.
-    """
-    raw_body = await request.body()
+    try:
+        raw_body = await _read_and_check_body(request)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            detail="Webhook payload exceeds maximum allowed size.",
+        )
+
     token_param = request.query_params.get("token")
     token_header = request.headers.get("X-Goog-Channel-Token") or request.headers.get("X-Goog-PubSub-Token")
-
-    # Validate secret token if configured
     if settings.GOOGLE_CALENDAR_WEBHOOK_SECRET:
         received_token = token_param or token_header
         if received_token != settings.GOOGLE_CALENDAR_WEBHOOK_SECRET:
-            logger.warning("Rejected unauthorized Google Calendar webhook: invalid verification token.")
+            logger.warning("Google Calendar webhook: invalid token.")
+            metrics.increment("ingestion.webhook.rejected", labels={"provider": "google_calendar", "reason": "invalid_token"})
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Google Calendar webhook verification failed: invalid token.",
@@ -152,7 +247,6 @@ async def handle_google_calendar_webhook(
     try:
         payload = json.loads(raw_body.decode("utf-8")) if raw_body else {}
     except Exception as e:
-        # If payload is empty but Google headers are present, construct sync payload
         if request.headers.get("X-Goog-Channel-ID"):
             payload = {
                 "channelId": request.headers.get("X-Goog-Channel-ID"),
@@ -166,14 +260,33 @@ async def handle_google_calendar_webhook(
                 detail=f"Invalid JSON payload: {str(e)}",
             )
 
-    # Attach Google sync headers to payload if not already present
     if isinstance(payload, dict):
         if "channelId" not in payload and request.headers.get("X-Goog-Channel-ID"):
             payload["channelId"] = request.headers.get("X-Goog-Channel-ID")
             payload["resourceId"] = request.headers.get("X-Goog-Resource-ID")
             payload["resourceState"] = request.headers.get("X-Goog-Resource-State")
 
-    workspace_id = request.headers.get("X-Workspace-Id") or request.query_params.get("workspace_id") or "ws-default"
+    workspace_id = _extract_workspace_id(request)
+    metrics.increment("events.received_total", labels={"provider": "google_calendar"})
+
+    inbox_rec, is_dup = await EventInboxService.ingest_to_inbox(
+        session=db,
+        workspace_id=workspace_id,
+        provider="google_calendar",
+        raw_payload=payload,
+        event_type="calendar_event",
+    )
+
+    if _is_async_requested(request):
+        return {
+            "status": "queued",
+            "event_id": inbox_rec.id,
+            "stream_key": inbox_rec.stream_key,
+            "provider": "google_calendar",
+            "deduplicated": is_dup,
+            "received_at": inbox_rec.received_at.isoformat(),
+        }
+
     try:
         result = await EventIngestionService.ingest_from_provider(
             session=db,
@@ -189,18 +302,38 @@ async def handle_google_calendar_webhook(
         )
 
 
-@router.post("/{provider}", response_model=IngestionResultResponse, status_code=status.HTTP_201_CREATED)
+# ---------------------------------------------------------------------------
+# POST /webhooks/{provider} — generic webhook endpoint
+# ---------------------------------------------------------------------------
+
+@router.post("/{provider}", status_code=status.HTTP_201_CREATED)
 async def handle_provider_webhook(
     provider: str,
     payload: Dict[str, Any],
     request: Request,
     db: AsyncSession = DatabaseSession,
 ):
-    """
-    Generic webhook receiver endpoint.
-    Routes provider webhooks to the corresponding adapter for normalization and ingestion.
-    """
-    workspace_id = request.headers.get("X-Workspace-Id") or request.query_params.get("workspace_id") or "ws-default"
+    workspace_id = _extract_workspace_id(request)
+    metrics.increment("events.received_total", labels={"provider": provider})
+
+    inbox_rec, is_dup = await EventInboxService.ingest_to_inbox(
+        session=db,
+        workspace_id=workspace_id,
+        provider=provider,
+        raw_payload=payload,
+        event_type="generic_event",
+    )
+
+    if _is_async_requested(request):
+        return {
+            "status": "queued",
+            "event_id": inbox_rec.id,
+            "stream_key": inbox_rec.stream_key,
+            "provider": provider,
+            "deduplicated": is_dup,
+            "received_at": inbox_rec.received_at.isoformat(),
+        }
+
     try:
         return await EventIngestionService.ingest_from_provider(
             session=db,

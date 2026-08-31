@@ -1,6 +1,24 @@
 version: '3.8'
 
 services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: obligation-agent-postgres
+    environment:
+      POSTGRES_DB: obligations_prod
+      POSTGRES_USER: obligation_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-secure_db_password_change_me}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U obligation_user -d obligations_prod"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
   backend:
     build:
       context: ./backend
@@ -12,18 +30,42 @@ services:
       - APP_ENV=production
       - AUTH_MODE=production
       - DEBUG=false
-      - DATABASE_URL=sqlite+aiosqlite:////data/obligations.db
+      - DATABASE_URL=postgresql+asyncpg://obligation_user:${DB_PASSWORD:-secure_db_password_change_me}@postgres:5432/obligations_prod
       - FRONTEND_URL=http://localhost:3000
-      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-changeme-production-jwt-secret-min-32-chars}
-      - ENCRYPTION_KEY=${ENCRYPTION_KEY:-changeme-fernet-encryption-key-32-bytes}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-changeme-production-jwt-secret-min-32-chars-entropy}
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY:-changeme-fernet-encryption-key-32-bytes-long}
+      - LOG_FORMAT=json
+      - WORKER_CONCURRENCY=4
+      - WORKER_DURABLE_QUEUE=true
+    depends_on:
+      postgres:
+        condition: service_healthy
     volumes:
-      - obligation_data:/data
+      - backup_data:/app/backups
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
-      interval: 30s
-      timeout: 10s
+      interval: 15s
+      timeout: 5s
       retries: 3
+
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.worker
+    container_name: obligation-agent-worker
+    environment:
+      - APP_ENV=production
+      - AUTH_MODE=production
+      - DATABASE_URL=postgresql+asyncpg://obligation_user:${DB_PASSWORD:-secure_db_password_change_me}@postgres:5432/obligations_prod
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-changeme-production-jwt-secret-min-32-chars-entropy}
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY:-changeme-fernet-encryption-key-32-bytes-long}
+      - WORKER_CONCURRENCY=8
+      - WORKER_DURABLE_QUEUE=true
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
 
   frontend:
     build:
@@ -39,4 +81,5 @@ services:
     restart: unless-stopped
 
 volumes:
-  obligation_data:
+  postgres_data:
+  backup_data:

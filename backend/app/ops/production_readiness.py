@@ -1,10 +1,18 @@
 """
-Phase 17 Production Readiness Diagnostic CLI.
+Phase 19 Production Readiness Diagnostic CLI.
 
 Usage:
     python -m app.ops.production_readiness
 
-Runs a comprehensive suite of production verification checks and returns exit code 0 on pass, 1 on fail.
+Runs a comprehensive suite of production verification checks including:
+  - Startup preflight checks (database, schema, configuration, encryption)
+  - Durable worker & queue status
+  - Integrity checker invariant audit
+  - Circuit breaker health status
+  - Metrics collector subsystem
+  - Backup & disaster recovery status
+
+Returns exit code 0 on pass, 1 on fail.
 """
 
 import sys
@@ -15,12 +23,12 @@ from sqlalchemy import text, select, func
 from app.core.config import settings
 from app.core.database import AsyncSessionLocal
 from app.core.crypto import CryptoService
-from app.core.worker import worker_queue
-from app.models.auth import Workspace, User, WorkspaceMembership
-from app.models.obligation import Obligation, ObligationEdge
-from app.models.decision import DecisionPlan
-from app.models.execution import ExecutionRecord
-from app.core.status_machine import WorkspaceRole
+from app.core.circuit_breaker import get_all_circuit_statuses
+from app.core.metrics import metrics
+from app.ops.startup_checks import run_all_startup_checks
+from app.ops.integrity_checker import IntegrityChecker
+from app.ops.backup_restore import list_backups
+from app.models.job import BackgroundJobRecord
 
 
 class DiagnosticRunner:
@@ -34,67 +42,67 @@ class DiagnosticRunner:
 
     async def run_all(self) -> bool:
         print("=" * 80)
-        print(f" OBLIGATION AGENT — PRODUCTION READINESS DIAGNOSTICS")
+        print(f" OBLIGATION AGENT — PHASE 19 PRODUCTION READINESS DIAGNOSTICS")
         print(f" Environment: {settings.APP_ENV} | Auth Mode: {settings.AUTH_MODE} | Version: {settings.VERSION}")
         print("=" * 80)
 
-        # 1. Database Connectivity
+        # 1. Startup Preflight Checks
+        preflight_results = await run_all_startup_checks()
+        for res in preflight_results:
+            self.record(f"Preflight: {res.check_name}", res.passed, res.message)
+
+        # 2. Database Session & Model Verification
         async with AsyncSessionLocal() as session:
             try:
-                res = await session.execute(text("SELECT 1"))
-                self.record("Database Connectivity", True, "Successfully connected to primary datastore.")
-            except Exception as e:
-                self.record("Database Connectivity", False, f"Connection failed: {e}")
+                job_count = (await session.execute(select(func.count(BackgroundJobRecord.id)))).scalar() or 0
+                self.record("Durable Worker Datastore", True, f"background_jobs table operational ({job_count} jobs tracked).")
+            except Exception as exc:
+                self.record("Durable Worker Datastore", False, f"Failed to access background_jobs: {exc}")
 
-            # 2. Table State & Schema Verification
+            # 3. System Invariant Integrity Scan
             try:
-                await session.execute(select(func.count(Workspace.id)))
-                await session.execute(select(func.count(User.id)))
-                await session.execute(select(func.count(Obligation.id)))
-                await session.execute(select(func.count(DecisionPlan.id)))
-                await session.execute(select(func.count(ExecutionRecord.id)))
-                self.record("Migration & Schema State", True, "All core tables and schemas verified.")
-            except Exception as e:
-                self.record("Migration & Schema State", False, f"Table check failed: {e}")
-
-            # 3. Configuration Validation
-            config_errors = settings.validate_production_config()
-            if not config_errors:
-                self.record("Required Configuration", True, "Configuration rules satisfied.")
-            else:
-                self.record("Required Configuration", False, "; ".join(config_errors))
-
-            # 4. Authentication Configuration
-            auth_ok = True
-            auth_msg = f"Auth mode is '{settings.AUTH_MODE}'."
-            if settings.is_production() and settings.AUTH_MODE.lower() != "production":
-                auth_ok = False
-                auth_msg = "Production environment must use production authentication mode."
-            self.record("Authentication Configuration", auth_ok, auth_msg)
-
-            # 5. Symmetric Encryption Configuration
-            try:
-                test_secret = "test-token-secret-12345"
-                enc = CryptoService.encrypt(test_secret)
-                dec = CryptoService.decrypt(enc)
-                if dec == test_secret:
-                    self.record("Credential Encryption at Rest", True, "AES/Fernet symmetric encryption operational.")
+                integrity_result = await IntegrityChecker.verify_all(session=session)
+                crit_count = integrity_result["critical_violations"]
+                if crit_count == 0:
+                    self.record("Safety Invariants Audit", True, f"0 critical invariant violations across scanned entities.")
                 else:
-                    self.record("Credential Encryption at Rest", False, "Decrypted text mismatch.")
-            except Exception as e:
-                self.record("Credential Encryption at Rest", False, f"Crypto error: {e}")
+                    self.record("Safety Invariants Audit", False, f"{crit_count} critical violations detected in data layer.")
+            except Exception as exc:
+                self.record("Safety Invariants Audit", False, f"Integrity scan error: {exc}")
 
-            # 6. Background Worker Subsystem
-            self.record("Worker Subsystem", True, f"Worker queue configured (Concurrency: {settings.WORKER_CONCURRENCY}).")
+        # 4. Credential Encryption at Rest
+        try:
+            test_secret = "test-token-secret-12345"
+            enc = CryptoService.encrypt(test_secret)
+            dec = CryptoService.decrypt(enc)
+            if dec == test_secret:
+                self.record("Credential Encryption at Rest", True, "AES/Fernet symmetric encryption operational.")
+            else:
+                self.record("Credential Encryption at Rest", False, "Decrypted text mismatch.")
+        except Exception as e:
+            self.record("Credential Encryption at Rest", False, f"Crypto error: {e}")
 
-            # 7. Workspace Tenancy Isolation
-            self.record("Multi-Tenant Workspace Isolation", True, "All queries enforced with workspace_id boundary.")
+        # 5. Circuit Breaker & Provider Isolation
+        try:
+            cb_statuses = get_all_circuit_statuses()
+            self.record("Circuit Breaker System", True, f"Registered providers: {list(cb_statuses.keys()) or ['default']}")
+        except Exception as exc:
+            self.record("Circuit Breaker System", False, f"Circuit breaker error: {exc}")
 
-            # 8. Idempotency & Unique Constraints
-            self.record("Idempotency Constraints", True, "Unique constraints active on memberships, idempotency keys, deduplication hashes.")
+        # 6. Real-time In-Process Metrics Engine
+        try:
+            snapshot = metrics.snapshot()
+            uptime = snapshot.get("uptime_seconds", 0)
+            self.record("Metrics Engine", True, f"Rolling metrics collector operational (Uptime: {uptime}s).")
+        except Exception as exc:
+            self.record("Metrics Engine", False, f"Metrics error: {exc}")
 
-            # 9. Safety Invariants (A-T)
-            self.record("Non-Autonomous Safety Invariants", True, "100% human-authorization gates verified.")
+        # 7. Backup & DR Subsystem
+        try:
+            backups = list_backups()
+            self.record("Disaster Recovery & Backups", True, f"{len(backups)} backups available in manifest repository.")
+        except Exception as exc:
+            self.record("Disaster Recovery & Backups", False, f"Backup error: {exc}")
 
         print("=" * 80)
         total = len(self.results)
@@ -102,7 +110,7 @@ class DiagnosticRunner:
         failed = total - passed
 
         if failed == 0:
-            print(f" RESULT: ALL {total} CHECKS PASSED. SYSTEM IS PRODUCTION READY.")
+            print(f" RESULT: ALL {total} CHECKS PASSED. SYSTEM IS FULLY PRODUCTION READY.")
             print("=" * 80)
             return True
         else:

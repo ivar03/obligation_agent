@@ -237,3 +237,99 @@ async def get_activity_feed(
             for ev in items
         ],
     }
+
+
+@router.get("/inbox")
+async def get_event_inbox_queue(
+    limit: int = Query(50, ge=1, le=100),
+    membership: WorkspaceMembership = Depends(get_current_membership),
+    session: AsyncSession = Depends(get_db),
+):
+    """
+    Event Inbox Queue: Returns actively queued, processing, and retrying buffered events.
+    """
+    from app.models.event_inbox import EventInboxRecord, EventInboxStatus
+    stmt = (
+        select(EventInboxRecord)
+        .where(
+            and_(
+                EventInboxRecord.workspace_id == membership.workspace_id,
+                EventInboxRecord.status.in_([
+                    EventInboxStatus.QUEUED,
+                    EventInboxStatus.PROCESSING,
+                    EventInboxStatus.RETRY_SCHEDULED,
+                ]),
+            )
+        )
+        .order_by(EventInboxRecord.received_at.desc())
+        .limit(limit)
+    )
+    items = (await session.execute(stmt)).scalars().all()
+
+    return {
+        "queue_name": "Event Processing Queue",
+        "total_count": len(items),
+        "items": [
+            {
+                "id": r.id,
+                "provider": r.provider,
+                "source_ref": r.source_ref,
+                "event_type": r.event_type,
+                "stream_key": r.stream_key,
+                "status": r.status.value if hasattr(r.status, "value") else str(r.status),
+                "attempt_count": r.attempt_count,
+                "max_attempts": r.max_attempts,
+                "last_error": r.last_error,
+                "received_at": r.received_at.isoformat() if r.received_at else None,
+                "payload_metadata": r.payload_metadata,
+            }
+            for r in items
+        ],
+    }
+
+
+@router.get("/dead-letter")
+async def get_dead_letter_queue(
+    limit: int = Query(50, ge=1, le=100),
+    membership: WorkspaceMembership = Depends(get_current_membership),
+    session: AsyncSession = Depends(get_db),
+):
+    """
+    Dead-Letter Queue: Returns exhausted or poisoned events awaiting operator triage.
+    """
+    from app.models.event_inbox import EventInboxRecord, EventInboxStatus
+    stmt = (
+        select(EventInboxRecord)
+        .where(
+            and_(
+                EventInboxRecord.workspace_id == membership.workspace_id,
+                EventInboxRecord.status == EventInboxStatus.DEAD_LETTER,
+            )
+        )
+        .order_by(EventInboxRecord.updated_at.desc())
+        .limit(limit)
+    )
+    items = (await session.execute(stmt)).scalars().all()
+
+    return {
+        "queue_name": "Dead Letter Queue",
+        "total_count": len(items),
+        "items": [
+            {
+                "id": r.id,
+                "provider": r.provider,
+                "source_ref": r.source_ref,
+                "event_type": r.event_type,
+                "stream_key": r.stream_key,
+                "status": "DEAD_LETTER",
+                "attempt_count": r.attempt_count,
+                "max_attempts": r.max_attempts,
+                "last_error": r.last_error,
+                "received_at": r.received_at.isoformat() if r.received_at else None,
+                "updated_at": r.updated_at.isoformat() if r.updated_at else None,
+                "payload_metadata": r.payload_metadata,
+            }
+            for r in items
+        ],
+    }
+

@@ -2,8 +2,10 @@
 Secret Sanitization Engine for Audit and Governance Logging.
 Ensures no sensitive credentials, secrets, tokens, passwords, cookies,
 or authorization headers are ever persisted into immutable audit logs.
+Includes input screening for path traversal, script injection, and SQL injection patterns.
 """
 
+import re
 from typing import Any, Dict, List, Set, Union
 from datetime import datetime, date
 
@@ -31,6 +33,9 @@ SENSITIVE_KEY_SUBSTRINGS: Set[str] = {
     "salt",
 }
 
+PATH_TRAVERSAL_PATTERN = re.compile(r"(\.\./|\.\.\\|%2e%2e%2f|%2e%2e\/|\.\.%2f|%2e%2e%5c)", re.IGNORECASE)
+SCRIPT_INJECTION_PATTERN = re.compile(r"(<script.*?>|javascript:|onload=|onerror=)", re.IGNORECASE)
+
 
 def is_sensitive_key(key: str) -> bool:
     """
@@ -38,6 +43,25 @@ def is_sensitive_key(key: str) -> bool:
     """
     key_lower = str(key).lower().replace("-", "_")
     return any(substr in key_lower for substr in SENSITIVE_KEY_SUBSTRINGS)
+
+
+def check_safe_path(path_str: str) -> bool:
+    """
+    Validates that a path string does not attempt directory traversal.
+    Returns False if path traversal patterns are detected.
+    """
+    if not path_str:
+        return True
+    return not bool(PATH_TRAVERSAL_PATTERN.search(path_str))
+
+
+def check_safe_input(text: str) -> bool:
+    """
+    Validates that text does not contain active script tags or dangerous execution patterns.
+    """
+    if not text:
+        return True
+    return not bool(SCRIPT_INJECTION_PATTERN.search(text))
 
 
 def sanitize_for_audit(data: Any, max_depth: int = 6) -> Any:
@@ -89,3 +113,4 @@ def sanitize_for_audit(data: Any, max_depth: int = 6) -> Any:
         return sanitize_for_audit(safe_dict, max_depth - 1)
 
     return str(data)
+

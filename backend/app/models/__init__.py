@@ -28,6 +28,9 @@ from app.models.organization import (
     WorkspaceSettings,
     InAppNotification,
 )
+from app.models.job import BackgroundJobRecord
+from app.models.event_inbox import EventInboxRecord, EventInboxStatus
+from app.models.llm_analysis import LLMAnalysisRecord
 
 __all__ = [
     "User",
@@ -54,6 +57,12 @@ __all__ = [
     "WorkspaceInvitation",
     "WorkspaceSettings",
     "InAppNotification",
+    "BackgroundJobRecord",
+    "EventInboxRecord",
+    "EventInboxStatus",
+    "LLMAnalysisRecord",
 ]
+
+
 
 
