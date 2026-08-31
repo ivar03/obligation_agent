@@ -9,6 +9,10 @@ from app.core.status_machine import (
     ObligationOutcomeType,
     PredictiveActionType,
     RiskLevel,
+    CausalFactorType,
+    ResolutionStrategyType,
+    SimulationActionType,
+    ConcentrationType,
 )
 
 
@@ -273,4 +277,159 @@ class AdaptiveOverviewResponse(BaseModel):
     top_effective_features: List[FeatureEffectivenessItem] = Field(default_factory=list)
     intervention_efficacy: InterventionEffectivenessMetric = Field(default_factory=InterventionEffectivenessMetric)
     calibration_metrics: AdaptiveCalibrationResponse
+
+
+# ==============================================================================
+# PHASE 14: ROOT-CAUSE ANALYSIS, IMPACT & RESOLUTION PLANNING SCHEMAS
+# ==============================================================================
+
+class CausalFactorItem(BaseModel):
+    factor_type: CausalFactorType
+    description: str
+    target_obligation_id: Optional[str] = None
+    target_owner: Optional[str] = None
+    target_action: Optional[str] = None
+    confidence: float = 0.8
+    evidence_refs: List[str] = Field(default_factory=list)
+    event_refs: List[str] = Field(default_factory=list)
+    severity: str = "MEDIUM"  # "CRITICAL" | "HIGH" | "MEDIUM" | "LOW"
+
+
+class RootCauseAnalysisResponse(BaseModel):
+    obligation_id: str
+    action: Optional[str] = None
+    owner: Optional[str] = None
+    status: Optional[str] = None
+    overall_explanation: str
+    primary_root_cause: str
+    root_cause_type: CausalFactorType
+    confidence: float
+    confidence_level: str  # "HIGH" | "MEDIUM" | "LOW"
+    direct_causes: List[CausalFactorItem] = Field(default_factory=list)
+    upstream_causes: List[CausalFactorItem] = Field(default_factory=list)
+    contributing_factors: List[CausalFactorItem] = Field(default_factory=list)
+    uncertainties: List[CausalFactorItem] = Field(default_factory=list)
+    affected_obligations: List[Dict[str, Any]] = Field(default_factory=list)
+    dependency_path: List[str] = Field(default_factory=list)
+    evidence_refs: List[str] = Field(default_factory=list)
+    event_refs: List[str] = Field(default_factory=list)
+    recommended_resolution: Optional[str] = None
+    evaluated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class ImpactAnalysisResponse(BaseModel):
+    obligation_id: str
+    action: Optional[str] = None
+    owner: Optional[str] = None
+    status: Optional[str] = None
+    direct_dependents_count: int
+    total_downstream_dependents_count: int
+    maximum_dependency_depth: int
+    critical_path_length: int
+    affected_owners: List[str] = Field(default_factory=list)
+    affected_deadlines: List[str] = Field(default_factory=list)
+    affected_high_risk_obligations: int
+    impact_score: float  # Bounded: 0.0 <= impact_score <= 1.0
+    impact_level: str  # "CRITICAL" | "HIGH" | "MEDIUM" | "LOW"
+    score_breakdown: Dict[str, float] = Field(default_factory=dict)
+    downstream_items: List[Dict[str, Any]] = Field(default_factory=list)
+    evaluated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class CriticalPathItem(BaseModel):
+    obligation_id: str
+    owner: str
+    action: str
+    status: str
+    deadline: Optional[str] = None
+    risk_score: float = 0.0
+    is_root_blocker: bool = False
+    hop_from_root: int = 0
+
+
+class CriticalPathResponse(BaseModel):
+    obligation_id: str
+    critical_path: List[str] = Field(default_factory=list)
+    critical_path_length: int
+    critical_path_risk: float  # 0.0 to 1.0
+    root_blocker_id: Optional[str] = None
+    root_blocker_owner: Optional[str] = None
+    root_blocker_action: Optional[str] = None
+    path_details: List[CriticalPathItem] = Field(default_factory=list)
+    explanation: str
+    evaluated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class ResolutionPlanResponse(BaseModel):
+    obligation_id: str
+    action: Optional[str] = None
+    owner: Optional[str] = None
+    strategy: ResolutionStrategyType
+    target_obligation_id: str
+    target_owner: str
+    target_action: str
+    rationale: str
+    expected_impact: str
+    confidence: float
+    supporting_causes: List[str] = Field(default_factory=list)
+    suggested_intervention_type: Optional[str] = None
+    alternative_strategies: List[Dict[str, Any]] = Field(default_factory=list)
+    evaluated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class ResolutionSimulationRequest(BaseModel):
+    action: SimulationActionType
+    target_obligation_id: str
+    parameters: Optional[Dict[str, Any]] = None
+
+
+class ResolutionSimulationResponse(BaseModel):
+    simulated_action: SimulationActionType
+    target_obligation_id: str
+    current_state: Dict[str, Any]
+    projected_state: Dict[str, Any]
+    affected_obligations: List[Dict[str, Any]] = Field(default_factory=list)
+    risk_delta: float  # negative means risk reduced, e.g. -0.45
+    unblocked_obligations: List[Dict[str, Any]] = Field(default_factory=list)
+    newly_at_risk_obligations: List[Dict[str, Any]] = Field(default_factory=list)
+    explanation: str
+    is_simulation_marker: bool = True
+    simulated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class BottleneckItem(BaseModel):
+    obligation_id: str
+    owner: str
+    action: str
+    status: str
+    downstream_dependents_count: int
+    affected_owners_count: int
+    critical_path_involvement_count: int
+    bottleneck_score: float
+    neutral_summary: str
+
+
+class BottleneckAnalysisResponse(BaseModel):
+    workspace_id: str
+    total_bottlenecks: int
+    bottlenecks: List[BottleneckItem] = Field(default_factory=list)
+    evaluated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class RiskConcentrationItem(BaseModel):
+    concentration_type: ConcentrationType
+    target_id: str
+    target_name: str
+    severity: str  # "CRITICAL" | "HIGH" | "MEDIUM" | "LOW"
+    score: float
+    description: str
+    affected_count: int
+
+
+class RiskConcentrationResponse(BaseModel):
+    workspace_id: str
+    total_concentrations: int
+    items: List[RiskConcentrationItem] = Field(default_factory=list)
+    evaluated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
 

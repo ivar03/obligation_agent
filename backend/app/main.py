@@ -10,7 +10,18 @@ from app.core.status_machine import InvalidStatusTransitionError
 from app.core.intervention_status import InvalidInterventionStatusTransitionError
 from app.api.routes import health, auth, workspaces, obligations, dashboard, events, risk, interventions, webhooks, integrations, reconciliation, intelligence
 from app.api.routes import audit as audit_router
+from app.api.routes import decision as decision_router
+from app.api.routes import memory as memory_router
+from app.api.routes import execution as execution_router
+from app.api.routes import monitoring as monitoring_router
+from app.api.routes import search as search_router
+from app.api.routes import queues as queues_router
+from app.api.routes import notifications as notifications_router
+from app.api.routes import import_export as import_export_router
 from app.core.request_context import RequestContextMiddleware
+
+
+from app.core.worker import worker_queue
 
 
 @asynccontextmanager
@@ -21,8 +32,16 @@ async def lifespan(app: FastAPI):
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     logger.info("Database tables verified.")
+    
+    # Start background worker queue
+    if settings.WORKER_ENABLED:
+        worker_queue.start()
+        
     yield
+    
     logger.info("Shutting down application...")
+    if settings.WORKER_ENABLED:
+        await worker_queue.stop()
     await engine.dispose()
 
 
@@ -87,6 +106,14 @@ app.include_router(interventions.router, prefix="/api")
 app.include_router(integrations.router, prefix="/api")
 app.include_router(reconciliation.router, prefix="/api")
 app.include_router(intelligence.router, prefix="/api")
+app.include_router(decision_router.router, prefix="/api")
+app.include_router(memory_router.router, prefix="/api")
+app.include_router(execution_router.router, prefix="/api")
+app.include_router(monitoring_router.router, prefix="/api")
+app.include_router(search_router.router, prefix="/api")
+app.include_router(queues_router.router, prefix="/api")
+app.include_router(notifications_router.router, prefix="/api")
+app.include_router(import_export_router.router, prefix="/api")
 app.include_router(audit_router.router)
 
 

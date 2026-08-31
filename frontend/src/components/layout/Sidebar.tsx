@@ -64,11 +64,25 @@ export const Sidebar: React.FC<SidebarProps> = ({ counts }) => {
       badge: "Phase 11",
     },
     {
+      name: "Operational Queues",
+      href: "/queues",
+      icon: Layers,
+      active: pathname.startsWith("/queues"),
+      badge: "Beta",
+    },
+    {
+      name: "Decision Center",
+      href: "/intelligence/decisions",
+      icon: Brain,
+      active: pathname.startsWith("/intelligence/decisions"),
+      badge: "Decisions",
+    },
+    {
       name: "Intelligence & Predictions",
       href: "/intelligence",
-      icon: Brain,
-      active: pathname.startsWith("/intelligence"),
-      badge: "Phase 12",
+      icon: Activity,
+      active: pathname === "/intelligence" || (pathname.startsWith("/intelligence") && !pathname.startsWith("/intelligence/decisions")),
+      badge: "Graph AI",
     },
     {
       name: "Activity Center",
@@ -90,6 +104,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ counts }) => {
       icon: ShieldCheck,
       active: pathname.startsWith("/audit"),
       badge: "Phase 15",
+    },
+    {
+      name: "Workspace Settings",
+      href: "/settings/workspace",
+      icon: Building2,
+      active: pathname.startsWith("/settings"),
+    },
+    {
+      name: "Onboarding Wizard",
+      href: "/onboarding",
+      icon: Sparkles,
+      active: pathname.startsWith("/onboarding"),
     },
   ];
 

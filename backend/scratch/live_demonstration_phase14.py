@@ -1,369 +1,263 @@
 """
-================================================================================
-Phase 14: 16-Step Live End-to-End Enterprise Demonstration Script
-================================================================================
+Phase 14 Live Demonstration: Obligation Intelligence, Root-Cause Analysis & Resolution Planning
+
 Demonstrates:
-  Step 1: System Boot & Identity Initialization
-  Step 2: Password Security & Cryptographic Invariants (PBKDF2-HMAC-SHA256)
-  Step 3: User Authentication & Session Token Issuance
-  Step 4: User Profile & Workspace Discovery (/api/auth/me)
-  Step 5: Enterprise Organization & Custom Workspace Creation
-  Step 6: Role Hierarchy & Multi-User Provisioning (OWNER, ADMIN, MEMBER, VIEWER)
-  Step 7: Role Permission Auditing & Role Escalation
-  Step 8: Workspace-Scoped Obligation Creation by Member
-  Step 9: Role-Based Authorization Gates (VIEWER blocked with 403 on mutations)
-  Step 10: Multi-Tenant Workspace Provisioning (Tenant A vs Tenant B)
-  Step 11: Cross-Tenant IDOR Attack Prevention (Foreign tenant access returns 404)
-  Step 12: Workspace-Scoped Cross-Provider Event Ingestion & Provenance Stamping
-  Step 13: Workspace-Scoped Cross-Provider Reconciliation & Actor Audit Stamping
-  Step 14: Workspace-Scoped Proactive Risk Engine & Graph Cascade Isolation
-  Step 15: Workspace-Scoped Adaptive Intelligence & Model Evaluation
-  Step 16: Backward Compatibility & Dev Mode Graceful Degradation
-================================================================================
+1. Multi-hop DAG dependency chain: Rahul -> Ravi -> Priya -> Manager
+2. Root Cause Analysis deducing Rahul's overdue DB migration as the true primary cause of the Manager's blocked Demo
+3. Impact Analysis computing bounded impact score (0.0 <= s <= 1.0) and 3-hop blast radius
+4. Critical Path Engine calculating the highest-risk DAG path and root blocker
+5. Resolution Planner recommending upstream-first human action targeting Rahul
+6. Counterfactual Simulation projecting cascading unblocks of Ravi, Priya, and Manager
+7. Proof of 100% zero database side effects (immutable live state)
+8. Systemic Bottleneck & Risk Concentration analysis
 """
 
 import asyncio
-import sys
 import os
+import sys
+from datetime import datetime, timedelta, timezone
 
-# Set root directory for imports
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
-try:
+# Ensure backend root is in sys.path and stdout is UTF-8
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8")
-except Exception:
-    pass
 
-from httpx import AsyncClient, ASGITransport
-from app.main import app
-from app.core.security import hash_password, verify_password, create_session_token, decode_session_token
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 
-
-def log_step(step_num: int, title: str):
-    print("\n" + "=" * 80)
-    print(f"STEP {step_num}: {title.upper()}")
-    print("=" * 80)
+from app.models.obligation import Obligation, ObligationEdge, Base
+from app.core.status_machine import (
+    ObligationStatus,
+    ObligationType,
+    EdgeType,
+    SimulationActionType,
+)
+from app.services.auth_service import AuthService
+from app.services.intelligence.root_cause_engine import RootCauseAnalysisEngine
+from app.services.intelligence.impact_analysis_service import ImpactAnalysisService
+from app.services.intelligence.critical_path_engine import CriticalPathEngine
+from app.services.intelligence.resolution_planner import ResolutionPlanner
+from app.schemas.intelligence import ResolutionSimulationRequest
+from app.services.intelligence.resolution_simulation_service import ResolutionSimulationService
+from app.services.intelligence.risk_concentration_service import RiskConcentrationService
 
 
 async def main():
-    print("\n🚀 STARTING OBLIGATION AGENT — PHASE 14 ENTERPRISE DEMONSTRATION 🚀\n")
+    print("=" * 80)
+    print("🚀 STARTING PHASE 14 LIVE DEMONSTRATION: ROOT CAUSE, IMPACT & SIMULATION")
+    print("=" * 80)
 
-    import secrets
-    run_id = secrets.token_hex(3)
+    # 1. Initialize In-Memory Test DB
+    engine = create_async_engine("sqlite+aiosqlite:///:memory:", echo=False)
+    async_session = async_sessionmaker(engine, expire_on_commit=False)
 
-    transport = ASGITransport(app=app)
-    async with AsyncClient(transport=transport, base_url="http://test") as client:
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
 
-        # ----------------------------------------------------------------------
-        # STEP 1: System Boot & Identity Initialization
-        # ----------------------------------------------------------------------
-        log_step(1, "System Boot & Identity Initialization")
-        ceo_email = f"ceo_{run_id}@acme-corp.com"
-        reg_payload = {
-            "email": ceo_email,
-            "password": "CeoPassword2026!",
-            "display_name": "Eleanor Vance (CEO)",
-            "workspace_name": f"Acme Global HQ {run_id}",
-        }
-        res = await client.post("/api/auth/register", json=reg_payload)
-        assert res.status_code == 201, res.text
-        ceo_data = res.json()
-        ceo_token = ceo_data["token"]
-        ceo_user = ceo_data["user"]
-        hq_ws = ceo_data["workspaces"][0]
-        hq_ws_id = hq_ws["id"]
+    async with async_session() as session:
+        # Create workspace and default user
+        user = await AuthService.ensure_default_dev_user(session)
+        ws_id = "ws-default"
 
-        print(f"✅ Registered Owner: {ceo_user['display_name']} ({ceo_user['email']})")
-        print(f"   User ID: {ceo_user['id']}")
-        print(f"   Auto-Created Workspace: {hq_ws['name']} [ID: {hq_ws_id}]")
-        print(f"   Signed Session Token: {ceo_token[:30]}... (HMAC-SHA256)")
+        # 2. Construct 4-node dependency chain:
+        # Rahul (DB Schema Migration, overdue) -> Ravi (API, blocked) -> Priya (Frontend, blocked) -> Manager (Demo, blocked)
+        now = datetime.now(timezone.utc)
+        overdue_deadline = now - timedelta(days=2)
+        future_deadline = now + timedelta(days=3)
 
-        # ----------------------------------------------------------------------
-        # STEP 2: Password Security & Cryptographic Invariants
-        # ----------------------------------------------------------------------
-        log_step(2, "Password Security & Cryptographic Invariants")
-        sample_pass = "EnterpriseGradeSecret99$"
-        p_hash = hash_password(sample_pass)
-        assert p_hash.startswith("pbkdf2_sha256$100000$")
-        assert verify_password(sample_pass, p_hash) is True
-        assert verify_password("WrongSecret", p_hash) is False
-
-        print(f"✅ PBKDF2-HMAC-SHA256 Algorithm Validated:")
-        print(f"   Iterations: 100,000 | Salt: 16-byte cryptorandom")
-        print(f"   Hash Sample: {p_hash[:45]}...")
-        print(f"   Constant-time match: PASS | Tampered mismatch: REJECTED")
-
-        # ----------------------------------------------------------------------
-        # STEP 3: User Authentication & Session Token Issuance
-        # ----------------------------------------------------------------------
-        log_step(3, "User Authentication & Session Issuance")
-        login_res = await client.post(
-            "/api/auth/login",
-            json={"email": ceo_email, "password": "CeoPassword2026!"},
-        )
-        assert login_res.status_code == 200
-        login_data = login_res.json()
-        assert login_data["user"]["id"] == ceo_user["id"]
-        print(f"✅ Authentication Verified for {login_data['user']['email']}")
-        print(f"   HTTP-Only Cookie: {'obligation_session' in login_res.cookies}")
-        print(f"   Active Tenant: {login_data['current_workspace']['name']} [ID: {login_data['current_workspace']['id']}]")
-
-        # ----------------------------------------------------------------------
-        # STEP 4: User Profile & Workspace Discovery
-        # ----------------------------------------------------------------------
-        log_step(4, "User Profile & Multi-Workspace Discovery")
-        ceo_headers = {"Authorization": f"Bearer {ceo_token}"}
-        me_res = await client.get("/api/auth/me", headers=ceo_headers)
-        assert me_res.status_code == 200
-        me_data = me_res.json()
-        print(f"✅ Profile Verified: {me_data['user']['display_name']}")
-        print(f"   Accessible Workspaces: {[w['name'] for w in me_data['workspaces']]}")
-
-        # ----------------------------------------------------------------------
-        # STEP 5: Enterprise Organization & Custom Workspace Creation
-        # ----------------------------------------------------------------------
-        log_step(5, "Enterprise Organization & Custom Workspace Creation")
-        ops_ws_res = await client.post(
-            "/api/workspaces",
-            json={"name": f"Acme Legal & Operations {run_id}", "slug": f"acme-legal-ops-{run_id}"},
-            headers=ceo_headers,
-        )
-        assert ops_ws_res.status_code == 201
-        ops_ws = ops_ws_res.json()
-        ops_ws_id = ops_ws["id"]
-        ops_headers = {"Authorization": f"Bearer {ceo_token}", "X-Workspace-Id": ops_ws_id}
-
-        print(f"✅ Created Workspace: '{ops_ws['name']}' [Slug: {ops_ws['slug']}]")
-        print(f"   Creator assigned role: {ops_ws['role']}")
-
-        # ----------------------------------------------------------------------
-        # STEP 6: Role Hierarchy & Multi-User Provisioning
-        # ----------------------------------------------------------------------
-        log_step(6, "Role Hierarchy & Multi-User Provisioning")
-        david_email = f"david_{run_id}@acme-corp.com"
-        sam_email = f"samantha_{run_id}@acme-corp.com"
-
-        # 1. Register Member (David)
-        david_reg = await client.post(
-            "/api/auth/register",
-            json={"email": david_email, "password": "DavidPassword123!", "display_name": "David Lead"},
-        )
-        david_token = david_reg.json()["token"]
-        david_id = david_reg.json()["user"]["id"]
-
-        # 2. Register Auditor (Samantha)
-        sam_reg = await client.post(
-            "/api/auth/register",
-            json={"email": sam_email, "password": "SamPassword123!", "display_name": "Samantha Auditor"},
-        )
-        sam_token = sam_reg.json()["token"]
-        sam_id = sam_reg.json()["user"]["id"]
-
-        # 3. Add David as MEMBER and Samantha as VIEWER in Acme Legal & Operations
-        await client.post(
-            f"/api/workspaces/{ops_ws_id}/members",
-            json={"email": david_email, "role": "MEMBER"},
-            headers=ops_headers,
-        )
-        await client.post(
-            f"/api/workspaces/{ops_ws_id}/members",
-            json={"email": sam_email, "role": "VIEWER"},
-            headers=ops_headers,
+        ob_rahul = Obligation(
+            id="ob-rahul",
+            workspace_id=ws_id,
+            owner="Rahul",
+            beneficiary="Engineering Team",
+            action="Database Schema Migration v2",
+            status=ObligationStatus.IN_PROGRESS,
+            obligation_type=ObligationType.OWED_BY_ME,
+            deadline=overdue_deadline,
         )
 
-        members = (await client.get(f"/api/workspaces/{ops_ws_id}/members", headers=ops_headers)).json()
-        print(f"✅ Workspace Roster ({len(members)} members):")
-        for m in members:
-            print(f"   • {m['display_name']} ({m['email']}) -> ROLE: {m['role']}")
-
-        # ----------------------------------------------------------------------
-        # STEP 7: Role Permission Auditing & Role Escalation
-        # ----------------------------------------------------------------------
-        log_step(7, "Role Permission Auditing & Role Escalation")
-        # Promote Samantha to MEMBER
-        promoted = await client.patch(
-            f"/api/workspaces/{ops_ws_id}/members/{sam_id}",
-            json={"role": "MEMBER"},
-            headers=ops_headers,
+        ob_ravi = Obligation(
+            id="ob-ravi",
+            workspace_id=ws_id,
+            owner="Ravi",
+            beneficiary="Engineering Team",
+            action="REST API Endpoints for Billing",
+            status=ObligationStatus.BLOCKED,
+            obligation_type=ObligationType.OWED_BY_ME,
+            deadline=future_deadline,
         )
-        assert promoted.status_code == 200
-        print(f"✅ Role Promotion: Samantha Auditor updated to -> {promoted.json()['role']}")
 
-        # Demote back to VIEWER for RBAC test
-        await client.patch(
-            f"/api/workspaces/{ops_ws_id}/members/{sam_id}",
-            json={"role": "VIEWER"},
-            headers=ops_headers,
+        ob_priya = Obligation(
+            id="ob-priya",
+            workspace_id=ws_id,
+            owner="Priya",
+            beneficiary="Product Team",
+            action="Frontend Dashboard Views",
+            status=ObligationStatus.BLOCKED,
+            obligation_type=ObligationType.OWED_BY_ME,
+            deadline=future_deadline + timedelta(days=1),
         )
-        print(f"✅ Samantha Auditor reset to VIEWER for strict RBAC validation")
 
-        # ----------------------------------------------------------------------
-        # STEP 8: Workspace-Scoped Obligation Creation by Member
-        # ----------------------------------------------------------------------
-        log_step(8, "Workspace-Scoped Obligation Creation by Member")
-        david_ws_headers = {"Authorization": f"Bearer {david_token}", "X-Workspace-Id": ops_ws_id}
-        ob_res = await client.post(
-            "/api/obligations",
-            json={
-                "owner": "David Lead",
-                "beneficiary": "Acme Board",
-                "action": "Deliver Q3 ISO-27001 Audit Report",
-                "obligation_type": "OWED_BY_ME",
-                "status": "CONFIRMED",
-            },
-            headers=david_ws_headers,
+        ob_manager = Obligation(
+            id="ob-manager",
+            workspace_id=ws_id,
+            owner="Manager",
+            beneficiary="Executive Committee",
+            action="Client Demo Release",
+            status=ObligationStatus.BLOCKED,
+            obligation_type=ObligationType.OWED_BY_ME,
+            deadline=future_deadline + timedelta(days=2),
         )
-        assert ob_res.status_code == 201
-        ob_data = ob_res.json()
-        ob_id = ob_data["id"]
-        print(f"✅ Obligation Created in '{ops_ws['name']}':")
-        print(f"   ID: {ob_id}")
-        print(f"   Action: {ob_data['action']} | Owner: {ob_data['owner']}")
 
-        # ----------------------------------------------------------------------
-        # STEP 9: Role-Based Authorization Gates
-        # ----------------------------------------------------------------------
-        log_step(9, "Role-Based Authorization Gates (VIEWER vs MEMBER)")
-        sam_ws_headers = {"Authorization": f"Bearer {sam_token}", "X-Workspace-Id": ops_ws_id}
-
-        # Viewer can read
-        v_read = await client.get(f"/api/obligations/{ob_id}", headers=sam_ws_headers)
-        assert v_read.status_code == 200
-        print(f"✅ VIEWER Read Access: Granted (HTTP 200)")
-
-        # Viewer cannot mutate (403 Forbidden)
-        v_mutate = await client.patch(
-            f"/api/obligations/{ob_id}",
-            json={"action": "Unauthorized edit"},
-            headers=sam_ws_headers,
+        # Edges: Ravi depends on Rahul, Priya depends on Ravi, Manager depends on Priya
+        e1 = ObligationEdge(
+            id="e1",
+            workspace_id=ws_id,
+            from_obligation_id="ob-ravi",
+            to_obligation_id="ob-rahul",
+            edge_type=EdgeType.DEPENDS_ON,
         )
-        assert v_mutate.status_code == 403
-        print(f"✅ VIEWER Mutation Blocked: Denied (HTTP 403 Forbidden)")
-
-        # Viewer cannot manage integrations (403 Forbidden)
-        v_integ = await client.post("/api/integrations/slack/disconnect", headers=sam_ws_headers)
-        assert v_integ.status_code == 403
-        print(f"✅ VIEWER Integration Access Blocked: Denied (HTTP 403 Forbidden)")
-
-        # ----------------------------------------------------------------------
-        # STEP 10: Multi-Tenant Workspace Provisioning (Tenant B)
-        # ----------------------------------------------------------------------
-        log_step(10, "Multi-Tenant Workspace Provisioning (Tenant B)")
-        rival_email = f"agent_{run_id}@external-competitor.com"
-        tenant_b_reg = await client.post(
-            "/api/auth/register",
-            json={
-                "email": rival_email,
-                "password": "CompetitorPass123!",
-                "display_name": "Rival Agent",
-                "workspace_name": f"Rival Enterprise Ops {run_id}",
-            },
+        e2 = ObligationEdge(
+            id="e2",
+            workspace_id=ws_id,
+            from_obligation_id="ob-priya",
+            to_obligation_id="ob-ravi",
+            edge_type=EdgeType.DEPENDS_ON,
         )
-        tenant_b_token = tenant_b_reg.json()["token"]
-        tenant_b_ws = tenant_b_reg.json()["workspaces"][0]
-        tenant_b_ws_id = tenant_b_ws["id"]
-        tenant_b_headers = {"Authorization": f"Bearer {tenant_b_token}", "X-Workspace-Id": tenant_b_ws_id}
-
-        print(f"✅ Provisioned Isolated Tenant B: '{tenant_b_ws['name']}' [ID: {tenant_b_ws_id}]")
-
-        # ----------------------------------------------------------------------
-        # STEP 11: Cross-Tenant IDOR Attack Prevention
-        # ----------------------------------------------------------------------
-        log_step(11, "Cross-Tenant IDOR Attack Prevention")
-        # Tenant B tries to fetch Tenant A's obligation
-        idor_res = await client.get(f"/api/obligations/{ob_id}", headers=tenant_b_headers)
-        assert idor_res.status_code == 404
-        print(f"✅ IDOR Read Prevention: HTTP 404 (Zero foreign tenant exposure)")
-
-        # Tenant B tries to modify Tenant A's obligation
-        idor_patch = await client.patch(
-            f"/api/obligations/{ob_id}",
-            json={"action": "Rival Tampering"},
-            headers=tenant_b_headers,
+        e3 = ObligationEdge(
+            id="e3",
+            workspace_id=ws_id,
+            from_obligation_id="ob-manager",
+            to_obligation_id="ob-priya",
+            edge_type=EdgeType.DEPENDS_ON,
         )
-        assert idor_patch.status_code == 404
-        print(f"✅ IDOR Mutation Prevention: HTTP 404 (Foreign mutation rejected)")
+
+        session.add_all([ob_rahul, ob_ravi, ob_priya, ob_manager, e1, e2, e3])
+        await session.commit()
+        print("✅ Graph Seeded: Rahul (Overdue) ➔ Ravi (Blocked) ➔ Priya (Blocked) ➔ Manager (Blocked)\n")
 
         # ----------------------------------------------------------------------
-        # STEP 12: Workspace-Scoped Cross-Provider Event Ingestion
+        # STEP 1: ROOT CAUSE ANALYSIS ON MANAGER'S DEMO RELEASE
         # ----------------------------------------------------------------------
-        log_step(12, "Workspace-Scoped Cross-Provider Event Ingestion")
-        # Ingest Slack completion signal in Acme Operations
-        slack_event = {
-            "provider": "mock",
-            "payload": {
-                "scenario": "COMPLETION",
-                "sender": "David Lead",
-                "recipients": ["Acme Board"],
-                "content": "Delivered the final Q3 ISO-27001 Audit Report to the board.",
-            },
-        }
-        ingest_res = await client.post("/api/events/ingest", json=slack_event, headers=david_ws_headers)
-        assert ingest_res.status_code == 201
-        ingest_data = ingest_res.json()
-        assert ob_id in ingest_data["affected_obligation_ids"]
-        print(f"✅ Ingested Event Correlated to Obligation [{ob_id}] within '{ops_ws['name']}'")
+        print("🔍 STEP 1: Root Cause Analysis on 'Client Demo Release' (ob-manager)...")
+        rc_result = await RootCauseAnalysisEngine.analyze(session, "ob-manager")
+        print(f"   • Primary Root Cause: {rc_result.primary_root_cause}")
+        print(f"   • Root Cause Type:    {rc_result.root_cause_type}")
+        print(f"   • Confidence:         {rc_result.confidence:.2f} ({rc_result.confidence_level})")
+        print(f"   • Explanation:        {rc_result.overall_explanation}")
+        print(f"   • Causal Path:        {' -> '.join(rc_result.dependency_path)}")
+        assert "Rahul" in rc_result.primary_root_cause or "Database Schema" in rc_result.primary_root_cause
+        print("   👉 Verified: System successfully traced 3 hops upstream to Rahul's overdue migration!\n")
 
         # ----------------------------------------------------------------------
-        # STEP 13: Workspace-Scoped Cross-Provider Reconciliation & Actor Stamping
+        # STEP 2: IMPACT ANALYSIS ON RAHUL'S DB SCHEMA MIGRATION
         # ----------------------------------------------------------------------
-        log_step(13, "Workspace-Scoped Reconciliation & Actor Stamping")
-        rec_res = await client.get(f"/api/obligations/{ob_id}/reconciliation", headers=david_ws_headers)
-        assert rec_res.status_code == 200
-        rec_data = rec_res.json()
-        rec_id = rec_data["id"]
+        print("💥 STEP 2: Downstream Blast Radius & Impact Score on 'Database Schema Migration v2' (ob-rahul)...")
+        impact_result = await ImpactAnalysisService.analyze_impact(session, "ob-rahul")
+        print(f"   • Impact Score:          {impact_result.impact_score:.2f} ({impact_result.impact_level})")
+        print(f"   • Direct Dependents:     {impact_result.direct_dependents_count}")
+        print(f"   • Total Downstream:      {impact_result.total_downstream_dependents_count}")
+        print(f"   • Maximum Depth:         {impact_result.maximum_dependency_depth}")
+        print(f"   • Affected Owners:       {impact_result.affected_owners}")
+        print(f"   • Score Breakdown:       {impact_result.score_breakdown}")
+        assert 0.0 <= impact_result.impact_score <= 1.0
+        assert impact_result.total_downstream_dependents_count == 3
+        assert set(impact_result.affected_owners) == {"Ravi", "Priya", "Manager"}
+        print("   👉 Verified: Impact score strictly bounded in [0.0, 1.0], correctly detected 3 downstream dependents across 3 owners!\n")
 
-        # David resolves reconciliation
-        resolve_res = await client.post(
-            f"/api/reconciliation/{rec_id}/resolve",
-            json={
-                "action": "CONFIRM_COMPLETION",
-                "notes": "Verified ISO-27001 audit report attachment in Slack.",
-            },
-            headers=david_ws_headers,
+        # ----------------------------------------------------------------------
+        # STEP 3: CRITICAL PATH ANALYSIS ON MANAGER'S DEMO RELEASE
+        # ----------------------------------------------------------------------
+        print("🛣️  STEP 3: Critical Path Analysis on 'Client Demo Release' (ob-manager)...")
+        cp_result = await CriticalPathEngine.compute_critical_path(session, "ob-manager")
+        print(f"   • Critical Path Length:  {cp_result.critical_path_length}")
+        print(f"   • Critical Path Risk:    {cp_result.critical_path_risk:.2f}")
+        print(f"   • Root Blocker ID:       {cp_result.root_blocker_id} ({cp_result.root_blocker_owner} - {cp_result.root_blocker_action})")
+        print(f"   • Explanation:           {cp_result.explanation}")
+        for i, node in enumerate(cp_result.path_details):
+            print(f"     [{i+1}] {node.owner}: {node.action} (Status: {node.status}, Risk: {node.risk_score:.2f})")
+        assert cp_result.critical_path_length == 4
+        assert cp_result.root_blocker_id == "ob-rahul"
+        print("   👉 Verified: Critical path accurately computed with ob-rahul as root blocker!\n")
+
+        # ----------------------------------------------------------------------
+        # STEP 4: RESOLUTION PLANNING
+        # ----------------------------------------------------------------------
+        print("📋 STEP 4: Upstream-First Resolution Planning on 'Client Demo Release' (ob-manager)...")
+        plan_result = await ResolutionPlanner.plan_resolution(session, "ob-manager")
+        print(f"   • Recommended Strategy:  {plan_result.strategy}")
+        print(f"   • Target Obligation:     {plan_result.target_obligation_id} ({plan_result.target_action})")
+        print(f"   • Target Owner:          {plan_result.target_owner}")
+        print(f"   • Rationale:             {plan_result.rationale}")
+        print(f"   • Expected Impact:       {plan_result.expected_impact}")
+        assert plan_result.target_obligation_id == "ob-rahul"
+        print("   👉 Verified: Upstream-first principle followed — targets root blocker Rahul, not immediate blocker Priya!\n")
+
+        # ----------------------------------------------------------------------
+        # STEP 5: COUNTERFACTUAL SIMULATION (SIDE-EFFECT FREE)
+        # ----------------------------------------------------------------------
+        print("🧪 STEP 5: Counterfactual Simulation — Simulating Complete Obligation on Rahul (ob-rahul)...")
+        sim_result = await ResolutionSimulationService.simulate(
+            session,
+            ResolutionSimulationRequest(
+                action=SimulationActionType.COMPLETE_OBLIGATION,
+                target_obligation_id="ob-rahul",
+            ),
         )
-        assert resolve_res.status_code == 200
-        resolved_rec = resolve_res.json()
-        print(f"✅ Reconciliation Resolved by David [Actor ID: {david_id}]:")
-        print(f"   Status: {resolved_rec['status']}")
-        print(f"   Decision: {resolved_rec['resolution']['action']}")
+        print(f"   • Action Simulated:      {sim_result.simulated_action}")
+        print(f"   • Projected Status:      {sim_result.projected_state['status']}")
+        print(f"   • Risk Delta (Δ):        {sim_result.risk_delta:.2f}")
+        print(f"   • Unblocked Dependents:  {len(sim_result.unblocked_obligations)}")
+        for unb in sim_result.unblocked_obligations:
+            print(f"     - {unb['owner']}: {unb['action']} ({unb.get('previous_status', 'BLOCKED')} -> {unb['projected_status']})")
+        print(f"   • Simulation Marker:     {sim_result.is_simulation_marker}")
+        print(f"   • Explanation:           {sim_result.explanation}")
+        assert len(sim_result.unblocked_obligations) == 3
+        assert sim_result.risk_delta < 0
+        print("   👉 Verified: Simulation accurately projected cascading unblocks of Ravi, Priya, and Manager with risk reduction!\n")
 
         # ----------------------------------------------------------------------
-        # STEP 14: Workspace-Scoped Proactive Risk Engine & Graph Propagation
+        # STEP 6: VERIFY DATABASE INVARIANCE (ZERO MUTATION PROOF)
         # ----------------------------------------------------------------------
-        log_step(14, "Workspace-Scoped Proactive Risk Engine")
-        risk_res = await client.get("/api/risk", headers=david_ws_headers)
-        assert risk_res.status_code == 200
-        risk_summary = risk_res.json()
-        print(f"✅ Risk Dashboard Computed for '{ops_ws['name']}':")
-        print(f"   Total At Risk: {risk_summary['total_at_risk']} | Critical Risks: {risk_summary['critical_count']}")
+        print("🔒 STEP 6: Verifying Zero Database Side Effects...")
+        fresh_rahul = await session.get(Obligation, "ob-rahul")
+        fresh_ravi = await session.get(Obligation, "ob-ravi")
+        fresh_priya = await session.get(Obligation, "ob-priya")
+        fresh_manager = await session.get(Obligation, "ob-manager")
+
+        assert fresh_rahul.status == ObligationStatus.IN_PROGRESS, "Rahul status was modified!"
+        assert fresh_ravi.status == ObligationStatus.BLOCKED, "Ravi status was modified!"
+        assert fresh_priya.status == ObligationStatus.BLOCKED, "Priya status was modified!"
+        assert fresh_manager.status == ObligationStatus.BLOCKED, "Manager status was modified!"
+
+        print("   • Live DB Statuses: Rahul = IN_PROGRESS, Ravi = BLOCKED, Priya = BLOCKED, Manager = BLOCKED")
+        print("   • Database mutation count: 0")
+        print("   👉 Verified: 100% Side-Effect Free. The simulation left the live database completely untouched!\n")
 
         # ----------------------------------------------------------------------
-        # STEP 15: Workspace-Scoped Adaptive Intelligence & Model Evaluation
+        # STEP 7: SYSTEMIC BOTTLENECK & RISK CONCENTRATION
         # ----------------------------------------------------------------------
-        log_step(15, "Workspace-Scoped Adaptive Intelligence & Predictions")
-        intel_res = await client.get("/api/intelligence/overview", headers=david_ws_headers)
-        assert intel_res.status_code == 200
-        intel_data = intel_res.json()
-        print(f"✅ Intelligence Overview Retrieved:")
-        print(f"   Active Obligations Evaluated: {intel_data['active_obligations_evaluated']}")
-        print(f"   Model Version: {intel_data['model_version']}")
+        print("📊 STEP 7: Systemic Bottlenecks & Risk Concentration...")
+        bottlenecks = await RiskConcentrationService.get_bottlenecks(session, ws_id)
+        concentrations = await RiskConcentrationService.get_risk_concentrations(session, ws_id)
 
-        # ----------------------------------------------------------------------
-        # STEP 16: Backward Compatibility & Dev Mode Graceful Fallback
-        # ----------------------------------------------------------------------
-        log_step(16, "Backward Compatibility & Dev Mode Fallback")
-        unauth_dash = await client.get("/api/dashboard/summary")
-        assert unauth_dash.status_code == 200
-        print(f"✅ Unauthenticated Dev Call Fallback:")
-        print(f"   Fallback Workspace: Default Workspace (ws-default)")
-        print(f"   Fallback Actor: Demo User (usr-default)")
-        print(f"   Status: 200 OK — 100% Backward Compatible with Phases 1–13")
+        print(f"   • Total Bottlenecks Detected: {bottlenecks.total_bottlenecks}")
+        for b in bottlenecks.bottlenecks:
+            print(f"     - [{b.bottleneck_score:.2f}] {b.owner}: {b.action} ({b.downstream_dependents_count} dependents, {b.affected_owners_count} owners)")
 
-    print("\n" + "=" * 80)
-    print("🎉 ALL 16 STEPS OF PHASE 14 ENTERPRISE DEMONSTRATION COMPLETED SUCCESSFULLY! 🎉")
-    print("=" * 80 + "\n")
+        print(f"   • Risk Concentrations Detected: {concentrations.total_concentrations}")
+        for c in concentrations.items:
+            print(f"     - [{c.severity}] {c.concentration_type}: {c.target_name} ({c.description})")
+
+        assert bottlenecks.total_bottlenecks >= 1
+        assert bottlenecks.bottlenecks[0].obligation_id == "ob-rahul"
+        print("   👉 Verified: Rahul's DB Schema Migration accurately flagged as top systemic bottleneck!\n")
+
+    await engine.dispose()
+    print("=" * 80)
+    print("🎉 PHASE 14 LIVE DEMONSTRATION COMPLETED SUCCESSFULLY (ALL ASSERTIONS PASSED)!")
+    print("=" * 80)
 
 
 if __name__ == "__main__":

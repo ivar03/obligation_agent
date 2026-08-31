@@ -29,12 +29,13 @@ import {
   IntegrationConnection,
   ReconciliationRecord,
   IntelligenceOverviewResponse,
+  MonitoringSummaryResponse,
 } from "@/lib/types/obligation";
 import { ObligationCard } from "@/components/obligations/ObligationCard";
 import { RiskCard } from "@/components/obligations/RiskCard";
 import { InterventionCard } from "@/components/interventions/InterventionCard";
 import { InterventionReviewModal } from "@/components/interventions/InterventionReviewModal";
-import { obligationsApi, interventionsApi, eventsApi, integrationsApi, reconciliationApi, intelligenceApi } from "@/lib/api/obligations";
+import { obligationsApi, interventionsApi, eventsApi, integrationsApi, reconciliationApi, intelligenceApi, monitoringApi } from "@/lib/api/obligations";
 import { useToast } from "@/components/ui/ToastContext";
 
 export default function DashboardPage() {
@@ -46,6 +47,7 @@ export default function DashboardPage() {
   const [connections, setConnections] = useState<IntegrationConnection[]>([]);
   const [reconciliations, setReconciliations] = useState<ReconciliationRecord[]>([]);
   const [intelligence, setIntelligence] = useState<IntelligenceOverviewResponse | null>(null);
+  const [monitoringSummary, setMonitoringSummary] = useState<MonitoringSummaryResponse | null>(null);
   const [selectedIntervention, setSelectedIntervention] = useState<Intervention | null>(null);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -55,7 +57,7 @@ export default function DashboardPage() {
 
   const loadData = useCallback(async () => {
     try {
-      const [summaryRes, riskRes, queueRes, eventsRes, integrationsRes, recRes, intelRes] = await Promise.all([
+      const [summaryRes, riskRes, queueRes, eventsRes, integrationsRes, recRes, intelRes, monRes] = await Promise.all([
         obligationsApi.getDashboardSummary(),
         obligationsApi.getBulkRisks().catch(() => null),
         interventionsApi.getQueue(10).catch(() => null),
@@ -63,10 +65,12 @@ export default function DashboardPage() {
         integrationsApi.list().catch(() => null),
         reconciliationApi.list({ limit: 4 }).catch(() => null),
         intelligenceApi.getOverview().catch(() => null),
+        monitoringApi.getSummary().catch(() => null),
       ]);
       setSummary(summaryRes);
       setRiskData(riskRes);
       setQueueData(queueRes);
+      setMonitoringSummary(monRes);
       if (eventsRes?.items) setRecentEvents(eventsRes.items);
       if (integrationsRes?.connections) setConnections(integrationsRes.connections);
       if (recRes?.items) setReconciliations(recRes.items);
@@ -320,6 +324,59 @@ export default function DashboardPage() {
           <div className="mt-1 text-xs text-zinc-400">Fulfilled obligations</div>
         </div>
       </div>
+
+      {/* PHASE 17: CONTINUOUS MONITORING HEALTH & ESCALATION WIDGET */}
+      {monitoringSummary && (
+        <section className="bg-gradient-to-r from-violet-950/30 via-slate-900/80 to-indigo-950/30 border border-violet-500/30 rounded-2xl p-5 shadow-lg space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-violet-500/20 border border-violet-500/40 flex items-center justify-center text-violet-400">
+                <Activity className="w-4 h-4" />
+              </div>
+              <div>
+                <h2 className="text-sm font-bold text-white tracking-tight flex items-center gap-2">
+                  <span>Continuous Monitoring &amp; Reliability Health</span>
+                  {monitoringSummary.open_escalations_count > 0 && (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40">
+                      {monitoringSummary.open_escalations_count} Open Escalations
+                    </span>
+                  )}
+                </h2>
+                <p className="text-xs text-zinc-400">
+                  Continuous state-diff engine monitoring {monitoringSummary.active_watches_count} active watches across deadlines, risk shifts, and execution queues.
+                </p>
+              </div>
+            </div>
+
+            <Link
+              href="/intelligence/monitoring"
+              className="px-3.5 py-1.5 bg-violet-600 hover:bg-violet-500 text-white text-xs font-semibold rounded-lg transition flex items-center gap-1 shadow"
+            >
+              <span>Open Monitoring Center</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-xs">
+            <div className="bg-slate-950/70 p-2.5 rounded-lg border border-slate-800">
+              <span className="text-slate-500 block text-[10px] uppercase font-bold">Active Watches</span>
+              <strong className="text-violet-300 font-mono text-sm">{monitoringSummary.active_watches_count}</strong>
+            </div>
+            <div className="bg-slate-950/70 p-2.5 rounded-lg border border-slate-800">
+              <span className="text-slate-500 block text-[10px] uppercase font-bold">Critical Alerts</span>
+              <strong className="text-rose-400 font-mono text-sm">{monitoringSummary.critical_events_count}</strong>
+            </div>
+            <div className="bg-slate-950/70 p-2.5 rounded-lg border border-slate-800">
+              <span className="text-slate-500 block text-[10px] uppercase font-bold">Deadline Breaches</span>
+              <strong className="text-slate-200 font-mono text-sm">{monitoringSummary.deadline_breaches_count}</strong>
+            </div>
+            <div className="bg-slate-950/70 p-2.5 rounded-lg border border-slate-800">
+              <span className="text-slate-500 block text-[10px] uppercase font-bold">Execution Failures</span>
+              <strong className="text-slate-200 font-mono text-sm">{monitoringSummary.execution_failures_count}</strong>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* PHASE 6: HUMAN-CONTROLLED INTERVENTION ACTION QUEUE */}
       {queueData && queueData.items.length > 0 && (

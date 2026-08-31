@@ -29,6 +29,9 @@ import {
   Brain,
   Shield,
   ShieldCheck,
+  Route,
+  Zap,
+  Play,
 } from "lucide-react";
 import {
   Obligation,
@@ -46,12 +49,17 @@ import {
   ModelComparisonResponse,
   PredictionHistoryItem,
   AuditEvent,
+  RootCauseAnalysisResponse,
+  ImpactAnalysisResponse,
+  CriticalPathResponse,
+  ResolutionPlanResponse,
 } from "@/lib/types/obligation";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { ConfidenceBadge } from "@/components/ui/ConfidenceBadge";
 import { InterventionCard } from "@/components/interventions/InterventionCard";
 import { InterventionReviewModal } from "@/components/interventions/InterventionReviewModal";
 import { ReconciliationReviewModal } from "@/components/reconciliation/ReconciliationReviewModal";
+import { HistoricalContextCard } from "@/components/memory/HistoricalContextCard";
 import { obligationsApi, interventionsApi, reconciliationApi, intelligenceApi, auditApi } from "@/lib/api/obligations";
 import { useToast } from "@/components/ui/ToastContext";
 
@@ -78,6 +86,10 @@ export default function ObligationDetailPage({ params }: PageProps) {
   const [modelComparison, setModelComparison] = useState<ModelComparisonResponse | null>(null);
   const [predictionHistory, setPredictionHistory] = useState<PredictionHistoryItem[]>([]);
   const [auditTrail, setAuditTrail] = useState<AuditEvent[]>([]);
+  const [rootCause, setRootCause] = useState<RootCauseAnalysisResponse | null>(null);
+  const [impact, setImpact] = useState<ImpactAnalysisResponse | null>(null);
+  const [criticalPath, setCriticalPath] = useState<CriticalPathResponse | null>(null);
+  const [resolutionPlan, setResolutionPlan] = useState<ResolutionPlanResponse | null>(null);
   const [selectedIntervention, setSelectedIntervention] = useState<Intervention | null>(null);
   const [showInterventionModal, setShowInterventionModal] = useState(false);
   const [showReconciliationModal, setShowReconciliationModal] = useState(false);
@@ -109,7 +121,22 @@ export default function ObligationDetailPage({ params }: PageProps) {
 
   const loadData = useCallback(async () => {
     try {
-      const [obData, graphData, evData, riskData, invData, recData, dossierData, compData, histData, auditData] = await Promise.all([
+      const [
+        obData,
+        graphData,
+        evData,
+        riskData,
+        invData,
+        recData,
+        dossierData,
+        compData,
+        histData,
+        auditData,
+        rcData,
+        impData,
+        cpData,
+        planData,
+      ] = await Promise.all([
         obligationsApi.getById(obligationId),
         obligationsApi.getGraph(obligationId),
         obligationsApi.getEvidence(obligationId),
@@ -120,6 +147,10 @@ export default function ObligationDetailPage({ params }: PageProps) {
         intelligenceApi.compareModels(obligationId).catch(() => null),
         intelligenceApi.getPredictionHistory(obligationId).catch(() => null),
         auditApi.getEntityHistory("obligation", obligationId).catch(() => []),
+        intelligenceApi.getRootCause(obligationId).catch(() => null),
+        intelligenceApi.getImpact(obligationId).catch(() => null),
+        intelligenceApi.getCriticalPath(obligationId).catch(() => null),
+        intelligenceApi.getResolutionPlan(obligationId).catch(() => null),
       ]);
       setObligation(obData);
       setGraph(graphData);
@@ -128,6 +159,10 @@ export default function ObligationDetailPage({ params }: PageProps) {
       setInterventions(invData.items || []);
       setReconciliation(recData);
       setAuditTrail(auditData || []);
+      setRootCause(rcData);
+      setImpact(impData);
+      setCriticalPath(cpData);
+      setResolutionPlan(planData);
       if (dossierData) {
         setPrediction(dossierData.prediction);
         setSimilarObligations(dossierData.similar_obligations.items || []);
@@ -998,6 +1033,11 @@ export default function ObligationDetailPage({ params }: PageProps) {
             </div>
           </div>
 
+          {/* PHASE 16: ORGANIZATIONAL MEMORY & HISTORICAL CONTEXT */}
+          <div className="pt-2">
+            <HistoricalContextCard obligationId={obligation.id} />
+          </div>
+
           {/* PHASE 3: RELATIONSHIPS SECTION */}
           <div className="space-y-4 pt-6 border-t border-zinc-800">
             <div className="flex items-center justify-between">
@@ -1740,6 +1780,132 @@ export default function ObligationDetailPage({ params }: PageProps) {
               </div>
             )}
           </div>
+
+          {/* PHASE 14: ROOT-CAUSE ANALYSIS, IMPACT BLAST RADIUS & RESOLUTION PLANNING */}
+          {rootCause && (
+            <div className="space-y-4 pt-6 border-t border-zinc-800">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div className="space-y-0.5">
+                  <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                    <Brain className="w-4 h-4 text-indigo-400" />
+                    <span>Causal Root-Cause & Blast Radius Intelligence</span>
+                  </h3>
+                  <p className="text-[11px] text-zinc-400">
+                    Upstream graph causality, multi-signal attribution, and critical path risk reasoning.
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`px-2 py-0.5 rounded text-[11px] font-mono font-bold border ${
+                      rootCause.confidence_level === "HIGH"
+                        ? "bg-emerald-950/60 text-emerald-300 border-emerald-500/40"
+                        : rootCause.confidence_level === "MEDIUM"
+                        ? "bg-amber-950/60 text-amber-300 border-amber-500/40"
+                        : "bg-zinc-800 text-zinc-400 border-zinc-700"
+                    }`}
+                  >
+                    Causal Confidence: {Math.round(rootCause.confidence * 100)}% ({rootCause.confidence_level})
+                  </span>
+                </div>
+              </div>
+
+              {/* Primary Cause Card */}
+              <div className="p-4 rounded-xl bg-indigo-950/20 border border-indigo-500/30 space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="text-[11px] font-mono text-indigo-400 uppercase font-bold flex items-center gap-1.5">
+                    <Zap className="w-3.5 h-3.5" />
+                    <span>Primary Root Cause</span>
+                  </div>
+                  <span className="px-1.5 py-0.2 rounded text-[10px] font-mono bg-indigo-950 text-indigo-300 border border-indigo-500/40">
+                    {rootCause.root_cause_type}
+                  </span>
+                </div>
+                <div className="text-xs font-bold text-white">{rootCause.primary_root_cause}</div>
+                <p className="text-xs text-zinc-300 leading-relaxed">{rootCause.overall_explanation}</p>
+              </div>
+
+              {/* Impact & Blast Radius Grid */}
+              {impact && (
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  <div className="p-3 rounded-xl bg-zinc-950/60 border border-zinc-800 space-y-0.5">
+                    <div className="text-[10px] text-zinc-500 uppercase tracking-wider">Impact Score</div>
+                    <div className="text-xl font-bold font-mono text-indigo-400">
+                      {impact.impact_score.toFixed(2)}
+                    </div>
+                    <div className="text-[10px] text-zinc-400 uppercase">{impact.impact_level} Blast Radius</div>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-zinc-950/60 border border-zinc-800 space-y-0.5">
+                    <div className="text-[10px] text-zinc-500 uppercase tracking-wider">Downstream Total</div>
+                    <div className="text-xl font-bold font-mono text-zinc-200">
+                      {impact.total_downstream_dependents_count}
+                    </div>
+                    <div className="text-[10px] text-zinc-400">Commitments affected</div>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-zinc-950/60 border border-zinc-800 space-y-0.5">
+                    <div className="text-[10px] text-zinc-500 uppercase tracking-wider">Max Depth</div>
+                    <div className="text-xl font-bold font-mono text-zinc-200">
+                      {impact.maximum_dependency_depth}
+                    </div>
+                    <div className="text-[10px] text-zinc-400">Hops downstream</div>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-zinc-950/60 border border-zinc-800 space-y-0.5">
+                    <div className="text-[10px] text-zinc-500 uppercase tracking-wider">Affected Owners</div>
+                    <div className="text-xl font-bold font-mono text-zinc-200">
+                      {impact.affected_owners.length}
+                    </div>
+                    <div className="text-[10px] text-zinc-400">Team members</div>
+                  </div>
+                </div>
+              )}
+
+              {/* Critical Path & Highest-Leverage Resolution */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {/* Critical Path Card */}
+                {criticalPath && (
+                  <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800 space-y-2">
+                    <div className="text-xs font-bold text-zinc-200 flex items-center gap-1.5">
+                      <Route className="w-3.5 h-3.5 text-indigo-400" />
+                      <span>Critical Dependency Path ({criticalPath.critical_path_length} hops)</span>
+                    </div>
+                    <p className="text-[11px] text-zinc-400">{criticalPath.explanation}</p>
+                    {criticalPath.root_blocker_action && (
+                      <div className="p-2 rounded bg-rose-950/30 border border-rose-500/30 text-[11px] space-y-0.5">
+                        <div className="text-[10px] font-mono text-rose-300 uppercase font-bold">Root Upstream Blocker</div>
+                        <div className="text-zinc-200 font-semibold">{criticalPath.root_blocker_action}</div>
+                        <div className="text-zinc-400 text-[10px]">Owner: {criticalPath.root_blocker_owner}</div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Resolution Recommendation */}
+                {resolutionPlan && (
+                  <div className="p-4 rounded-xl bg-emerald-950/20 border border-emerald-500/30 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="text-xs font-bold text-emerald-300 flex items-center gap-1.5">
+                        <Play className="w-3.5 h-3.5" />
+                        <span>Upstream Resolution Plan</span>
+                      </div>
+                      <span className="px-1.5 py-0.2 rounded text-[10px] font-mono bg-emerald-950 text-emerald-300 border border-emerald-500/40">
+                        {resolutionPlan.strategy}
+                      </span>
+                    </div>
+                    <div className="text-xs font-semibold text-zinc-200">
+                      Target: {resolutionPlan.target_action} ({resolutionPlan.target_owner})
+                    </div>
+                    <p className="text-[11px] text-zinc-300 leading-relaxed">{resolutionPlan.rationale}</p>
+                    <div className="text-[10px] text-emerald-400 font-mono">
+                      Expected Impact: {resolutionPlan.expected_impact}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* PHASE 15: ENTERPRISE AUDIT & GOVERNANCE PROVENANCE TIMELINE */}
           <div className="space-y-4 pt-6 border-t border-zinc-800">

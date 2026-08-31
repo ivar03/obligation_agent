@@ -1115,3 +1115,828 @@ export interface GovernanceSummaryResponse {
   chain_integrity_status: string;
   evaluated_at: string;
 }
+
+// ==============================================================================
+// PHASE 14: ROOT-CAUSE ANALYSIS, IMPACT & RESOLUTION PLANNING TYPES
+// ==============================================================================
+
+export type CausalFactorType =
+  | "DIRECT_CAUSE"
+  | "UPSTREAM_CAUSE"
+  | "CONTRIBUTING_FACTOR"
+  | "UNCERTAINTY";
+
+export type ResolutionStrategyType =
+  | "RESOLVE_ROOT_BLOCKER"
+  | "FOLLOW_UP_ROOT_OWNER"
+  | "REQUEST_MISSING_EVIDENCE"
+  | "ASSIGN_OWNER"
+  | "CLARIFY_DEADLINE"
+  | "REVIEW_CONFLICTING_EVIDENCE"
+  | "WAIT_FOR_CONDITION"
+  | "REVIEW_DEPENDENCY"
+  | "NO_ACTION";
+
+export type SimulationActionType =
+  | "COMPLETE_OBLIGATION"
+  | "RESOLVE_BLOCKER"
+  | "ASSIGN_OWNER"
+  | "REMOVE_DEPENDENCY"
+  | "CONFIRM_EVIDENCE";
+
+export type ConcentrationType =
+  | "BOTTLENECK"
+  | "HIGH_IMPACT_OWNER"
+  | "CRITICAL_PREREQUISITE"
+  | "RISK_CONCENTRATION";
+
+export interface CausalFactorItem {
+  factor_type: CausalFactorType | string;
+  description: string;
+  target_obligation_id?: string | null;
+  target_owner?: string | null;
+  target_action?: string | null;
+  confidence: number;
+  evidence_refs?: string[];
+  event_refs?: string[];
+  severity: "CRITICAL" | "HIGH" | "MEDIUM" | "LOW" | string;
+}
+
+export interface RootCauseAnalysisResponse {
+  obligation_id: string;
+  action?: string | null;
+  owner?: string | null;
+  status?: string | null;
+  overall_explanation: string;
+  primary_root_cause: string;
+  root_cause_type: CausalFactorType | string;
+  confidence: number;
+  confidence_level: "HIGH" | "MEDIUM" | "LOW" | string;
+  direct_causes: CausalFactorItem[];
+  upstream_causes: CausalFactorItem[];
+  contributing_factors: CausalFactorItem[];
+  uncertainties: CausalFactorItem[];
+  affected_obligations: Record<string, unknown>[];
+  dependency_path: string[];
+  evidence_refs: string[];
+  event_refs: string[];
+  recommended_resolution?: string | null;
+  evaluated_at: string;
+}
+
+export interface ImpactAnalysisResponse {
+  obligation_id: string;
+  action?: string | null;
+  owner?: string | null;
+  status?: string | null;
+  direct_dependents_count: number;
+  total_downstream_dependents_count: number;
+  maximum_dependency_depth: number;
+  critical_path_length: number;
+  affected_owners: string[];
+  affected_deadlines: string[];
+  affected_high_risk_obligations: number;
+  impact_score: number;
+  impact_level: "CRITICAL" | "HIGH" | "MEDIUM" | "LOW" | string;
+  score_breakdown: Record<string, number>;
+  downstream_items: Record<string, unknown>[];
+  evaluated_at: string;
+}
+
+export interface CriticalPathItem {
+  obligation_id: string;
+  owner: string;
+  action: string;
+  status: string;
+  deadline?: string | null;
+  risk_score: number;
+  is_root_blocker: boolean;
+  hop_from_root: number;
+}
+
+export interface CriticalPathResponse {
+  obligation_id: string;
+  critical_path: string[];
+  critical_path_length: number;
+  critical_path_risk: number;
+  root_blocker_id?: string | null;
+  root_blocker_owner?: string | null;
+  root_blocker_action?: string | null;
+  path_details: CriticalPathItem[];
+  explanation: string;
+  evaluated_at: string;
+}
+
+export interface ResolutionPlanResponse {
+  obligation_id: string;
+  action?: string | null;
+  owner?: string | null;
+  strategy: ResolutionStrategyType | string;
+  target_obligation_id: string;
+  target_owner: string;
+  target_action: string;
+  rationale: string;
+  expected_impact: string;
+  confidence: number;
+  supporting_causes: string[];
+  suggested_intervention_type?: string | null;
+  alternative_strategies: Record<string, unknown>[];
+  evaluated_at: string;
+}
+
+export interface ResolutionSimulationRequest {
+  action: SimulationActionType | string;
+  target_obligation_id: string;
+  parameters?: Record<string, unknown> | null;
+}
+
+export interface ResolutionSimulationResponse {
+  simulated_action: SimulationActionType | string;
+  target_obligation_id: string;
+  current_state: Record<string, unknown>;
+  projected_state: Record<string, unknown>;
+  affected_obligations: Record<string, unknown>[];
+  risk_delta: number;
+  unblocked_obligations: Record<string, unknown>[];
+  newly_at_risk_obligations: Record<string, unknown>[];
+  explanation: string;
+  is_simulation_marker: boolean;
+  simulated_at: string;
+}
+
+export interface BottleneckItem {
+  obligation_id: string;
+  owner: string;
+  action: string;
+  status: string;
+  downstream_dependents_count: number;
+  affected_owners_count: number;
+  critical_path_involvement_count: number;
+  bottleneck_score: number;
+  neutral_summary: string;
+}
+
+export interface BottleneckAnalysisResponse {
+  workspace_id: string;
+  total_bottlenecks: number;
+  bottlenecks: BottleneckItem[];
+  evaluated_at: string;
+}
+
+export interface RiskConcentrationItem {
+  concentration_type: ConcentrationType | string;
+  target_id: string;
+  target_name: string;
+  severity: "CRITICAL" | "HIGH" | "MEDIUM" | "LOW" | string;
+  score: number;
+  description: string;
+  affected_count: number;
+}
+
+export interface RiskConcentrationResponse {
+  workspace_id: string;
+  total_concentrations: number;
+  items: RiskConcentrationItem[];
+  evaluated_at: string;
+}
+
+// =============================================================================
+// PHASE 15: INTELLIGENCE ORCHESTRATOR & DECISION LAYER TYPES
+// =============================================================================
+
+export type DecisionPlanStatus =
+  | "GENERATED"
+  | "PENDING_REVIEW"
+  | "APPROVED"
+  | "PARTIALLY_EXECUTED"
+  | "RESOLVED"
+  | "REJECTED"
+  | "SUPERSEDED"
+  | "EXPIRED"
+  | "CANCELLED";
+
+export type HumanDecisionType =
+  | "ASSIGN_OWNER"
+  | "APPROVE_INTERVENTION"
+  | "CONFIRM_EVIDENCE"
+  | "CHANGE_DEADLINE"
+  | "REMOVE_DEPENDENCY"
+  | "APPROVE_ALTERNATIVE_STRATEGY";
+
+export interface HumanDecisionRequirement {
+  decision_type: HumanDecisionType | string;
+  reason: string;
+  affected_obligation_id: string;
+  affected_obligation_action?: string | null;
+  consequence_of_decision: string;
+  supporting_evidence: string[];
+  confidence: number;
+  proposed_default?: string | null;
+  requires_admin: boolean;
+}
+
+export interface CandidateStrategyItem {
+  strategy_id: string;
+  strategy_name: string;
+  strategy_type: string;
+  target_obligation_id: string;
+  target_owner: string;
+  target_action: string;
+  rationale: string;
+  decision_score: number;
+  expected_impact: string;
+  risk_reduction: number;
+  projected_unblocks_count: number;
+  simulated_evaluation: Record<string, unknown>;
+  human_decisions: HumanDecisionRequirement[];
+  is_primary_recommendation: boolean;
+  score_breakdown: Record<string, number>;
+}
+
+export interface DecisionPlan {
+  id: string;
+  workspace_id: string;
+  target_obligation_id: string;
+  target_obligation_action?: string | null;
+  target_obligation_owner?: string | null;
+  target_obligation_status?: string | null;
+  generated_at: string;
+  plan_version: number;
+  status: DecisionPlanStatus | string;
+  overall_urgency: "CRITICAL" | "HIGH" | "MEDIUM" | "LOW" | string;
+  overall_risk: number;
+  decision_confidence: number;
+  primary_objective: string;
+  root_cause_obligation_id?: string | null;
+  root_cause_summary?: string | null;
+  critical_path: Record<string, unknown>[];
+  impact_summary: {
+    direct_dependents_count?: number;
+    total_downstream_dependents_count?: number;
+    maximum_dependency_depth?: number;
+    affected_owners?: string[];
+    affected_deadlines?: string[];
+    impact_score?: number;
+    impact_level?: string;
+  };
+  key_risks: string[];
+  supporting_evidence: Record<string, unknown>[];
+  recommended_actions: CandidateStrategyItem;
+  alternative_actions: CandidateStrategyItem[];
+  human_decisions_required: HumanDecisionRequirement[];
+  assumptions: string[];
+  uncertainties: string[];
+  simulation_summary: Record<string, unknown>;
+  created_from_snapshot_ids: string[];
+  created_from_event_ids: string[];
+  explainability_narrative: string;
+  approved_at?: string | null;
+  approved_by_user_id?: string | null;
+  rejected_at?: string | null;
+  rejected_by_user_id?: string | null;
+  superseded_at?: string | null;
+  superseded_by_plan_id?: string | null;
+  resolution_notes?: string | null;
+  is_stale: boolean;
+}
+
+export interface DecisionPlanSummary {
+  id: string;
+  workspace_id: string;
+  target_obligation_id: string;
+  target_obligation_action: string;
+  target_obligation_owner: string;
+  target_obligation_status: string;
+  plan_version: number;
+  status: DecisionPlanStatus | string;
+  overall_urgency: string;
+  overall_risk: number;
+  decision_confidence: number;
+  primary_objective: string;
+  recommended_strategy_name: string;
+  target_owner: string;
+  human_decisions_count: number;
+  is_stale: boolean;
+  generated_at: string;
+}
+
+export interface DecisionPlanListResponse {
+  items: DecisionPlanSummary[];
+  total: number;
+}
+
+export interface DecisionPlanApproveRequest {
+  selected_strategy_id?: string;
+  notes?: string;
+}
+
+export interface DecisionPlanRejectRequest {
+  reason: string;
+}
+
+export interface DecisionPlanSimulateRequest {
+  strategy_id?: string;
+  custom_action?: string;
+  custom_parameters?: Record<string, unknown>;
+}
+
+// ==========================================
+// PHASE 16: ORGANIZATIONAL MEMORY & HISTORICAL REASONING TYPES
+// ==========================================
+
+export type MemoryType =
+  | "OBLIGATION_OUTCOME"
+  | "EVIDENCE_PATTERN"
+  | "INTERVENTION_OUTCOME"
+  | "DEPENDENCY_PATTERN"
+  | "OWNER_HISTORY"
+  | "BLOCKER_PATTERN"
+  | "RESOLUTION_PATTERN"
+  | "EVENT_CONTEXT"
+  | "RECURRING_COMMITMENT";
+
+export type PatternType =
+  | "RECURRING_DELAY_PATTERN"
+  | "RECURRING_BLOCKER_PATTERN"
+  | "RECURRING_DEPENDENCY_PATTERN"
+  | "RECURRING_INTERVENTION_RESPONSE"
+  | "RECURRING_OBLIGATION_TYPE";
+
+export type PatternMaturity =
+  | "INSUFFICIENT_HISTORY"
+  | "EMERGING_PATTERN"
+  | "ESTABLISHED_PATTERN";
+
+export type RecurrenceInterval =
+  | "DAILY"
+  | "WEEKLY"
+  | "BIWEEKLY"
+  | "MONTHLY"
+  | "QUARTERLY"
+  | "AD_HOC";
+
+export interface SemanticRepresentation {
+  action?: string | null;
+  deliverable?: string | null;
+  entities: string[];
+  topics: string[];
+  obligation_type?: string | null;
+  deadline_characteristic?: string | null;
+  blocker_terms: string[];
+}
+
+export interface OrganizationalMemory {
+  id: string;
+  workspace_id: string;
+  memory_type: MemoryType | string;
+  source_type: string;
+  source_ref?: string | null;
+  obligation_id?: string | null;
+  event_id?: string | null;
+  owner_id?: string | null;
+  content: string;
+  semantic_summary: string;
+  semantic_labels: string[];
+  entities: string[];
+  topics: string[];
+  outcome?: string | null;
+  observed_at: string;
+  created_at: string;
+  metadata_json: Record<string, unknown>;
+  importance_score: number;
+  confidence: number;
+  is_active: boolean;
+}
+
+export interface MemoryRetrievalItem {
+  memory: OrganizationalMemory;
+  relevance_score: number;
+  match_reasons: string[];
+  similarity_breakdown: Record<string, number>;
+}
+
+export interface HistoricalPatternItem {
+  pattern_type: PatternType | string;
+  maturity: PatternMaturity | string;
+  observation_count: number;
+  confidence: number;
+  supporting_memory_ids: string[];
+  first_observed_at?: string | null;
+  last_observed_at?: string | null;
+  description: string;
+  neutral_metrics: Record<string, unknown>;
+}
+
+export interface HistoricalOwnerAnalytics {
+  owner_id: string;
+  total_commitments_observed: number;
+  completed_count: number;
+  completed_late_count: number;
+  completed_on_time_count: number;
+  completion_rate: number;
+  on_time_completion_rate: number;
+  median_delay_hours: number;
+  late_frequency: number;
+  total_interventions_received: number;
+  intervention_response_count: number;
+  intervention_response_rate: number;
+  neutral_summary: string;
+  has_sufficient_history: boolean;
+  evaluated_at: string;
+}
+
+export interface RecurringObligationItem {
+  recurrence_type: RecurrenceInterval | string;
+  interval_days: number;
+  observation_count: number;
+  confidence: number;
+  last_observed_date?: string | null;
+  next_predicted_date?: string | null;
+  description: string;
+}
+
+export interface MemoryContextResponse {
+  obligation_id: string;
+  context_status: "AVAILABLE" | "NO_COMPARABLE_HISTORY" | string;
+  semantic_representation: SemanticRepresentation;
+  similar_obligations: MemoryRetrievalItem[];
+  historical_patterns: HistoricalPatternItem[];
+  recurring_blockers: HistoricalPatternItem[];
+  intervention_history: MemoryRetrievalItem[];
+  owner_analytics?: HistoricalOwnerAnalytics | null;
+  recurring_commitment?: RecurringObligationItem | null;
+  confidence: number;
+  explanation: string;
+  evaluated_at: string;
+}
+
+// ==============================================================================
+// PHASE 16: CONTROLLED DECISION EXECUTION & OUTCOME VERIFICATION
+// ==============================================================================
+
+export type ExecutionType =
+  | "INTERVENTION_MESSAGE"
+  | "STATUS_POLL"
+  | "BLOCKER_NOTIFICATION"
+  | "ESCALATION_NOTICE"
+  | "EVIDENCE_REQUEST";
+
+export type ExecutionStatus =
+  | "PENDING_AUTHORIZATION"
+  | "AUTHORIZED"
+  | "QUEUED"
+  | "EXECUTING"
+  | "DELIVERED"
+  | "DELIVERY_FAILED"
+  | "RETRY_SCHEDULED"
+  | "RESPONSE_PENDING"
+  | "OUTCOME_DETECTED"
+  | "RESOLVED"
+  | "FAILED"
+  | "CANCELLED"
+  | "EXPIRED";
+
+export type ExecutionOutcome =
+  | "ACKNOWLEDGED"
+  | "PROGRESS_REPORTED"
+  | "COMPLETION_SIGNAL"
+  | "NEGATIVE_RESPONSE"
+  | "NO_RESPONSE"
+  | "CONFLICTING_RESPONSE"
+  | "UNKNOWN";
+
+export type ExecutionFailureCode =
+  | "INVALID_RECIPIENT"
+  | "RATE_LIMITED"
+  | "NETWORK_TIMEOUT"
+  | "PERMISSION_DENIED"
+  | "CONFIGURATION_ERROR"
+  | "RETRY_LIMIT_EXCEEDED"
+  | "CANCELLED_BY_OPERATOR"
+  | "SUPERSEDED_BEFORE_EXECUTION"
+  | "PROVIDER_UNAVAILABLE";
+
+export interface ExecutionRecord {
+  id: string;
+  workspace_id: string;
+  decision_plan_id: string;
+  intervention_id?: string | null;
+  obligation_id: string;
+  execution_type: ExecutionType | string;
+  provider: string;
+  provider_version: string;
+  status: ExecutionStatus;
+  authorized_by?: string | null;
+  authorized_at?: string | null;
+  executed_at?: string | null;
+  provider_execution_ref?: string | null;
+  idempotency_key: string;
+  request_payload_hash: string;
+  safe_request_metadata: Record<string, unknown>;
+  delivery_status?: string | null;
+  failure_code?: ExecutionFailureCode | null;
+  failure_reason?: string | null;
+  retry_count: number;
+  max_retries: number;
+  next_retry_at?: string | null;
+  response_received_at?: string | null;
+  response_event_id?: string | null;
+  outcome?: ExecutionOutcome | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ExecutionReceipt {
+  execution_id: string;
+  workspace_id: string;
+  decision_plan_id: string;
+  plan_version: number;
+  intervention_id?: string | null;
+  obligation_id: string;
+  obligation_action: string;
+  target_owner?: string | null;
+  provider: string;
+  provider_execution_ref?: string | null;
+  delivery_status: string;
+  status: ExecutionStatus;
+  authorized_by?: string | null;
+  authorized_at?: string | null;
+  executed_at?: string | null;
+  retry_count: number;
+  failure_code?: string | null;
+  failure_reason?: string | null;
+  safe_metadata: Record<string, unknown>;
+  receipt_generated_at: string;
+}
+
+export interface ExecutionQueueItem {
+  execution_id: string;
+  decision_plan_id: string;
+  plan_version: number;
+  obligation_id: string;
+  obligation_action: string;
+  obligation_owner: string;
+  plan_urgency: string;
+  plan_risk: number;
+  provider: string;
+  status: ExecutionStatus;
+  authorized_by?: string | null;
+  authorized_at?: string | null;
+  executed_at?: string | null;
+  retry_count: number;
+  max_retries: number;
+  outcome?: ExecutionOutcome | null;
+  created_at: string;
+}
+
+export interface ExecutionQueueResponse {
+  pending_authorization_count: number;
+  executing_count: number;
+  delivered_count: number;
+  awaiting_response_count: number;
+  failed_count: number;
+  resolved_count: number;
+  items: ExecutionQueueItem[];
+}
+
+export interface ExecutionAuthorizeRequest {
+  strategy_name?: string;
+  provider?: string;
+  authorized_action?: Record<string, unknown>;
+  notes?: string;
+}
+
+export interface ExecutionExecuteRequest {
+  provider?: string;
+  notes?: string;
+}
+
+export interface ExecutionCancelRequest {
+  reason: string;
+}
+
+export interface ExecutionRetryRequest {
+  notes?: string;
+}
+
+export interface OutcomeReconciliationResponse {
+  execution_id: string;
+  event_id: string;
+  outcome: ExecutionOutcome;
+  previous_execution_status: ExecutionStatus;
+  updated_execution_status: ExecutionStatus;
+  intervention_status?: string | null;
+  obligation_status: string;
+  evidence_created: boolean;
+  evidence_id?: string | null;
+  plan_marked_stale: boolean;
+  reconciled_at: string;
+  reconciliation_notes: string;
+}
+
+// ==========================================
+// PHASE 17: CONTINUOUS MONITORING & ESCALATION
+// ==========================================
+
+export type WatchType =
+  | "DEADLINE"
+  | "RISK"
+  | "DEPENDENCY"
+  | "EXECUTION"
+  | "RESPONSE"
+  | "EVIDENCE"
+  | "DECISION_PLAN"
+  | "CRITICAL_PATH"
+  | "BOTTLENECK";
+
+export type WatchStatus =
+  | "ACTIVE"
+  | "PAUSED"
+  | "TRIGGERED"
+  | "RESOLVED"
+  | "EXPIRED"
+  | "CANCELLED";
+
+export type MonitoringEventType =
+  | "DEADLINE_APPROACHING"
+  | "DEADLINE_BREACHED"
+  | "RISK_ESCALATED"
+  | "RISK_DEESCALATED"
+  | "DEPENDENCY_BLOCKED"
+  | "DEPENDENCY_RESOLVED"
+  | "NEW_COMPLETION_EVIDENCE"
+  | "NEW_NEGATIVE_SIGNAL"
+  | "OWNER_UNRESPONSIVE"
+  | "EXECUTION_FAILED"
+  | "EXECUTION_STALLED"
+  | "EXECUTION_RESPONSE_TIMEOUT"
+  | "DECISION_PLAN_STALE"
+  | "DECISION_PLAN_RESOLVED"
+  | "CRITICAL_PATH_CHANGED"
+  | "SYSTEMIC_BOTTLENECK_DETECTED";
+
+export type MonitoringSeverity =
+  | "INFO"
+  | "NOTICE"
+  | "WARNING"
+  | "HIGH"
+  | "CRITICAL";
+
+export type EscalationStatus =
+  | "OPEN"
+  | "ACKNOWLEDGED"
+  | "RESOLVED"
+  | "DISMISSED"
+  | "EXPIRED";
+
+export type MonitoringRunStatus =
+  | "RUNNING"
+  | "COMPLETED"
+  | "PARTIAL"
+  | "FAILED";
+
+export type TargetType =
+  | "OBLIGATION"
+  | "EXECUTION"
+  | "DECISION_PLAN"
+  | "INTERVENTION"
+  | "WORKSPACE";
+
+export interface MonitoringWatch {
+  id: string;
+  workspace_id: string;
+  watch_type: WatchType;
+  target_type: TargetType;
+  target_id: string;
+  status: WatchStatus;
+  configuration: Record<string, unknown>;
+  last_evaluated_at?: string | null;
+  next_evaluation_at?: string | null;
+  last_observed_state: Record<string, unknown>;
+  last_triggered_at?: string | null;
+  trigger_count: number;
+  cooldown_until?: string | null;
+  created_by?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface MonitoringWatchCreate {
+  watch_type: WatchType;
+  target_type?: TargetType;
+  target_id: string;
+  configuration?: Record<string, unknown>;
+  next_evaluation_at?: string | null;
+}
+
+export interface MonitoringWatchUpdate {
+  status?: WatchStatus;
+  configuration?: Record<string, unknown>;
+  next_evaluation_at?: string | null;
+}
+
+export interface MonitoringWatchListResponse {
+  items: MonitoringWatch[];
+  total: number;
+}
+
+export interface MonitoringEvent {
+  id: string;
+  workspace_id: string;
+  watch_id?: string | null;
+  event_type: MonitoringEventType;
+  severity: MonitoringSeverity;
+  target_type: TargetType;
+  target_id: string;
+  previous_state: Record<string, unknown>;
+  current_state: Record<string, unknown>;
+  detected_at: string;
+  explanation: string;
+  signals: Record<string, unknown>;
+  provenance: Record<string, unknown>;
+  deduplication_key: string;
+  acknowledged_at?: string | null;
+  acknowledged_by?: string | null;
+  resolved_at?: string | null;
+  resolution_reason?: string | null;
+}
+
+export interface MonitoringEventListResponse {
+  items: MonitoringEvent[];
+  total: number;
+}
+
+export interface EscalationCandidate {
+  id: string;
+  workspace_id: string;
+  monitoring_event_id?: string | null;
+  target_type: TargetType;
+  target_id: string;
+  severity: MonitoringSeverity;
+  reason: string;
+  recommended_next_step: string;
+  affected_obligations: string[];
+  affected_owners: string[];
+  blast_radius: Record<string, unknown>;
+  decision_plan_id?: string | null;
+  status: EscalationStatus;
+  deduplication_key: string;
+  created_at: string;
+  acknowledged_at?: string | null;
+  acknowledged_by?: string | null;
+  resolved_at?: string | null;
+}
+
+export interface EscalationCandidateListResponse {
+  items: EscalationCandidate[];
+  total: number;
+}
+
+export interface EscalationAcknowledgeRequest {
+  notes?: string;
+}
+
+export interface EscalationResolveRequest {
+  resolution_reason?: string;
+}
+
+export interface EscalationDismissRequest {
+  reason?: string;
+}
+
+export interface MonitoringRun {
+  id: string;
+  workspace_id: string;
+  started_at: string;
+  completed_at?: string | null;
+  watches_evaluated: number;
+  events_created: number;
+  escalations_created: number;
+  errors: Record<string, unknown>[];
+  status: MonitoringRunStatus;
+}
+
+export interface MonitoringRunListResponse {
+  items: MonitoringRun[];
+  total: number;
+}
+
+export interface MonitoringRunRequest {
+  watch_ids?: string[];
+  force_all?: boolean;
+}
+
+export interface MonitoringSummaryResponse {
+  active_watches_count: number;
+  critical_events_count: number;
+  high_events_count: number;
+  open_escalations_count: number;
+  deadline_breaches_count: number;
+  risk_escalations_count: number;
+  execution_failures_count: number;
+  response_timeouts_count: number;
+  dependency_blocks_count: number;
+  stale_decision_plans_count: number;
+  recent_events: MonitoringEvent[];
+  open_escalations: EscalationCandidate[];
+}

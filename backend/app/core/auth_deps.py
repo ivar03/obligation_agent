@@ -41,8 +41,9 @@ async def get_current_user(
 ) -> User:
     """
     FastAPI dependency resolving the current authenticated user.
-    Falls back cleanly to default dev user ('usr-default') in development/testing mode
-    when no authentication token is provided, preserving legacy regression suites.
+    In production mode (AUTH_MODE=production or APP_ENV=production), rejects unauthenticated requests with 401.
+    In development/testing mode (AUTH_MODE=mock), falls back cleanly to default dev user ('usr-default')
+    when no authentication token is provided, preserving regression suites.
     """
     user = await get_current_user_optional(request, session)
     if user:
@@ -59,6 +60,15 @@ async def get_current_user(
                 detail="Invalid or expired authentication session.",
                 headers={"WWW-Authenticate": "Bearer"},
             )
+
+    # In production mode, reject unauthenticated requests
+    from app.core.config import settings
+    if settings.is_production_auth():
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Authentication required. Please provide a valid Bearer token.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
     # In dev/test mode without credentials, fall back to default demo user
     dev_user, _, _ = await AuthService.ensure_default_dev_user(session)

@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from typing import List, Optional, Set, Dict, Any
+from typing import List, Optional, Set, Dict, Any, Tuple
 from sqlalchemy import select, or_, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import HTTPException, status
@@ -415,3 +415,163 @@ class GraphService:
             is_blocked=obligation.status == ObligationStatus.BLOCKED or len(blockers) > 0,
             unblocks_on_completion=unblocks,
         )
+
+    # ==============================================================================
+    # PHASE 14: INTELLIGENCE & ROOT-CAUSE GRAPH TRAVERSALS
+    # ==============================================================================
+
+    @staticmethod
+    async def get_upstream_chain(
+        session: AsyncSession, obligation_id: str, max_depth: int = 20
+    ) -> List[Dict[str, Any]]:
+        """
+        Traverses upstream along DEPENDS_ON edges to find all transitive prerequisites.
+        Returns a list of dicts with obligation, hop_distance, and path from source.
+        LINKED edges are strictly excluded from blocker/dependency chains.
+        """
+        results: List[Dict[str, Any]] = []
+        visited: Set[str] = {obligation_id}
+        queue: List[Tuple[str, int, List[str]]] = [(obligation_id, 0, [obligation_id])]
+
+        while queue:
+            curr_id, dist, path = queue.pop(0)
+            if dist >= max_depth:
+                continue
+
+            # Fetch direct dependencies
+            deps = await GraphService.get_dependencies(session, curr_id)
+            for dep in deps:
+                if dep.id not in visited:
+                    visited.add(dep.id)
+                    new_dist = dist + 1
+                    new_path = path + [dep.id]
+                    results.append({
+                        "obligation": dep,
+                        "hop_distance": new_dist,
+                        "path": new_path,
+                    })
+                    queue.append((dep.id, new_dist, new_path))
+
+        return results
+
+    @staticmethod
+    async def get_downstream_impact(
+        session: AsyncSession, obligation_id: str, max_depth: int = 20
+    ) -> List[Dict[str, Any]]:
+        """
+        Traverses downstream along inverse DEPENDS_ON edges to identify all obligations
+        affected if `obligation_id` is delayed, blocked, or altered.
+        """
+        results: List[Dict[str, Any]] = []
+        visited: Set[str] = {obligation_id}
+        queue: List[Tuple[str, int, List[str]]] = [(obligation_id, 0, [obligation_id])]
+
+        while queue:
+            curr_id, dist, path = queue.pop(0)
+            if dist >= max_depth:
+                continue
+
+            dependents = await GraphService.get_dependents(session, curr_id)
+            for dep in dependents:
+                if dep.id not in visited:
+                    visited.add(dep.id)
+                    new_dist = dist + 1
+                    new_path = path + [dep.id]
+                    results.append({
+                        "obligation": dep,
+                        "hop_distance": new_dist,
+                        "path": new_path,
+                    })
+                    queue.append((dep.id, new_dist, new_path))
+
+        return results
+
+    @staticmethod
+    async def get_root_blockers(
+        session: AsyncSession, obligation_id: str
+    ) -> List[Dict[str, Any]]:
+        """
+        Recursively identifies the ultimate root-cause blocker obligations.
+        A root blocker is an uncompleted upstream prerequisite that either has no blockers
+        itself or is the originating failure node (e.g. OVERDUE, cancelled, or lacking evidence).
+        """
+        upstream = await GraphService.get_upstream_chain(session, obligation_id)
+        if not upstream:
+            return []
+
+        # Find all uncompleted upstream obligations
+        uncompleted = [item for item in upstream if item["obligation"].status != ObligationStatus.COMPLETED]
+        if not uncompleted:
+            return []
+
+        root_blockers: List[Dict[str, Any]] = []
+        for item in uncompleted:
+            dep_obj: Obligation = item["obligation"]
+            # Check if this node has any uncompleted prerequisites itself
+            dep_blockers = await GraphService.get_blockers(session, dep_obj.id)
+            if not dep_blockers:
+                # Leaf uncompleted prerequisite -> definitely a root blocker
+                root_blockers.append(item)
+            else:
+                # If all its blockers are completed or none exist, it is a root
+                unresolved_sub_blockers = [
+                    b for b in dep_blockers if b.status != ObligationStatus.COMPLETED
+                ]
+                if not unresolved_sub_blockers:
+                    root_blockers.append(item)
+
+        # If cyclic/complex topology returned empty but uncompleted exist, pick deepest uncompleted
+        if not root_blockers and uncompleted:
+            max_dist = max(item["hop_distance"] for item in uncompleted)
+            root_blockers = [item for item in uncompleted if item["hop_distance"] == max_dist]
+
+        return root_blockers
+
+    @staticmethod
+    async def get_dependency_depth(session: AsyncSession, obligation_id: str) -> int:
+        """Computes the maximum depth of the upstream dependency tree."""
+        upstream = await GraphService.get_upstream_chain(session, obligation_id)
+        if not upstream:
+            return 0
+        return max(item["hop_distance"] for item in upstream)
+
+    @staticmethod
+    async def get_impact_summary(
+        session: AsyncSession, obligation_id: str
+    ) -> Dict[str, Any]:
+        """
+        Aggregates downstream blast radius metrics for an obligation.
+        """
+        direct_dependents = await GraphService.get_dependents(session, obligation_id)
+        downstream = await GraphService.get_downstream_impact(session, obligation_id)
+
+        all_downstream_objs = [d["obligation"] for d in downstream]
+        affected_owners = list({d.owner for d in all_downstream_objs if d.owner})
+        affected_deadlines = [d.deadline.isoformat() for d in all_downstream_objs if d.deadline]
+        max_depth = max([d["hop_distance"] for d in downstream], default=0)
+
+        high_risk_count = sum(
+            1 for d in all_downstream_objs
+            if d.status in (ObligationStatus.OVERDUE, ObligationStatus.BLOCKED)
+        )
+
+        return {
+            "obligation_id": obligation_id,
+            "direct_dependents_count": len(direct_dependents),
+            "total_downstream_dependents_count": len(downstream),
+            "maximum_dependency_depth": max_depth,
+            "affected_owners": affected_owners,
+            "affected_deadlines": affected_deadlines,
+            "affected_high_risk_obligations": high_risk_count,
+            "downstream_items": [
+                {
+                    "obligation_id": d["obligation"].id,
+                    "action": d["obligation"].action,
+                    "owner": d["obligation"].owner,
+                    "status": d["obligation"].status.value if hasattr(d["obligation"].status, "value") else str(d["obligation"].status),
+                    "hop_distance": d["hop_distance"],
+                }
+                for d in downstream
+            ],
+        }
+

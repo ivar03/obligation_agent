@@ -23,10 +23,24 @@ from app.schemas.intelligence import (
     ModelComparisonResponse,
     PredictionHistoryResponse,
     InterventionEffectivenessMetric,
+    RootCauseAnalysisResponse,
+    ImpactAnalysisResponse,
+    CriticalPathResponse,
+    ResolutionPlanResponse,
+    ResolutionSimulationRequest,
+    ResolutionSimulationResponse,
+    BottleneckAnalysisResponse,
+    RiskConcentrationResponse,
 )
 from app.services.intelligence.calibration_engine import CalibrationEngine
 from app.services.intelligence.weight_learning_engine import WeightLearningEngine
 from app.services.intelligence.intervention_effectiveness_service import InterventionEffectivenessService
+from app.services.intelligence.root_cause_engine import RootCauseAnalysisEngine
+from app.services.intelligence.impact_analysis_service import ImpactAnalysisService
+from app.services.intelligence.critical_path_engine import CriticalPathEngine
+from app.services.intelligence.resolution_planner import ResolutionPlanner
+from app.services.intelligence.resolution_simulation_service import ResolutionSimulationService
+from app.services.intelligence.risk_concentration_service import RiskConcentrationService
 
 router = APIRouter(prefix="/intelligence", tags=["Intelligence & Predictions"])
 
@@ -227,4 +241,136 @@ async def get_intervention_effectiveness(
     commitments with vs without human-authorized interventions.
     """
     return await InterventionEffectivenessService.get_metrics(session)
+
+
+# ==============================================================================
+# PHASE 14: ROOT-CAUSE ANALYSIS, IMPACT & RESOLUTION PLANNING ROUTES
+# ==============================================================================
+
+@router.get("/obligations/{obligation_id}/root-cause", response_model=RootCauseAnalysisResponse)
+async def get_obligation_root_cause(
+    obligation_id: str,
+    session: AsyncSession = Depends(get_db),
+    workspace: Workspace = Depends(get_current_workspace),
+    user: User = Depends(get_current_user),
+):
+    """
+    Performs multi-signal causal deduction classifying direct causes, upstream causes,
+    contributing factors, and uncertainties with calibrated confidence.
+    """
+    try:
+        return await RootCauseAnalysisEngine.analyze(
+            session, obligation_id, workspace_id=workspace.id if workspace else None
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
+
+@router.get("/obligations/{obligation_id}/impact", response_model=ImpactAnalysisResponse)
+async def get_obligation_impact(
+    obligation_id: str,
+    session: AsyncSession = Depends(get_db),
+    workspace: Workspace = Depends(get_current_workspace),
+    user: User = Depends(get_current_user),
+):
+    """
+    Calculates downstream blast radius and bounded impact score (0.0 to 1.0)
+    with detailed score breakdown.
+    """
+    try:
+        return await ImpactAnalysisService.analyze_impact(
+            session, obligation_id, workspace_id=workspace.id if workspace else None
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
+
+@router.get("/obligations/{obligation_id}/critical-path", response_model=CriticalPathResponse)
+async def get_obligation_critical_path(
+    obligation_id: str,
+    session: AsyncSession = Depends(get_db),
+    workspace: Workspace = Depends(get_current_workspace),
+    user: User = Depends(get_current_user),
+):
+    """
+    Computes deterministic critical dependency path over DAGs, identifying
+    highest-risk prerequisite chain and root blocker.
+    """
+    try:
+        return await CriticalPathEngine.compute_critical_path(
+            session, obligation_id, workspace_id=workspace.id if workspace else None
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
+
+@router.get("/obligations/{obligation_id}/resolution-plan", response_model=ResolutionPlanResponse)
+async def get_obligation_resolution_plan(
+    obligation_id: str,
+    session: AsyncSession = Depends(get_db),
+    workspace: Workspace = Depends(get_current_workspace),
+    user: User = Depends(get_current_user),
+):
+    """
+    Generates highest-leverage actionable human intervention plan, prioritizing
+    upstream root causes over downstream symptoms.
+    """
+    try:
+        return await ResolutionPlanner.plan_resolution(
+            session, obligation_id, workspace_id=workspace.id if workspace else None
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
+
+@router.post("/obligations/{obligation_id}/simulate-resolution", response_model=ResolutionSimulationResponse)
+async def simulate_obligation_resolution(
+    obligation_id: str,
+    request: ResolutionSimulationRequest,
+    session: AsyncSession = Depends(get_db),
+    workspace: Workspace = Depends(get_current_workspace),
+    user: User = Depends(get_current_user),
+):
+    """
+    100% side-effect-free in-memory counterfactual resolution simulator.
+    Simulates completing prerequisites or resolving blockers without mutating the database.
+    """
+    if request.target_obligation_id != obligation_id:
+        request.target_obligation_id = obligation_id
+
+    try:
+        return await ResolutionSimulationService.simulate(
+            session, request, workspace_id=workspace.id if workspace else None
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
+
+@router.get("/bottlenecks", response_model=BottleneckAnalysisResponse)
+async def get_systemic_bottlenecks(
+    session: AsyncSession = Depends(get_db),
+    workspace: Workspace = Depends(get_current_workspace),
+    user: User = Depends(get_current_user),
+):
+    """
+    Surfaces structural bottleneck commitments with high downstream dependency fan-out.
+    """
+    return await RiskConcentrationService.get_bottlenecks(
+        session, workspace_id=workspace.id if workspace else None
+    )
+
+
+@router.get("/risk-concentration", response_model=RiskConcentrationResponse)
+async def get_risk_concentration(
+    session: AsyncSession = Depends(get_db),
+    workspace: Workspace = Depends(get_current_workspace),
+    user: User = Depends(get_current_user),
+):
+    """
+    Identifies systemic organizational risk concentrations and multi-person choke points.
+    """
+    return await RiskConcentrationService.get_risk_concentrations(
+        session, workspace_id=workspace.id if workspace else None
+    )
+
 

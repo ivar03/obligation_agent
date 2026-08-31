@@ -69,6 +69,46 @@ import {
   AuditListResponse,
   AuditVerificationResponse,
   GovernanceSummaryResponse,
+  RootCauseAnalysisResponse,
+  ImpactAnalysisResponse,
+  CriticalPathResponse,
+  ResolutionPlanResponse,
+  ResolutionSimulationRequest,
+  ResolutionSimulationResponse,
+  BottleneckAnalysisResponse,
+  RiskConcentrationResponse,
+  DecisionPlan,
+  DecisionPlanListResponse,
+  DecisionPlanApproveRequest,
+  DecisionPlanRejectRequest,
+  DecisionPlanSimulateRequest,
+  MemoryContextResponse,
+  MemoryRetrievalItem,
+  HistoricalPatternItem,
+  HistoricalOwnerAnalytics,
+  OrganizationalMemory,
+  ExecutionRecord,
+  ExecutionReceipt,
+  ExecutionQueueResponse,
+  ExecutionAuthorizeRequest,
+  ExecutionExecuteRequest,
+  ExecutionCancelRequest,
+  ExecutionRetryRequest,
+  MonitoringWatch,
+  MonitoringWatchCreate,
+  MonitoringWatchUpdate,
+  MonitoringWatchListResponse,
+  MonitoringEvent,
+  MonitoringEventListResponse,
+  EscalationCandidate,
+  EscalationCandidateListResponse,
+  EscalationAcknowledgeRequest,
+  EscalationResolveRequest,
+  EscalationDismissRequest,
+  MonitoringRun,
+  MonitoringRunListResponse,
+  MonitoringRunRequest,
+  MonitoringSummaryResponse,
 } from "../types/obligation";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
@@ -750,6 +790,56 @@ export const intelligenceApi = {
       method: "GET",
     });
   },
+
+  // ============================================================================
+  // PHASE 14: ROOT-CAUSE ANALYSIS, IMPACT & RESOLUTION PLANNING
+  // ============================================================================
+
+  getRootCause: async (obligationId: string): Promise<RootCauseAnalysisResponse> => {
+    return apiClient(`/api/intelligence/obligations/${obligationId}/root-cause`, {
+      method: "GET",
+    });
+  },
+
+  getImpact: async (obligationId: string): Promise<ImpactAnalysisResponse> => {
+    return apiClient(`/api/intelligence/obligations/${obligationId}/impact`, {
+      method: "GET",
+    });
+  },
+
+  getCriticalPath: async (obligationId: string): Promise<CriticalPathResponse> => {
+    return apiClient(`/api/intelligence/obligations/${obligationId}/critical-path`, {
+      method: "GET",
+    });
+  },
+
+  getResolutionPlan: async (obligationId: string): Promise<ResolutionPlanResponse> => {
+    return apiClient(`/api/intelligence/obligations/${obligationId}/resolution-plan`, {
+      method: "GET",
+    });
+  },
+
+  simulateResolution: async (
+    obligationId: string,
+    payload: ResolutionSimulationRequest
+  ): Promise<ResolutionSimulationResponse> => {
+    return apiClient(`/api/intelligence/obligations/${obligationId}/simulate-resolution`, {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  },
+
+  getBottlenecks: async (): Promise<BottleneckAnalysisResponse> => {
+    return apiClient("/api/intelligence/bottlenecks", {
+      method: "GET",
+    });
+  },
+
+  getRiskConcentrations: async (): Promise<RiskConcentrationResponse> => {
+    return apiClient("/api/intelligence/risk-concentration", {
+      method: "GET",
+    });
+  },
 };
 
 export const authApi = {
@@ -914,6 +1004,356 @@ export const auditApi = {
     return `/api/audit/export?${query.toString()}`;
   },
 };
+
+// =============================================================================
+// PHASE 15: DECISION ORCHESTRATOR API
+// =============================================================================
+
+export const decisionApi = {
+  generate: async (obligationId: string): Promise<DecisionPlan> => {
+    return apiClient(`/api/intelligence/decision/${obligationId}/generate`, {
+      method: "POST",
+    });
+  },
+
+  get: async (obligationId: string): Promise<DecisionPlan> => {
+    return apiClient(`/api/intelligence/decision/${obligationId}`, {
+      method: "GET",
+    });
+  },
+
+  getHistory: async (obligationId: string): Promise<DecisionPlan[]> => {
+    return apiClient(`/api/intelligence/decision/${obligationId}/history`, {
+      method: "GET",
+    });
+  },
+
+  getQueue: async (): Promise<DecisionPlanListResponse> => {
+    return apiClient("/api/intelligence/decision/queue", {
+      method: "GET",
+    });
+  },
+
+  approve: async (planId: string, payload?: DecisionPlanApproveRequest): Promise<DecisionPlan> => {
+    return apiClient(`/api/intelligence/decision/${planId}/approve`, {
+      method: "POST",
+      body: JSON.stringify(payload || {}),
+    });
+  },
+
+  reject: async (planId: string, payload: DecisionPlanRejectRequest): Promise<DecisionPlan> => {
+    return apiClient(`/api/intelligence/decision/${planId}/reject`, {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  },
+
+  refresh: async (planId: string): Promise<DecisionPlan> => {
+    return apiClient(`/api/intelligence/decision/${planId}/refresh`, {
+      method: "POST",
+    });
+  },
+
+  simulate: async (planId: string, payload: DecisionPlanSimulateRequest): Promise<ResolutionSimulationResponse> => {
+    return apiClient(`/api/intelligence/decision/${planId}/simulate`, {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  },
+};
+
+export const memoryApi = {
+  getContext: async (obligationId: string): Promise<MemoryContextResponse> => {
+    return apiClient(`/api/intelligence/memory/${obligationId}`, {
+      method: "GET",
+    });
+  },
+
+  search: async (params?: {
+    query?: string;
+    memory_type?: string;
+    owner_id?: string;
+    min_relevance?: number;
+    limit?: number;
+    offset?: number;
+  }): Promise<MemoryRetrievalItem[]> => {
+    const searchParams = new URLSearchParams();
+    if (params?.query) searchParams.append("query", params.query);
+    if (params?.memory_type) searchParams.append("memory_type", params.memory_type);
+    if (params?.owner_id) searchParams.append("owner_id", params.owner_id);
+    if (params?.min_relevance !== undefined) searchParams.append("min_relevance", params.min_relevance.toString());
+    if (params?.limit !== undefined) searchParams.append("limit", params.limit.toString());
+    if (params?.offset !== undefined) searchParams.append("offset", params.offset.toString());
+
+    const qs = searchParams.toString() ? `?${searchParams.toString()}` : "";
+    return apiClient(`/api/intelligence/memory/search${qs}`, {
+      method: "GET",
+    });
+  },
+
+  getPatterns: async (): Promise<HistoricalPatternItem[]> => {
+    return apiClient("/api/intelligence/memory/patterns", {
+      method: "GET",
+    });
+  },
+
+  getOwnerAnalytics: async (ownerId: string): Promise<HistoricalOwnerAnalytics> => {
+    return apiClient(`/api/intelligence/memory/owners/${encodeURIComponent(ownerId)}`, {
+      method: "GET",
+    });
+  },
+
+  formMemory: async (payload: {
+    memory_type: string;
+    source_type: string;
+    content: string;
+    semantic_summary: string;
+    source_ref?: string;
+    obligation_id?: string;
+    owner_id?: string;
+    outcome?: string;
+    metadata_json?: Record<string, unknown>;
+  }): Promise<OrganizationalMemory> => {
+    return apiClient("/api/intelligence/memory/form", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  },
+};
+
+// ==========================================
+// PHASE 16: CONTROLLED EXECUTION SERVICE CLIENT
+// ==========================================
+
+export const executionApi = {
+  authorize: async (
+    planId: string,
+    payload?: ExecutionAuthorizeRequest
+  ): Promise<ExecutionRecord> => {
+    return apiClient(`/api/intelligence/execution/${planId}/authorize`, {
+      method: "POST",
+      body: JSON.stringify(payload || {}),
+    });
+  },
+
+  execute: async (
+    planId: string,
+    payload?: ExecutionExecuteRequest
+  ): Promise<ExecutionRecord> => {
+    return apiClient(`/api/intelligence/execution/${planId}/execute`, {
+      method: "POST",
+      body: JSON.stringify(payload || {}),
+    });
+  },
+
+  getById: async (executionId: string): Promise<ExecutionRecord> => {
+    return apiClient(`/api/intelligence/execution/${executionId}`, {
+      method: "GET",
+    });
+  },
+
+  getReceipt: async (executionId: string): Promise<ExecutionReceipt> => {
+    return apiClient(`/api/intelligence/execution/${executionId}/receipt`, {
+      method: "GET",
+    });
+  },
+
+  cancel: async (
+    executionId: string,
+    payload: ExecutionCancelRequest
+  ): Promise<ExecutionRecord> => {
+    return apiClient(`/api/intelligence/execution/${executionId}/cancel`, {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  },
+
+  retry: async (
+    executionId: string,
+    payload?: ExecutionRetryRequest
+  ): Promise<ExecutionRecord> => {
+    return apiClient(`/api/intelligence/execution/${executionId}/retry`, {
+      method: "POST",
+      body: JSON.stringify(payload || {}),
+    });
+  },
+
+  getHistory: async (planId: string): Promise<ExecutionRecord[]> => {
+    return apiClient(`/api/intelligence/execution/${planId}/history`, {
+      method: "GET",
+    });
+  },
+
+  getQueue: async (): Promise<ExecutionQueueResponse> => {
+    return apiClient("/api/intelligence/execution/queue", {
+      method: "GET",
+    });
+  },
+};
+
+// ==========================================
+// PHASE 17: CONTINUOUS MONITORING API
+// ==========================================
+
+export const monitoringApi = {
+  triggerRun: async (payload?: MonitoringRunRequest): Promise<MonitoringRun> => {
+    return apiClient("/api/intelligence/monitoring/run", {
+      method: "POST",
+      body: JSON.stringify(payload || {}),
+    });
+  },
+
+  listRuns: async (limit: number = 20, offset: number = 0): Promise<MonitoringRunListResponse> => {
+    return apiClient(`/api/intelligence/monitoring/runs?limit=${limit}&offset=${offset}`, {
+      method: "GET",
+    });
+  },
+
+  getRun: async (runId: string): Promise<MonitoringRun> => {
+    return apiClient(`/api/intelligence/monitoring/runs/${runId}`, {
+      method: "GET",
+    });
+  },
+
+  createWatch: async (payload: MonitoringWatchCreate): Promise<MonitoringWatch> => {
+    return apiClient("/api/intelligence/monitoring/watches", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  },
+
+  listWatches: async (params?: {
+    status?: string;
+    watch_type?: string;
+    target_id?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<MonitoringWatchListResponse> => {
+    const searchParams = new URLSearchParams();
+    if (params?.status) searchParams.append("status", params.status);
+    if (params?.watch_type) searchParams.append("watch_type", params.watch_type);
+    if (params?.target_id) searchParams.append("target_id", params.target_id);
+    if (params?.limit) searchParams.append("limit", params.limit.toString());
+    if (params?.offset) searchParams.append("offset", params.offset.toString());
+
+    return apiClient(`/api/intelligence/monitoring/watches?${searchParams.toString()}`, {
+      method: "GET",
+    });
+  },
+
+  getWatch: async (watchId: string): Promise<MonitoringWatch> => {
+    return apiClient(`/api/intelligence/monitoring/watches/${watchId}`, {
+      method: "GET",
+    });
+  },
+
+  pauseWatch: async (watchId: string): Promise<MonitoringWatch> => {
+    return apiClient(`/api/intelligence/monitoring/watches/${watchId}/pause`, {
+      method: "POST",
+    });
+  },
+
+  resumeWatch: async (watchId: string): Promise<MonitoringWatch> => {
+    return apiClient(`/api/intelligence/monitoring/watches/${watchId}/resume`, {
+      method: "POST",
+    });
+  },
+
+  deleteWatch: async (watchId: string): Promise<{ message: string; watch_id: string }> => {
+    return apiClient(`/api/intelligence/monitoring/watches/${watchId}`, {
+      method: "DELETE",
+    });
+  },
+
+  listEvents: async (params?: {
+    severity?: string;
+    target_id?: string;
+    event_type?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<MonitoringEventListResponse> => {
+    const searchParams = new URLSearchParams();
+    if (params?.severity) searchParams.append("severity", params.severity);
+    if (params?.target_id) searchParams.append("target_id", params.target_id);
+    if (params?.event_type) searchParams.append("event_type", params.event_type);
+    if (params?.limit) searchParams.append("limit", params.limit.toString());
+    if (params?.offset) searchParams.append("offset", params.offset.toString());
+
+    return apiClient(`/api/intelligence/monitoring/events?${searchParams.toString()}`, {
+      method: "GET",
+    });
+  },
+
+  getEvent: async (eventId: string): Promise<MonitoringEvent> => {
+    return apiClient(`/api/intelligence/monitoring/events/${eventId}`, {
+      method: "GET",
+    });
+  },
+
+  listEscalations: async (params?: {
+    status?: string;
+    severity?: string;
+    target_id?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<EscalationCandidateListResponse> => {
+    const searchParams = new URLSearchParams();
+    if (params?.status) searchParams.append("status", params.status);
+    if (params?.severity) searchParams.append("severity", params.severity);
+    if (params?.target_id) searchParams.append("target_id", params.target_id);
+    if (params?.limit) searchParams.append("limit", params.limit.toString());
+    if (params?.offset) searchParams.append("offset", params.offset.toString());
+
+    return apiClient(`/api/intelligence/monitoring/escalations?${searchParams.toString()}`, {
+      method: "GET",
+    });
+  },
+
+  getEscalation: async (escalationId: string): Promise<EscalationCandidate> => {
+    return apiClient(`/api/intelligence/monitoring/escalations/${escalationId}`, {
+      method: "GET",
+    });
+  },
+
+  acknowledgeEscalation: async (
+    escalationId: string,
+    payload?: EscalationAcknowledgeRequest
+  ): Promise<EscalationCandidate> => {
+    return apiClient(`/api/intelligence/monitoring/escalations/${escalationId}/acknowledge`, {
+      method: "POST",
+      body: JSON.stringify(payload || {}),
+    });
+  },
+
+  resolveEscalation: async (
+    escalationId: string,
+    payload?: EscalationResolveRequest
+  ): Promise<EscalationCandidate> => {
+    return apiClient(`/api/intelligence/monitoring/escalations/${escalationId}/resolve`, {
+      method: "POST",
+      body: JSON.stringify(payload || {}),
+    });
+  },
+
+  dismissEscalation: async (
+    escalationId: string,
+    payload?: EscalationDismissRequest
+  ): Promise<EscalationCandidate> => {
+    return apiClient(`/api/intelligence/monitoring/escalations/${escalationId}/dismiss`, {
+      method: "POST",
+      body: JSON.stringify(payload || {}),
+    });
+  },
+
+  getSummary: async (): Promise<MonitoringSummaryResponse> => {
+    return apiClient("/api/intelligence/monitoring/summary", {
+      method: "GET",
+    });
+  },
+};
+
+
+
 
 
 

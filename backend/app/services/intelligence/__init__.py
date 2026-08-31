@@ -13,7 +13,22 @@ from app.services.intelligence.calibration_engine import CalibrationEngine
 from app.services.intelligence.adaptive_prediction_provider import AdaptivePredictionProvider
 from app.services.intelligence.feedback_service import FeedbackService
 from app.services.intelligence.intervention_effectiveness_service import InterventionEffectivenessService
-from app.services.intelligence.intelligence_service import IntelligenceService
+from app.services.intelligence.root_cause_engine import RootCauseAnalysisEngine
+from app.services.intelligence.impact_analysis_service import ImpactAnalysisService
+from app.services.intelligence.critical_path_engine import CriticalPathEngine
+from app.services.intelligence.resolution_planner import ResolutionPlanner
+from app.services.intelligence.resolution_simulation_service import ResolutionSimulationService
+from app.services.intelligence.risk_concentration_service import RiskConcentrationService
+from app.services.intelligence.decision_ranking_engine import DecisionRankingEngine
+from app.services.intelligence.intelligence_orchestrator import IntelligenceOrchestrator
+from app.services.intelligence.memory import (
+    SemanticContextEngine,
+    MemoryFormationService,
+    MemoryRetrievalService,
+    PatternDetectionService,
+    HistoricalOwnerAnalyticsService,
+    HistoricalRiskSignalProvider,
+)
 
 __all__ = [
     "OutcomeClassifier",
@@ -29,5 +44,20 @@ __all__ = [
     "AdaptivePredictionProvider",
     "FeedbackService",
     "InterventionEffectivenessService",
-    "IntelligenceService",
+    "RootCauseAnalysisEngine",
+    "ImpactAnalysisService",
+    "CriticalPathEngine",
+    "ResolutionPlanner",
+    "ResolutionSimulationService",
+    "RiskConcentrationService",
+    "DecisionRankingEngine",
+    "IntelligenceOrchestrator",
+    "SemanticContextEngine",
+    "MemoryFormationService",
+    "MemoryRetrievalService",
+    "PatternDetectionService",
+    "HistoricalOwnerAnalyticsService",
+    "HistoricalRiskSignalProvider",
 ]
+
+

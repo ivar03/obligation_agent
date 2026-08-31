@@ -333,6 +333,13 @@ class EventIngestionService:
             except Exception as e:
                 logger.error(f"Reconciliation error for obligation [{ob_id}]: {e}")
 
+        # Phase 16: Trigger Outcome Reconciliation for active executions
+        from app.services.execution.outcome_reconciliation_service import OutcomeReconciliationService
+        try:
+            await OutcomeReconciliationService.reconcile_event(session, audit_record, event)
+        except Exception as e:
+            logger.error(f"Execution outcome reconciliation error for event [{audit_record.id}]: {e}")
+
         return IngestionResultResponse(
             status=processing_status,
             event_id=audit_record.id,
