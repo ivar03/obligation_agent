@@ -45,7 +45,24 @@ async def list_reconciliations(
     )
 
 
+@router.post("/reconciliation/refresh", response_model=ReconciliationListResponse)
+async def refresh_workspace_reconciliation(
+    db: AsyncSession = Depends(get_db),
+    workspace: Workspace = Depends(get_current_workspace),
+    user: User = Depends(get_current_user),
+):
+    """
+    Re-evaluates cross-provider reconciliation across all obligations in active workspace and returns updated list.
+    """
+    await ReconciliationService.reconcile_workspace(session=db, workspace_id=workspace.id)
+    return await ReconciliationService.list_reconciliations(
+        session=db,
+        workspace_id=workspace.id,
+    )
+
+
 @router.get("/reconciliation/{reconciliation_id}", response_model=ReconciliationRecordResponse)
+
 async def get_reconciliation(
     reconciliation_id: str,
     db: AsyncSession = Depends(get_db),

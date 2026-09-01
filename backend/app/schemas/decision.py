@@ -65,8 +65,9 @@ class DecisionPlanResponse(BaseModel):
     impact_summary: Dict[str, Any] = Field(default_factory=dict)
     key_risks: List[str] = Field(default_factory=list)
     supporting_evidence: List[Dict[str, Any]] = Field(default_factory=list)
-    recommended_actions: Dict[str, Any] = Field(default_factory=dict)
+    recommended_actions: Dict[str, Any] | List[Any] | Any = Field(default_factory=dict)
     alternative_actions: List[Dict[str, Any]] = Field(default_factory=list)
+
     human_decisions_required: List[HumanDecisionRequirement] = Field(default_factory=list)
     assumptions: List[str] = Field(default_factory=list)
     uncertainties: List[str] = Field(default_factory=list)

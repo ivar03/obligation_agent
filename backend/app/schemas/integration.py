@@ -41,3 +41,22 @@ class OAuthConnectResponse(BaseModel):
 
 class SlackWebhookChallengeResponse(BaseModel):
     challenge: str
+
+
+# ==========================================
+# JIRA INTEGRATION SCHEMAS
+# ==========================================
+
+class JiraConnectTokenRequest(BaseModel):
+    site_url: str = Field(..., description="Jira Cloud Site URL e.g. https://your-domain.atlassian.net")
+    email: str = Field(..., description="Jira account email address")
+    api_token: str = Field(..., description="Atlassian API token")
+
+
+class JiraSelectProjectsRequest(BaseModel):
+    project_keys: List[str] = Field(..., description="List of Jira project keys to synchronize")
+
+
+class JiraSyncRequest(BaseModel):
+    project_keys: Optional[List[str]] = Field(default=None, description="Optional override project keys to sync")
+

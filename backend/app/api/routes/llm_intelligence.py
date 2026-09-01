@@ -52,6 +52,16 @@ async def check_llm_health():
     return await LLMProviderRegistry.get_all_health()
 
 
+@router.get("/status", response_model=Dict[str, Any])
+async def get_llm_runtime_status():
+    """
+    Returns non-secret runtime configuration and readiness status of the
+    LLM Natural-Language Intelligence layer.
+    """
+    return LLMProviderRegistry.get_runtime_status()
+
+
+
 @router.post("/analyze", response_model=LLMAnalyzeResponse)
 async def analyze_obligation_text(
     req: LLMAnalyzeRequest,

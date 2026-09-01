@@ -131,10 +131,17 @@ class ExecutionAuthorizationService:
 
         # 8. Check associated intervention if present
         intervention: Optional[Intervention] = None
-        rec_actions = plan.recommended_actions or {}
+        rec_raw = plan.recommended_actions
+        rec_actions: Dict[str, Any] = {}
+        if isinstance(rec_raw, dict):
+            rec_actions = rec_raw
+        elif isinstance(rec_raw, list) and len(rec_raw) > 0 and isinstance(rec_raw[0], dict):
+            rec_actions = rec_raw[0]
+
         inv_id = rec_actions.get("intervention_id")
         if inv_id:
             intervention = await session.get(Intervention, inv_id)
+
 
         # 9. Provider connection availability check
         if requested_provider not in ["mock", "slack", "email", "webhook"]:

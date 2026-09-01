@@ -303,10 +303,102 @@ async def handle_google_calendar_webhook(
 
 
 # ---------------------------------------------------------------------------
+# POST /webhooks/jira — Dedicated Jira Cloud Webhook Endpoint
+# ---------------------------------------------------------------------------
+
+@router.post("/jira")
+async def handle_jira_webhook(
+    request: Request,
+    db: AsyncSession = DatabaseSession,
+):
+    from app.services.providers.jira_provider import JiraProvider
+
+    # 1. Payload size check
+    try:
+        raw_body = await _read_and_check_body(request)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            detail="Jira webhook payload exceeds maximum allowed size.",
+        )
+
+    # 2. Signature / secret token validation
+    secret = settings.JIRA_WEBHOOK_SECRET
+    sig_header = (
+        request.headers.get("X-Hub-Signature")
+        or request.headers.get("X-Atlassian-Webhook-Signature")
+        or request.headers.get("X-Signature")
+    )
+    token_param = request.query_params.get("secret") or request.query_params.get("token")
+
+    if secret:
+        is_valid = JiraProvider.verify_jira_webhook(
+            request_body=raw_body,
+            secret=secret,
+            signature=sig_header,
+            token_param=token_param,
+        )
+        if not is_valid:
+            logger.warning("Jira webhook: unauthorized signature or secret token mismatch.")
+            metrics.increment("ingestion.webhook.rejected", labels={"provider": "jira", "reason": "invalid_signature"})
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Jira webhook verification failed: invalid signature or token.",
+            )
+
+    try:
+        payload = json.loads(raw_body.decode("utf-8")) if raw_body else {}
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid JSON payload: {str(e)}",
+        )
+
+    workspace_id = _extract_workspace_id(request)
+    webhook_event = payload.get("webhookEvent") or "jira:issue_updated"
+    metrics.increment("events.received_total", labels={"provider": "jira", "event": webhook_event})
+
+    # 3. Durable intake into EventInboxRecord
+    inbox_rec, is_dup = await EventInboxService.ingest_to_inbox(
+        session=db,
+        workspace_id=workspace_id,
+        provider="jira",
+        raw_payload=payload,
+        event_type=webhook_event,
+    )
+
+    # 4. Async ACK vs synchronous pipeline
+    if _is_async_requested(request):
+        return {
+            "status": "queued",
+            "event_id": inbox_rec.id,
+            "stream_key": inbox_rec.stream_key,
+            "provider": "jira",
+            "deduplicated": is_dup,
+            "received_at": inbox_rec.received_at.isoformat(),
+        }
+
+    try:
+        result = await EventIngestionService.ingest_from_provider(
+            session=db,
+            provider_name="jira",
+            raw_payload=payload,
+            workspace_id=workspace_id,
+        )
+        return result
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        )
+
+
+# ---------------------------------------------------------------------------
 # POST /webhooks/{provider} — generic webhook endpoint
 # ---------------------------------------------------------------------------
 
 @router.post("/{provider}", status_code=status.HTTP_201_CREATED)
+
 async def handle_provider_webhook(
     provider: str,
     payload: Dict[str, Any],

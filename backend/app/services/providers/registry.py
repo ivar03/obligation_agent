@@ -5,6 +5,7 @@ from app.services.providers.mock_provider import MockProvider
 from app.services.providers.slack_provider import SlackProvider
 from app.services.providers.gmail_provider import GmailProvider
 from app.services.providers.google_calendar_provider import GoogleCalendarProvider
+from app.services.providers.jira_provider import JiraProvider
 
 
 class ProviderRegistry:
@@ -20,6 +21,8 @@ class ProviderRegistry:
         self.register(SlackProvider())
         self.register(GmailProvider())
         self.register(GoogleCalendarProvider())
+        self.register(JiraProvider())
+
 
     def register(self, provider: BaseProvider) -> None:
         """Registers a provider adapter."""

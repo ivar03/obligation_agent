@@ -102,8 +102,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ counts }) => {
       name: "Governance & Audit",
       href: "/audit",
       icon: ShieldCheck,
-      active: pathname.startsWith("/audit"),
+      active: pathname === "/audit",
       badge: "Phase 15",
+    },
+    {
+      name: "Operations & Observability",
+      href: "/operations",
+      icon: Activity,
+      active: pathname.startsWith("/operations"),
+      badge: "Phase 21",
     },
     {
       name: "Workspace Settings",
@@ -111,6 +118,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ counts }) => {
       icon: Building2,
       active: pathname.startsWith("/settings"),
     },
+
     {
       name: "Onboarding Wizard",
       href: "/onboarding",

@@ -148,7 +148,35 @@ class AuditService:
 
         session.add(event)
         await session.flush()
+
+        # Bridge into Phase 21 Operational Audit Trail for Observability Explorer
+        try:
+            from app.services.operational_audit_service import OperationalAuditService
+            await OperationalAuditService.log_event(
+                session=session,
+                workspace_id=workspace_id,
+                event_type=f"DOMAIN_{entity_type or 'SYSTEM'}_{action_str}",
+                action=action_str,
+                severity=severity_str,
+                actor_type="USER" if actor_user_id else "SYSTEM",
+                actor_id=actor_user_id,
+                resource_type=entity_type,
+                resource_id=entity_id,
+                result=result_str,
+                metadata={
+                    **(safe_meta or {}),
+                    "audit_event_id": event_id,
+                    "reason": reason,
+                    "before_state": safe_before,
+                    "after_state": safe_after,
+                },
+                request_id=req_id,
+            )
+        except Exception as bridge_err:
+            logger.debug(f"Operational audit bridge error (non-fatal): {bridge_err}")
+
         return event
+
 
     @classmethod
     async def record_mutation(

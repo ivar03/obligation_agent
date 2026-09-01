@@ -19,6 +19,8 @@ from starlette.responses import Response
 
 # Context variables propagated through the async call chain
 request_id_ctx: ContextVar[Optional[str]] = ContextVar("request_id", default=None)
+trace_id_ctx: ContextVar[Optional[str]] = ContextVar("trace_id", default=None)
+span_id_ctx: ContextVar[Optional[str]] = ContextVar("span_id", default=None)
 client_ip_ctx: ContextVar[Optional[str]] = ContextVar("client_ip", default=None)
 user_agent_ctx: ContextVar[Optional[str]] = ContextVar("user_agent", default=None)
 request_start_ctx: ContextVar[Optional[float]] = ContextVar("request_start", default=None)
@@ -36,6 +38,20 @@ def sanitize_request_id(raw_id: Optional[str]) -> str:
     return str(uuid.uuid4())
 
 
+def sanitize_trace_id(raw_id: Optional[str]) -> str:
+    """Sanitizes or creates a standard 32-char hex trace ID."""
+    if raw_id:
+        cleaned = re.sub(r"[^a-zA-Z0-9\-_]", "", raw_id.strip())
+        if 4 <= len(cleaned) <= 64:
+            return cleaned
+    return uuid.uuid4().hex
+
+
+def generate_span_id() -> str:
+    """Generates a 16-char hex span ID."""
+    return uuid.uuid4().hex[:16]
+
+
 def get_current_request_id() -> str:
     """
     Returns the active request correlation ID.
@@ -45,6 +61,39 @@ def get_current_request_id() -> str:
     if not req_id:
         return str(uuid.uuid4())
     return req_id
+
+
+def get_current_trace_id() -> str:
+    """Returns the active distributed trace ID (defaults to request_id if unset)."""
+    tid = trace_id_ctx.get()
+    if tid:
+        return tid
+    req_id = request_id_ctx.get()
+    if req_id:
+        return req_id
+    return uuid.uuid4().hex
+
+
+def get_current_span_id() -> str:
+    """Returns the active span ID."""
+    sid = span_id_ctx.get()
+    if sid:
+        return sid
+    return generate_span_id()
+
+
+def set_trace_context(
+    trace_id: Optional[str] = None,
+    span_id: Optional[str] = None,
+    request_id: Optional[str] = None,
+):
+    """Explicitly sets trace context for background jobs or async workers."""
+    if trace_id:
+        trace_id_ctx.set(trace_id)
+    if span_id:
+        span_id_ctx.set(span_id)
+    if request_id:
+        request_id_ctx.set(request_id)
 
 
 def get_current_client_ip() -> Optional[str]:
@@ -61,6 +110,7 @@ def get_request_duration_ms() -> Optional[float]:
     if start is not None:
         return round((time.perf_counter() - start) * 1000, 2)
     return None
+
 
 
 class RequestContextMiddleware(BaseHTTPMiddleware):
@@ -84,7 +134,19 @@ class RequestContextMiddleware(BaseHTTPMiddleware):
             or request.headers.get("X-Correlation-Id")
         )
         req_id = sanitize_request_id(incoming_req_id)
+        
+        # Extract or generate trace ID & span ID
+        incoming_trace_id = (
+            request.headers.get("X-Trace-Id")
+            or request.headers.get("traceparent")
+            or incoming_req_id
+        )
+        trace_id = sanitize_trace_id(incoming_trace_id)
+        span_id = generate_span_id()
+
         token_req = request_id_ctx.set(req_id)
+        token_trace = trace_id_ctx.set(trace_id)
+        token_span = span_id_ctx.set(span_id)
         token_start = request_start_ctx.set(start)
 
         # Extract client IP
@@ -105,6 +167,8 @@ class RequestContextMiddleware(BaseHTTPMiddleware):
             response = await call_next(request)
             duration_ms = round((time.perf_counter() - start) * 1000, 2)
             response.headers["X-Request-Id"] = req_id
+            response.headers["X-Trace-Id"] = trace_id
+            response.headers["X-Span-Id"] = span_id
 
             # Emit structured access log (credential-free)
             _emit_access_log(request, response.status_code, duration_ms, req_id)
@@ -128,9 +192,12 @@ class RequestContextMiddleware(BaseHTTPMiddleware):
             raise
         finally:
             request_id_ctx.reset(token_req)
+            trace_id_ctx.reset(token_trace)
+            span_id_ctx.reset(token_span)
             request_start_ctx.reset(token_start)
             client_ip_ctx.reset(token_ip)
             user_agent_ctx.reset(token_ua)
+
 
 
 def _emit_access_log(request: Request, status_code: int, duration_ms: float, req_id: str):

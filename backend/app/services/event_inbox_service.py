@@ -63,6 +63,15 @@ class EventInboxService:
         elif prov in ("google_calendar", "google-calendar"):
             calendar_id = payload.get("calendarId") or payload.get("channelId") or "primary"
             return f"{workspace_id}:google_calendar:{calendar_id}"
+        elif prov == "jira":
+            issue_key = (
+                payload.get("key")
+                or payload.get("issue", {}).get("key")
+                or payload.get("issue_key")
+                or payload.get("project_key")
+                or "default"
+            )
+            return f"{workspace_id}:jira:{issue_key}"
         
         # Default partition per workspace + provider
         return f"{workspace_id}:{provider}:default"
@@ -89,8 +98,17 @@ class EventInboxService:
             )
         elif prov in ("google_calendar", "google-calendar"):
             return payload.get("id") or payload.get("resourceId") or payload.get("channelId")
+        elif prov == "jira":
+            key = payload.get("key") or payload.get("issue", {}).get("key")
+            comment_id = payload.get("comment", {}).get("id") if isinstance(payload.get("comment"), dict) else None
+            if key and comment_id:
+                return f"jira:{key}:comment:{comment_id}"
+            if key:
+                return f"jira:{key}"
+            return payload.get("id") or payload.get("event_id")
         
         return payload.get("id") or payload.get("event_id")
+
 
     @staticmethod
     def extract_safe_metadata(provider: str, payload: Dict[str, Any]) -> Dict[str, Any]:

@@ -639,12 +639,19 @@ class IntelligenceOrchestrator:
         Checks if underlying obligation state, root blocker status, or dependencies have changed.
         """
         # 1. Target obligation status change
-        rec_action = plan.recommended_actions or {}
+        rec_raw = plan.recommended_actions
+        rec_action: Dict[str, Any] = {}
+        if isinstance(rec_raw, dict):
+            rec_action = rec_raw
+        elif isinstance(rec_raw, list) and len(rec_raw) > 0 and isinstance(rec_raw[0], dict):
+            rec_action = rec_raw[0]
+
         target_id = rec_action.get("target_obligation_id")
         if target_id:
             target_ob = await session.get(Obligation, target_id)
             if target_ob and target_ob.status == ObligationStatus.COMPLETED:
                 return True
+
 
         # 2. Obligation status changed from when plan was generated
         if obligation.status == ObligationStatus.COMPLETED:

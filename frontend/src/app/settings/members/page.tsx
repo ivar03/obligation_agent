@@ -2,16 +2,19 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { workspacesApi } from "@/lib/api/obligations";
 import { Users, UserPlus, Trash2, Copy, Check, Loader2, AlertCircle } from "lucide-react";
 
 interface Member {
   id: string;
   user_id: string;
-  email?: string;
-  display_name?: string;
+  email?: string | null;
+  display_name?: string | null;
   role: string;
-  created_at: string;
+  created_at?: string | null;
 }
+
+
 
 interface Invitation {
   id: string;
@@ -39,17 +42,16 @@ export default function MembersSettingsPage() {
     if (!activeWorkspace) return;
     try {
       // Fetch members
-      const resMem = await fetch(`/api/workspaces/${activeWorkspace.id}`);
-      if (resMem.ok) {
-        const data = await resMem.json();
-        setMembers(data.members || []);
+      const dataMem = await workspacesApi.listMembers(activeWorkspace.id);
+      if (dataMem) {
+        setMembers(dataMem || []);
       }
 
+
       // Fetch invitations
-      const resInv = await fetch(`/api/workspaces/${activeWorkspace.id}/invitations`);
-      if (resInv.ok) {
-        const data = await resInv.json();
-        setInvitations(data || []);
+      const dataInv = await workspacesApi.listInvitations<Invitation>(activeWorkspace.id);
+      if (dataInv) {
+        setInvitations(dataInv || []);
       }
     } catch {}
   }, [activeWorkspace]);
@@ -65,20 +67,12 @@ export default function MembersSettingsPage() {
     setErrorMsg("");
     setInviteSuccess(null);
     try {
-      const res = await fetch(`/api/workspaces/${activeWorkspace.id}/invitations`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          invited_email: inviteEmail.trim(),
-          role: inviteRole,
-        }),
+      const data = await workspacesApi.createInvitation<Invitation>(activeWorkspace.id, {
+        invited_email: inviteEmail.trim(),
+        role: inviteRole,
       });
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.detail || "Failed to issue invitation.");
-      }
-      const data: Invitation = await res.json();
       setInviteSuccess(data);
+
       setInviteEmail("");
       fetchData();
     } catch (err: unknown) {
@@ -92,9 +86,7 @@ export default function MembersSettingsPage() {
   const handleCancelInvite = async (invId: string) => {
     if (!activeWorkspace) return;
     try {
-      await fetch(`/api/workspaces/${activeWorkspace.id}/invitations/${invId}`, {
-        method: "DELETE",
-      });
+      await workspacesApi.cancelInvitation(activeWorkspace.id, invId);
       fetchData();
     } catch {}
   };
@@ -106,6 +98,7 @@ export default function MembersSettingsPage() {
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);
   };
+
 
   return (
     <div className="space-y-6">

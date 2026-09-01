@@ -125,7 +125,13 @@ class ExecutionService:
                 requested_provider=provider_name,
             )
 
-            rec_actions = plan.recommended_actions or {}
+            rec_raw = plan.recommended_actions
+            rec_actions: Dict[str, Any] = {}
+            if isinstance(rec_raw, dict):
+                rec_actions = rec_raw
+            elif isinstance(rec_raw, list) and len(rec_raw) > 0 and isinstance(rec_raw[0], dict):
+                rec_actions = rec_raw[0]
+
             recipient = (
                 rec_actions.get("target_owner")
                 or (intervention.target_owner if intervention else None)

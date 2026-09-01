@@ -21,12 +21,14 @@ def test_settings_environment_helpers():
         DATABASE_URL="postgresql+asyncpg://user:pass@localhost:5432/db",
         JWT_SECRET_KEY="a" * 36,
         ENCRYPTION_KEY="k" * 32,
+        GEMINI_API_KEY="test-gemini-api-key-12345",
     )
     assert prod_settings.is_production() is True
     assert prod_settings.is_postgres() is True
     assert prod_settings.is_sqlite() is False
     errors = prod_settings.validate_production_config()
     assert len(errors) == 0
+
 
 
 def test_production_sqlite_rejection():

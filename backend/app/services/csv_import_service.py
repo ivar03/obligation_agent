@@ -58,10 +58,34 @@ def parse_flexible_date(date_str: str) -> Optional[datetime]:
     return None
 
 
+def defang_formula_injection(val: Optional[str]) -> Optional[str]:
+    """Escapes spreadsheet formula execution characters (=, +, -, @, tab, newline)."""
+    if not val:
+        return val
+    cleaned = val.strip()
+    if cleaned and cleaned[0] in ("=", "+", "-", "@", "\t", "\r"):
+        return "'" + cleaned
+    return cleaned
+
+
 class CsvImportService:
     """
     Handles CSV parsing, row-level validation, duplicate checking, and atomic ingestion.
     """
+
+
+    CSV_TEMPLATE: str = (
+        "action,owner,beneficiary,deadline,priority,obligation_type,description,dependencies\n"
+        "Deliver Q3 Financial Audit Report,alice@company.com,sarah@company.com,2026-09-30,HIGH,OWED_BY_ME,Complete and sign off on Q3 revenue reconciliation,\n"
+        "Deploy Database Migration,bob@company.com,dev-team,2026-09-15,CRITICAL,OWED_BY_ME,Apply schema updates in staging,\n"
+        "Verify Security Compliance,charlie@company.com,Compliance Board,2026-10-15,MEDIUM,OWED_BY_ME,Annual access audit and log review,Deliver Q3 Financial Audit Report\n"
+        "Provide Vendor Security Review,vendor@partner.com,alice@company.com,2026-09-20,MEDIUM,OWED_TO_ME,Third-party SOC2 compliance package,\n"
+    )
+
+    @classmethod
+    def get_template_csv(cls) -> str:
+        """Returns standard CSV template content."""
+        return cls.CSV_TEMPLATE
 
     @classmethod
     async def preview_csv(
@@ -70,6 +94,7 @@ class CsvImportService:
         workspace_id: str,
         csv_text: str,
     ) -> CsvImportPreviewResponse:
+
         # Load existing actions in this workspace for duplicate detection
         stmt = select(Obligation.action).where(Obligation.workspace_id == workspace_id)
         existing_actions = set((await session.execute(stmt)).scalars().all())
@@ -95,17 +120,18 @@ class CsvImportService:
             errors = []
 
             # 1. Action requirement
-            action = row.get("action") or row.get("title") or row.get("commitment")
+            action = defang_formula_injection(row.get("action") or row.get("title") or row.get("commitment"))
             if not action:
                 errors.append("Missing required field 'action'.")
 
             # 2. Owner requirement
-            owner = row.get("owner") or row.get("assignee") or row.get("person")
+            owner = defang_formula_injection(row.get("owner") or row.get("assignee") or row.get("person"))
             if not owner:
                 errors.append("Missing required field 'owner'.")
 
             # 3. Beneficiary (optional, defaults to Company)
-            beneficiary = row.get("beneficiary") or row.get("recipient") or "Company"
+            beneficiary = defang_formula_injection(row.get("beneficiary") or row.get("recipient") or "Company")
+
 
             # 4. Deadline parsing
             raw_deadline = row.get("deadline") or row.get("due_date") or row.get("due")

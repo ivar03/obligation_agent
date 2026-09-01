@@ -147,17 +147,21 @@ async function apiClient<T>(endpoint: string, options: RequestInit = {}): Promis
     authHeaders["X-Workspace-Id"] = activeWorkspaceId;
   }
 
-  const headers = {
-    "Content-Type": "application/json",
+  const headers: Record<string, string> = {
     ...authHeaders,
-    ...options.headers,
+    ...(options.headers as Record<string, string>),
   };
+
+  if (!(options.body instanceof FormData) && !headers["Content-Type"]) {
+    headers["Content-Type"] = "application/json";
+  }
 
   const response = await fetch(url, {
     credentials: "include",
     ...options,
     headers,
   });
+
 
   if (!response.ok) {
     let errorDetail = "An unexpected error occurred.";
@@ -664,7 +668,14 @@ export const reconciliationApi = {
       body: JSON.stringify(payload || {}),
     });
   },
+
+  refresh: async (): Promise<ReconciliationListResponse> => {
+    return apiClient("/api/reconciliation/refresh", {
+      method: "POST",
+    });
+  },
 };
+
 
 // ==========================================
 // PHASE 12: INTELLIGENCE & PREDICTIONS API
@@ -926,7 +937,34 @@ export const workspacesApi = {
       method: "DELETE",
     });
   },
+
+  listInvitations: async <T = Record<string, unknown>>(workspaceId: string): Promise<T[]> => {
+    return apiClient(`/api/workspaces/${workspaceId}/invitations`, { method: "GET" });
+  },
+
+  createInvitation: async <T = Record<string, unknown>>(workspaceId: string, data: { invited_email: string; role: string }): Promise<T> => {
+    return apiClient(`/api/workspaces/${workspaceId}/invitations`, {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  },
+
+  cancelInvitation: async (workspaceId: string, invitationId: string): Promise<{ message: string }> => {
+    return apiClient(`/api/workspaces/${workspaceId}/invitations/${invitationId}`, {
+      method: "DELETE",
+    });
+  },
+
+  acceptInvitation: async (data: { token: string; display_name?: string; password?: string }): Promise<{ message: string; workspace_id: string; user_id: string; role: string }> => {
+    return apiClient(`/api/workspaces/invitations/accept`, {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  },
 };
+
+
+
 
 export const auditApi = {
   list: async (params?: {
@@ -1351,6 +1389,202 @@ export const monitoringApi = {
     });
   },
 };
+
+export const importExportApi = {
+  previewCsv: async <T = Record<string, unknown>>(formData: FormData): Promise<T> => {
+    return apiClient(`/api/obligations/import/csv/preview`, {
+      method: "POST",
+      body: formData,
+    });
+  },
+  commitCsv: async <T = Record<string, unknown>>(payload: { rows: unknown[]; skip_duplicates?: boolean }): Promise<T> => {
+    return apiClient(`/api/obligations/import/csv/commit`, {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  },
+  getTemplateUrl: (): string => {
+    return `${API_BASE_URL}/api/obligations/import/csv/template`;
+  },
+};
+
+export const jiraApi = {
+  connectToken: async <T = Record<string, unknown>>(data: {
+    site_url: string;
+    email: string;
+    api_token: string;
+  }): Promise<T> => {
+    return apiClient(`/api/integrations/jira/connect-token`, {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  },
+
+  listProjects: async <T = Record<string, unknown>>(): Promise<T[]> => {
+    return apiClient(`/api/integrations/jira/projects`, {
+      method: "GET",
+    });
+  },
+
+  selectProjects: async <T = Record<string, unknown>>(project_keys: string[]): Promise<T> => {
+    return apiClient(`/api/integrations/jira/projects`, {
+      method: "POST",
+      body: JSON.stringify({ project_keys }),
+    });
+  },
+
+  triggerSync: async <T = Record<string, unknown>>(project_keys?: string[]): Promise<T> => {
+    return apiClient(`/api/integrations/jira/sync`, {
+      method: "POST",
+      body: JSON.stringify(project_keys ? { project_keys } : {}),
+    });
+  },
+
+  getSyncStatus: async <T = Record<string, unknown>>(): Promise<T> => {
+    return apiClient(`/api/integrations/jira/sync/status`, {
+      method: "GET",
+    });
+  },
+};
+
+// ==========================================
+// PHASE 20: LLM NATURAL-LANGUAGE INTELLIGENCE API
+// ==========================================
+
+export const llmApi = {
+  getStatus: async (): Promise<{
+    provider: string;
+    model: string;
+    is_ready: boolean;
+    rate_limiter?: Record<string, unknown>;
+    validation_status?: string;
+  }> => {
+    return apiClient("/api/intelligence/llm/status", {
+      method: "GET",
+    });
+  },
+
+  getProviders: async (): Promise<{
+    active_provider: string;
+    registered_providers: Array<{ name: string; is_available: boolean }>;
+  }> => {
+    return apiClient("/api/intelligence/llm/providers", {
+      method: "GET",
+    });
+  },
+
+  getHistory: async <T = Record<string, unknown>>(params?: { workspace_id?: string; limit?: number }): Promise<T[]> => {
+    const query = new URLSearchParams();
+    const wsId = params?.workspace_id || getActiveWorkspaceId() || "ws-default";
+    query.append("workspace_id", wsId);
+    if (params?.limit) query.append("limit", String(params.limit));
+    return apiClient(`/api/intelligence/llm/history?${query.toString()}`, {
+      method: "GET",
+    });
+  },
+};
+
+// ==========================================
+// PHASE 21: OPERATIONAL OBSERVABILITY & AUDIT API
+// ==========================================
+
+export const opsApi = {
+  listAudit: async <T = Record<string, unknown>>(params?: {
+    workspace_id?: string;
+    event_type?: string;
+    severity?: string;
+    trace_id?: string;
+    actor_id?: string;
+    request_id?: string;
+    resource_id?: string;
+    provider?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<T[]> => {
+    const query = new URLSearchParams();
+    const wsId = params?.workspace_id || getActiveWorkspaceId() || "ws-default";
+    query.append("workspace_id", wsId);
+    if (params?.event_type) query.append("event_type", params.event_type);
+    if (params?.severity) query.append("severity", params.severity);
+    if (params?.trace_id) query.append("trace_id", params.trace_id);
+    if (params?.actor_id) query.append("actor_id", params.actor_id);
+    if (params?.request_id) query.append("request_id", params.request_id);
+    if (params?.resource_id) query.append("resource_id", params.resource_id);
+    if (params?.provider) query.append("provider", params.provider);
+    if (params?.limit) query.append("limit", String(params.limit));
+    if (params?.offset) query.append("offset", String(params.offset));
+
+    const qs = query.toString();
+    return apiClient(`/api/ops/audit${qs ? `?${qs}` : ""}`, {
+      method: "GET",
+    });
+  },
+
+  verifyAuditIntegrity: async <T = Record<string, unknown>>(workspaceId?: string): Promise<T> => {
+    const wsId = workspaceId || getActiveWorkspaceId() || "ws-default";
+    return apiClient(`/api/ops/audit/integrity?workspace_id=${encodeURIComponent(wsId)}`, {
+      method: "GET",
+    });
+  },
+
+  getAuditStats: async <T = Record<string, unknown>>(workspaceId?: string): Promise<T> => {
+    const wsId = workspaceId || getActiveWorkspaceId() || "ws-default";
+    return apiClient(`/api/ops/audit/stats?workspace_id=${encodeURIComponent(wsId)}`, {
+      method: "GET",
+    });
+  },
+
+  getAuditRecord: async <T = Record<string, unknown>>(recordId: string): Promise<T> => {
+    return apiClient(`/api/ops/audit/${encodeURIComponent(recordId)}`, {
+      method: "GET",
+    });
+  },
+
+  getDashboardMetrics: async <T = Record<string, unknown>>(workspaceId?: string): Promise<T> => {
+    const wsId = workspaceId || getActiveWorkspaceId() || "ws-default";
+    return apiClient(`/api/ops/dashboard?workspace_id=${encodeURIComponent(wsId)}`, {
+      method: "GET",
+    });
+  },
+
+  getAlerts: async <T = Record<string, unknown>>(workspaceId?: string, status?: string): Promise<T[]> => {
+    const query = new URLSearchParams();
+    const wsId = workspaceId || getActiveWorkspaceId() || "ws-default";
+    query.append("workspace_id", wsId);
+    if (status) query.append("status", status);
+    return apiClient(`/api/ops/alerts?${query.toString()}`, {
+      method: "GET",
+    });
+  },
+
+  evaluateAlerts: async <T = Record<string, unknown>>(workspaceId?: string): Promise<T> => {
+    const wsId = workspaceId || getActiveWorkspaceId() || "ws-default";
+    return apiClient(`/api/ops/alerts/evaluate?workspace_id=${encodeURIComponent(wsId)}`, {
+      method: "POST",
+    });
+  },
+
+  actionAlert: async <T = Record<string, unknown>>(
+    alertId: string,
+    payload: { action: string; reason?: string }
+  ): Promise<T> => {
+    return apiClient(`/api/ops/alerts/${encodeURIComponent(alertId)}/action`, {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  },
+
+  getTrace: async <T = Record<string, unknown>>(traceId: string, workspaceId?: string): Promise<T> => {
+    const wsId = workspaceId || getActiveWorkspaceId() || "ws-default";
+    return apiClient(`/api/ops/traces/${encodeURIComponent(traceId)}?workspace_id=${encodeURIComponent(wsId)}`, {
+      method: "GET",
+    });
+  },
+};
+
+
+
+
 
 
 

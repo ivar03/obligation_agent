@@ -210,6 +210,38 @@ class MockLLMProvider(BaseLLMProvider):
     def _generate_event_semantic_proposal(self, user_prompt: str) -> EventSemanticProposal:
         text = user_prompt.lower()
 
+        # Scenario F: Negative Blocker
+        # "I can't finish the migration because the production credentials haven't arrived."
+        if "can't" in text or "cannot" in text or "blocked" in text or "failed" in text or "haven't arrived" in text:
+            return EventSemanticProposal(
+                semantic_role="NEGATIVE_BLOCKER",
+                confidence=0.92,
+                summary="Task is obstructed by an unresolved dependency or blocker.",
+                actor="Sender",
+                deliverable="migration" if "migration" in text else "task",
+                evidence_strength=0.85,
+                contradictions=["Blocker: missing prerequisites or credentials"],
+                reasoning="Explicit negative constraint and blocker explanation detected.",
+                provider="mock",
+                prompt_version="v1",
+            )
+
+        # Scenario E: Progress Update
+        # "I'm still working on the migration."
+        if "working on" in text or "in progress" in text or "drafting" in text or "making progress" in text or "almost finished" in text or "almost done" in text:
+            return EventSemanticProposal(
+                semantic_role="PROGRESS_UPDATE",
+                confidence=0.90,
+                summary="Work is actively ongoing; not yet complete.",
+                actor="Sender",
+                deliverable="migration" if "migration" in text else "active task",
+                evidence_strength=0.60,
+                contradictions=[],
+                reasoning="Ongoing progressive tense indicates active work without completion assertion.",
+                provider="mock",
+                prompt_version="v1",
+            )
+
         # Scenario D: Completion Signal
         # "I've sent the benchmark results to Priya."
         if any(w in text for w in ["sent", "submitted", "finished", "uploaded", "completed", "deployed", "resolved"]):
@@ -230,38 +262,6 @@ class MockLLMProvider(BaseLLMProvider):
                     prompt_version="v1",
                 )
 
-
-        # Scenario E: Progress Update
-        # "I'm still working on the migration."
-        if "working on" in text or "in progress" in text or "drafting" in text or "making progress" in text:
-            return EventSemanticProposal(
-                semantic_role="PROGRESS_UPDATE",
-                confidence=0.90,
-                summary="Work is actively ongoing; not yet complete.",
-                actor="Sender",
-                deliverable="migration" if "migration" in text else "active task",
-                evidence_strength=0.60,
-                contradictions=[],
-                reasoning="Ongoing progressive tense indicates active work without completion assertion.",
-                provider="mock",
-                prompt_version="v1",
-            )
-
-        # Scenario F: Negative Blocker
-        # "I can't finish the migration because the production credentials haven't arrived."
-        if "can't" in text or "cannot" in text or "blocked" in text or "failed" in text or "haven't arrived" in text:
-            return EventSemanticProposal(
-                semantic_role="NEGATIVE_BLOCKER",
-                confidence=0.92,
-                summary="Task is obstructed by an unresolved dependency or blocker.",
-                actor="Sender",
-                deliverable="migration" if "migration" in text else "task",
-                evidence_strength=0.85,
-                contradictions=["Blocker: missing prerequisites or credentials"],
-                reasoning="Explicit negative constraint and blocker explanation detected.",
-                provider="mock",
-                prompt_version="v1",
-            )
 
         # Request
         if "please" in text or "can you" in text or "could you" in text:

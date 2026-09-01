@@ -245,8 +245,10 @@ class IntegrationService:
             )
 
         record.status = "DISCONNECTED"
+        record.encrypted_credentials = None
         record.updated_at = utc_now()
         await session.flush()
+
 
         from app.services.audit_service import AuditService
         from app.core.status_machine import AuditAction

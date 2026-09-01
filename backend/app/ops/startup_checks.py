@@ -32,7 +32,10 @@ REQUIRED_TABLES = [
     "background_jobs",
     "event_inbox",
     "llm_analysis_records",
+    "operational_audit_records",
+    "operational_alerts",
 ]
+
 
 
 

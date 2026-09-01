@@ -18,7 +18,11 @@ from app.schemas.integration import (
     IntegrationListResponse,
     IntegrationTestResponse,
     OAuthConnectResponse,
+    JiraConnectTokenRequest,
+    JiraSelectProjectsRequest,
+    JiraSyncRequest,
 )
+
 from app.services.integration_service import IntegrationService
 
 router = APIRouter(prefix="/integrations", tags=["Integrations & Connections"])
@@ -143,3 +147,94 @@ async def disconnect_integration(
     Disconnects an active external provider. Requires ADMIN or higher.
     """
     return await IntegrationService.disconnect(db, provider, workspace_id=workspace.id)
+
+
+# =============================================================================
+# JIRA CLOUD SPECIFIC INTEGRATION ENDPOINTS
+# =============================================================================
+
+@router.post("/jira/connect-token")
+async def connect_jira_with_token(
+    payload: JiraConnectTokenRequest,
+    db: AsyncSession = DatabaseSession,
+    workspace: Workspace = Depends(get_current_workspace),
+    membership: WorkspaceMembership = Depends(require_role(WorkspaceRole.ADMIN)),
+    user: User = Depends(get_current_user),
+):
+    """
+    Connects Jira Cloud using API token authentication. Requires workspace ADMIN.
+    """
+    from app.services.jira_service import JiraService
+    return await JiraService.connect_jira(
+        session=db,
+        workspace_id=workspace.id,
+        site_url=payload.site_url,
+        email=payload.email,
+        api_token=payload.api_token,
+    )
+
+
+@router.get("/jira/projects")
+async def list_jira_projects(
+    db: AsyncSession = DatabaseSession,
+    workspace: Workspace = Depends(get_current_workspace),
+    user: User = Depends(get_current_user),
+):
+    """
+    Discovers accessible Jira projects for the active workspace.
+    """
+    from app.services.jira_service import JiraService
+    return await JiraService.list_projects(session=db, workspace_id=workspace.id)
+
+
+@router.post("/jira/projects")
+async def select_jira_projects(
+    payload: JiraSelectProjectsRequest,
+    db: AsyncSession = DatabaseSession,
+    workspace: Workspace = Depends(get_current_workspace),
+    membership: WorkspaceMembership = Depends(require_role(WorkspaceRole.ADMIN)),
+    user: User = Depends(get_current_user),
+):
+    """
+    Updates the list of Jira projects to synchronize for the active workspace. Requires ADMIN.
+    """
+    from app.services.jira_service import JiraService
+    return await JiraService.select_projects(
+        session=db,
+        workspace_id=workspace.id,
+        project_keys=payload.project_keys,
+    )
+
+
+@router.post("/jira/sync")
+async def trigger_jira_sync(
+    payload: Optional[JiraSyncRequest] = None,
+    db: AsyncSession = DatabaseSession,
+    workspace: Workspace = Depends(get_current_workspace),
+    membership: WorkspaceMembership = Depends(require_role(WorkspaceRole.ADMIN)),
+    user: User = Depends(get_current_user),
+):
+    """
+    Triggers an on-demand synchronization of Jira issues into the event pipeline. Requires ADMIN.
+    """
+    from app.services.jira_service import JiraService
+    project_keys = payload.project_keys if payload else None
+    return await JiraService.sync_issues(
+        session=db,
+        workspace_id=workspace.id,
+        project_keys=project_keys,
+    )
+
+
+@router.get("/jira/sync/status")
+async def get_jira_sync_status(
+    db: AsyncSession = DatabaseSession,
+    workspace: Workspace = Depends(get_current_workspace),
+    user: User = Depends(get_current_user),
+):
+    """
+    Returns current sync status, selected projects, and last synced timestamp.
+    """
+    from app.services.jira_service import JiraService
+    return await JiraService.get_sync_status(session=db, workspace_id=workspace.id)
+

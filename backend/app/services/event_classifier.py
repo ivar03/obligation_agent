@@ -19,6 +19,7 @@ class EventClassifier:
         r"\b(?:haven'?t|have\s+not)\s+(?:sent|submitted|finished|completed|received|reviewed|exported|provided)\b",
         r"\b(?:still\s+haven'?t|still\s+waiting\s+for|not\s+yet\s+sent|delayed|rejected|blocked\s+by|blocked\s+on|is\s+blocked|export\s+failed|failed\s+because)\b",
         r"\b(?:client\s+rejected|proposal\s+rejected|did\s+not\s+send|meeting\s+cancelled|meeting_cancelled|cancelled\s+meeting|found\s+discrepancies|discrepancies\s+in|not\s+ready)\b",
+        r"\b(?:status:\s*blocked|status\s+transition:\s*.*\bblocked|\bblocked\b)\b",
     ]
 
     COMMITMENT_PATTERNS = [
@@ -34,13 +35,16 @@ class EventClassifier:
 
     PROGRESS_PATTERNS = [
         r"\b(?:working\s+on|currently\s+drafting|in\s+progress|drafting|almost\s+done|making\s+progress|accepted\s+the\s+project|attendee_response|meeting\s+concluded|meeting_completed)\b",
+        r"\b(?:status:\s*in\s*progress|status:\s*to\s*do|status\s+transition:\s*.*\bin\s*progress)\b",
     ]
 
     COMPLETION_PATTERNS = [
         r"\b(?:sent|submitted|finished|completed|reviewed|uploaded|delivered|signed|deployed|published|provided|exported)\b",
         r"\b(?:attached|attaching|here\s+is|here\s+are|all\s+done|task\s+complete|done\s+with|discrepancies\s+resolved|all\s+resolved)\b",
         r"\b(?:csv\s+sent|docs\s+sent|report\s+sent|numbers\s+sent|email\s+sent)\b",
+        r"\b(?:status:\s*done|status:\s*resolved|status:\s*closed|status\s+transition:\s*.*\b(?:done|resolved|closed))\b",
     ]
+
 
     IRRELEVANT_PATTERNS = [
         r"^(?:hi|hello|hey|good\s+morning|good\s+afternoon|good\s+evening|thanks|thank\s+you|cool|ok|okay|sounds\s+good|got\s+it)[.!]?$",

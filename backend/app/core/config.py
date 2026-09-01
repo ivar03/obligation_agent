@@ -46,16 +46,17 @@ class Settings(BaseSettings):
     # LLM (Phase 20 Natural-Language Intelligence Layer)
     # -------------------------------------------------------------------------
     LLM_ENABLED: bool = True
-    LLM_PROVIDER: str = "mock"  # "mock" | "openai" | "local" | "anthropic"
-    LLM_MODEL: str = "mock-intelligence-v1"
+    LLM_PROVIDER: str = "mock"  # "mock" | "gemini"
+    LLM_MODEL: str = "gemini-1.5-flash"
     LLM_MAX_REQUESTS_PER_MINUTE: int = 60
     LLM_MAX_TOKENS_PER_REQUEST: int = 2048
     LLM_MAX_DAILY_REQUESTS: int = 5000
     LLM_TIMEOUT_SECONDS: float = 5.0
     LLM_TEMPERATURE: float = 0.0
     LLM_FALLBACK_TO_DETERMINISTIC: bool = True
-    OPENAI_API_KEY: str = ""
     GEMINI_API_KEY: str = ""
+
+
 
     # -------------------------------------------------------------------------
     # Slack Integration (Phase 8)
@@ -86,6 +87,19 @@ class Settings(BaseSettings):
     GOOGLE_CALENDAR_CLIENT_SECRET: str = ""
     GOOGLE_CALENDAR_REDIRECT_URI: str = "http://localhost:8000/api/integrations/google_calendar/callback"
     GOOGLE_CALENDAR_WEBHOOK_SECRET: str = ""
+
+    # -------------------------------------------------------------------------
+    # Jira Integration (External Work Provider)
+    # -------------------------------------------------------------------------
+    JIRA_ENABLED: bool = True
+    JIRA_SITE_URL: str = ""
+    JIRA_USER_EMAIL: str = ""
+    JIRA_API_TOKEN: str = ""
+    JIRA_WEBHOOK_SECRET: str = ""
+    JIRA_CLIENT_ID: str = ""
+    JIRA_CLIENT_SECRET: str = ""
+    JIRA_REDIRECT_URI: str = "http://localhost:8000/api/integrations/jira/callback"
+
 
     # -------------------------------------------------------------------------
     # Environment & Security (Phase 17)
@@ -154,12 +168,22 @@ class Settings(BaseSettings):
     BACKUP_VERIFY_ON_CREATE: bool = True
 
     # -------------------------------------------------------------------------
+    # Development & Demo Seed
+    # -------------------------------------------------------------------------
+    DEMO_USER_EMAIL: str = "demo@obligation.local"
+    DEMO_USER_PASSWORD: str = "demo1234"
+    DEMO_WORKSPACE_NAME: str = "Demo Workspace"
+    DEMO_WORKSPACE_ID: str = "ws-default"
+    DEMO_USER_ID: str = "usr-default"
+
+    # -------------------------------------------------------------------------
     # Phase 19: Observability
     # -------------------------------------------------------------------------
     LOG_LEVEL: str = "INFO"
     LOG_FORMAT: str = "text"        # "json" (production) | "text" (development)
     METRICS_ENABLED: bool = True
     METRICS_WINDOW_SIZE: int = 1000  # rolling sample count for percentile calculation
+
 
     # =========================================================================
     # Environment Detection Helpers
@@ -206,7 +230,10 @@ class Settings(BaseSettings):
                 )
             if self.ENCRYPTION_KEY == "":
                 errors.append("ENCRYPTION_KEY must be explicitly configured in production.")
+            if self.LLM_ENABLED and self.LLM_PROVIDER.lower() == "gemini" and not self.GEMINI_API_KEY:
+                errors.append("GEMINI_API_KEY must be configured when LLM_PROVIDER is 'gemini' in production.")
         if self.is_staging():
+
             if self.is_sqlite():
                 errors.append("SQLite is not recommended for staging; prefer PostgreSQL.")
         return errors

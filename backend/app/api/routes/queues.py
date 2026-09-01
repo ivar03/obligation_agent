@@ -98,14 +98,15 @@ async def get_evidence_review_queue(
             {
                 "id": e.id,
                 "obligation_id": e.obligation_id,
-                "evidence_type": e.evidence_type.value,
+                "evidence_type": e.evidence_type.value if hasattr(e.evidence_type, "value") else str(e.evidence_type),
                 "source_type": e.source_type,
                 "content": e.content,
-                "actor": e.actor,
-                "confidence_score": e.confidence_score,
+                "actor": getattr(e, "actor", None),
+                "confidence_score": getattr(e, "correlation_confidence", 1.0),
                 "created_at": e.created_at.isoformat(),
                 "url": f"/obligations/{e.obligation_id}",
             }
+
             for e in items
         ],
     }

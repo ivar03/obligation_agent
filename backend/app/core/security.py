@@ -106,3 +106,55 @@ def decode_session_token(token: str) -> Optional[Dict[str, Any]]:
         return payload
     except Exception:
         return None
+
+
+def hash_invitation_token(raw_token: str) -> str:
+    """Computes SHA-256 hash of an invitation token for database storage."""
+    return hashlib.sha256(raw_token.strip().encode("utf-8")).hexdigest()
+
+
+def verify_invitation_token(raw_token: str, stored_hash: str) -> bool:
+    """Verifies a raw invitation token against its stored SHA-256 hash."""
+    computed_hash = hash_invitation_token(raw_token)
+    return secrets.compare_digest(computed_hash, stored_hash)
+
+
+def generate_secure_invitation_token() -> tuple[str, str]:
+    """
+    Generates a high-entropy URL-safe invitation token and its persistent SHA-256 hash.
+    Returns: (raw_token_for_email_link, hashed_token_for_db)
+    """
+    raw_token = secrets.token_urlsafe(32)
+    hashed_token = hash_invitation_token(raw_token)
+    return raw_token, hashed_token
+
+
+def generate_oauth_state(workspace_id: str, provider: str = "slack") -> str:
+    """Generates an HMAC-signed CSRF state parameter for OAuth handshakes."""
+    now = int(time.time())
+    nonce = secrets.token_hex(16)
+    payload = f"{workspace_id}:{provider}:{now}:{nonce}"
+    sig = hmac.new(AUTH_SECRET_KEY.encode("utf-8"), payload.encode("utf-8"), hashlib.sha256).hexdigest()[:32]
+    return f"{payload}:{sig}"
+
+
+def validate_oauth_state(state: str, max_age_seconds: int = 600) -> Optional[Dict[str, str]]:
+    """
+    Validates an OAuth state string for signature validity and expiration (10 min).
+    Returns dict with workspace_id and provider if valid, None otherwise.
+    """
+    if not state or state.count(":") != 4:
+        return None
+    try:
+        ws_id, provider, ts_str, nonce, sig = state.split(":")
+        payload = f"{ws_id}:{provider}:{ts_str}:{nonce}"
+        expected_sig = hmac.new(AUTH_SECRET_KEY.encode("utf-8"), payload.encode("utf-8"), hashlib.sha256).hexdigest()[:32]
+        if not secrets.compare_digest(sig, expected_sig):
+            return None
+        ts = int(ts_str)
+        if time.time() - ts > max_age_seconds:
+            return None
+        return {"workspace_id": ws_id, "provider": provider}
+    except Exception:
+        return None
+

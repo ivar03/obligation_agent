@@ -116,7 +116,27 @@ async def get_decision_queue(
     items: List[DecisionPlanSummaryResponse] = []
     for p in plans:
         ob = await db.get(Obligation, p.target_obligation_id)
-        rec = p.recommended_actions or {}
+        rec_raw = p.recommended_actions
+        rec: Dict[str, Any] = {}
+        if isinstance(rec_raw, dict):
+            rec = rec_raw
+        elif isinstance(rec_raw, list) and len(rec_raw) > 0 and isinstance(rec_raw[0], dict):
+            rec = rec_raw[0]
+        elif isinstance(rec_raw, list) and len(rec_raw) > 0:
+            rec = {"strategy_name": str(rec_raw[0])}
+
+        strategy_name = (
+            rec.get("strategy_name")
+            or rec.get("action")
+            or rec.get("name")
+            or (p.primary_objective if p.primary_objective else "Primary Strategy")
+        )
+        target_owner = (
+            rec.get("target_owner")
+            or (ob.owner if ob else None)
+            or "Unassigned"
+        )
+
         items.append(
             DecisionPlanSummaryResponse(
                 id=p.id,
@@ -131,14 +151,15 @@ async def get_decision_queue(
                 overall_risk=p.overall_risk,
                 decision_confidence=p.decision_confidence,
                 primary_objective=p.primary_objective,
-                recommended_strategy_name=rec.get("strategy_name", "Primary Strategy"),
-                target_owner=rec.get("target_owner", "Unassigned"),
+                recommended_strategy_name=strategy_name,
+                target_owner=target_owner,
                 human_decisions_count=len(p.human_decisions_required or []),
                 is_stale=p.status == DecisionPlanStatus.SUPERSEDED,
                 generated_at=p.generated_at,
             )
         )
     return DecisionPlanListResponse(items=items, total=len(items))
+
 
 
 @router.get("/{obligation_id}", response_model=DecisionPlanResponse)
@@ -297,11 +318,18 @@ async def simulate_plan_strategy(
     target_id = plan.target_obligation_id
     action = payload.custom_action or "COMPLETE_OBLIGATION"
     params = payload.custom_parameters or {}
+    rec_raw = plan.recommended_actions
+    rec: Dict[str, Any] = {}
 
-    rec = plan.recommended_actions or {}
+    if isinstance(rec_raw, dict):
+        rec = rec_raw
+    elif isinstance(rec_raw, list) and len(rec_raw) > 0 and isinstance(rec_raw[0], dict):
+        rec = rec_raw[0]
+
     if payload.strategy_id and payload.strategy_id == rec.get("strategy_id"):
         target_id = rec.get("target_obligation_id", target_id)
         action = rec.get("strategy_type", action)
+
 
     for alt in plan.alternative_actions or []:
         if payload.strategy_id and payload.strategy_id == alt.get("strategy_id"):

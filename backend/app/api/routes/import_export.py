@@ -1,10 +1,7 @@
-"""
-Phase 18 Bulk Data Ingestion & CSV Import Routes.
-"""
-
 from typing import Optional
-from fastapi import APIRouter, Depends, UploadFile, File, Form, HTTPException, status
+from fastapi import APIRouter, Depends, UploadFile, File, Form, HTTPException, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
+
 
 from app.core.database import get_db
 from app.models.auth import WorkspaceMembership, User
@@ -17,6 +14,20 @@ from app.schemas.import_export import (
 )
 
 router = APIRouter(prefix="/obligations/import", tags=["Data Ingestion & CSV Import"])
+
+
+@router.get("/csv/template")
+async def download_csv_template():
+    """
+    Provides a standardized, downloadable CSV template with expected headers and sample rows.
+    """
+    template_content = CsvImportService.get_template_csv()
+    return Response(
+        content=template_content,
+        media_type="text/csv",
+        headers={"Content-Disposition": 'attachment; filename="obligations_template.csv"'},
+    )
+
 
 
 @router.post("/csv/preview", response_model=CsvImportPreviewResponse)

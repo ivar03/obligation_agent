@@ -31,6 +31,9 @@ from app.models.organization import (
 from app.models.job import BackgroundJobRecord
 from app.models.event_inbox import EventInboxRecord, EventInboxStatus
 from app.models.llm_analysis import LLMAnalysisRecord
+from app.models.operational_audit import OperationalAuditRecord
+from app.models.operational_alert import OperationalAlert
+
 
 __all__ = [
     "User",
@@ -61,7 +64,10 @@ __all__ = [
     "EventInboxRecord",
     "EventInboxStatus",
     "LLMAnalysisRecord",
+    "OperationalAuditRecord",
+    "OperationalAlert",
 ]
+
 
 
 

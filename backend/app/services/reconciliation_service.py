@@ -676,8 +676,35 @@ class ReconciliationService:
             return None
         return await cls._enrich_response(session, rec)
 
+
+    @classmethod
+    async def reconcile_workspace(
+
+        cls, session: AsyncSession, workspace_id: str
+    ) -> List[ReconciliationRecord]:
+        """
+        Re-evaluates cross-provider reconciliation across all obligations with evidence in the workspace.
+        """
+        stmt = (
+            select(Obligation.id)
+            .where(Obligation.workspace_id == workspace_id)
+        )
+        res = await session.execute(stmt)
+        ob_ids = res.scalars().all()
+        results = []
+        for oid in ob_ids:
+            try:
+                rec = await cls.reconcile_obligation(session, oid, workspace_id=workspace_id)
+                if rec:
+                    results.append(rec)
+            except Exception as e:
+                logger.error(f"Error reconciling obligation [{oid}] in workspace [{workspace_id}]: {e}")
+        await session.flush()
+        return results
+
     @classmethod
     async def list_reconciliations(
+
         cls,
         session: AsyncSession,
         status_filter: Optional[ReconciliationStatus] = None,

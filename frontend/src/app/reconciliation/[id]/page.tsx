@@ -16,10 +16,10 @@ import {
   ArrowRight,
   RefreshCw,
 } from "lucide-react";
-import { AppLayout } from "../../../components/layout/AppLayout";
 import {
   ReconciliationRecord,
 } from "../../../lib/types/obligation";
+
 import { reconciliationApi } from "../../../lib/api/obligations";
 import { ReconciliationReviewModal } from "../../../components/reconciliation/ReconciliationReviewModal";
 
@@ -94,37 +94,33 @@ export default function ReconciliationDetailPage({
 
   if (isLoading) {
     return (
-      <AppLayout>
-        <div className="max-w-5xl mx-auto px-4 py-16 text-center text-zinc-500 flex flex-col items-center gap-3">
-          <RefreshCw className="w-6 h-6 animate-spin text-indigo-400" />
-          <p className="text-sm">Loading reconciliation provenance timeline...</p>
-        </div>
-      </AppLayout>
+      <div className="max-w-5xl mx-auto px-4 py-16 text-center text-zinc-500 flex flex-col items-center gap-3">
+        <RefreshCw className="w-6 h-6 animate-spin text-indigo-400" />
+        <p className="text-sm">Loading reconciliation provenance timeline...</p>
+      </div>
     );
   }
 
   if (error || !reconciliation) {
     return (
-      <AppLayout>
-        <div className="max-w-5xl mx-auto px-4 py-16 text-center space-y-4">
-          <AlertTriangle className="w-10 h-10 text-rose-400 mx-auto" />
-          <h2 className="text-lg font-semibold text-zinc-200">Reconciliation Record Not Found</h2>
-          <p className="text-xs text-zinc-400">{error || "Could not find the requested record."}</p>
-          <Link
-            href="/reconciliation"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-medium rounded-xl transition-all"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Reconciliation
-          </Link>
-        </div>
-      </AppLayout>
+      <div className="max-w-5xl mx-auto px-4 py-16 text-center space-y-4">
+        <AlertTriangle className="w-10 h-10 text-rose-400 mx-auto" />
+        <h2 className="text-lg font-semibold text-zinc-200">Reconciliation Record Not Found</h2>
+        <p className="text-xs text-zinc-400">{error || "Could not find the requested record."}</p>
+        <Link
+          href="/reconciliation"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-medium rounded-xl transition-all"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to Reconciliation
+        </Link>
+      </div>
     );
   }
 
   return (
-    <AppLayout>
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 space-y-8">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 space-y-8">
+
         {/* Navigation Breadcrumb */}
         <div className="flex items-center justify-between">
           <Link
@@ -329,20 +325,21 @@ export default function ReconciliationDetailPage({
             )}
           </div>
         </div>
-      </div>
 
-      {/* Decision Review Modal */}
-      {isModalOpen && (
-        <ReconciliationReviewModal
-          reconciliation={reconciliation}
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onResolved={(updated) => {
-            setReconciliation(updated);
-            fetchRecord();
-          }}
-        />
-      )}
-    </AppLayout>
+        {/* Decision Review Modal */}
+        {isModalOpen && (
+          <ReconciliationReviewModal
+            reconciliation={reconciliation}
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            onResolved={(updated) => {
+              setReconciliation(updated);
+              fetchRecord();
+            }}
+          />
+        )}
+      </div>
   );
 }
+
+

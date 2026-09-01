@@ -54,8 +54,9 @@ interface QueueItem {
   received_at?: string;
   available_at?: string;
   processing_duration_ms?: number;
-  payload_metadata?: Record<string, any>;
+  payload_metadata?: Record<string, unknown>;
   correlated_obligation_id?: string;
+
   url?: string;
 }
 

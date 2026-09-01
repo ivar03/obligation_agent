@@ -13,17 +13,20 @@ import {
   RefreshCw,
   SlidersHorizontal,
 } from "lucide-react";
-import { AppLayout } from "../../components/layout/AppLayout";
 import {
   ReconciliationRecord,
   ReconciliationStatus,
   ReconciliationListResponse,
 } from "../../lib/types/obligation";
+
 import { reconciliationApi } from "../../lib/api/obligations";
 import { ReconciliationReviewModal } from "../../components/reconciliation/ReconciliationReviewModal";
 
 export default function ReconciliationPage() {
   const [reconciliations, setReconciliations] = useState<ReconciliationRecord[]>([]);
+  const [selectedStatus, setSelectedStatus] = useState<ReconciliationStatus | "ALL">("ALL");
+  const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [counts, setCounts] = useState({
     total: 0,
     conflicting: 0,
@@ -31,8 +34,6 @@ export default function ReconciliationPage() {
     ambiguous: 0,
     resolved: 0,
   });
-  const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
-  const [isLoading, setIsLoading] = useState(true);
   const [activeModalRec, setActiveModalRec] = useState<ReconciliationRecord | null>(null);
 
   const fetchReconciliations = useCallback(async () => {
@@ -56,6 +57,30 @@ export default function ReconciliationPage() {
       setIsLoading(false);
     }
   }, [selectedStatus]);
+
+  const handleRefreshSignals = async () => {
+    setIsRefreshing(true);
+    try {
+      const res = await reconciliationApi.refresh();
+      if (res && res.items) {
+        setReconciliations(res.items);
+        setCounts({
+          total: res.total,
+          conflicting: res.conflicting_count,
+          consistent: res.consistent_count,
+          ambiguous: res.ambiguous_count,
+          resolved: res.resolved_count,
+        });
+      } else {
+        await fetchReconciliations();
+      }
+    } catch (err) {
+      console.error("Failed to re-evaluate signals:", err);
+      await fetchReconciliations();
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   useEffect(() => {
     fetchReconciliations();
@@ -110,8 +135,8 @@ export default function ReconciliationPage() {
   };
 
   return (
-    <AppLayout>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
@@ -130,12 +155,14 @@ export default function ReconciliationPage() {
             </p>
           </div>
           <button
-            onClick={() => fetchReconciliations()}
-            className="self-start md:self-auto inline-flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-medium rounded-xl border border-zinc-700 transition-all shadow-sm"
+            onClick={() => handleRefreshSignals()}
+            disabled={isRefreshing || isLoading}
+            className="self-start md:self-auto inline-flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-medium rounded-xl border border-zinc-700 transition-all shadow-sm disabled:opacity-50"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? "animate-spin" : ""}`} />
+            <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing || isLoading ? "animate-spin" : ""}`} />
             Refresh Signals
           </button>
+
         </div>
 
         {/* Metrics Overview Cards */}
@@ -205,8 +232,9 @@ export default function ReconciliationPage() {
           ].map((tab) => (
             <button
               key={tab.key}
-              onClick={() => setSelectedStatus(tab.key)}
+              onClick={() => setSelectedStatus(tab.key as ReconciliationStatus | "ALL")}
               className={`px-3.5 py-1.5 text-xs font-medium rounded-xl whitespace-nowrap transition-all ${
+
                 selectedStatus === tab.key
                   ? "bg-zinc-100 text-zinc-900 font-semibold shadow"
                   : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/60"
@@ -349,17 +377,18 @@ export default function ReconciliationPage() {
             })}
           </div>
         )}
-      </div>
 
-      {/* Human Decision Modal */}
-      {activeModalRec && (
-        <ReconciliationReviewModal
-          reconciliation={activeModalRec}
-          isOpen={!!activeModalRec}
-          onClose={() => setActiveModalRec(null)}
-          onResolved={handleResolved}
-        />
-      )}
-    </AppLayout>
+        {/* Human Decision Modal */}
+        {activeModalRec && (
+          <ReconciliationReviewModal
+            reconciliation={activeModalRec}
+            isOpen={!!activeModalRec}
+            onClose={() => setActiveModalRec(null)}
+            onResolved={handleResolved}
+          />
+        )}
+      </div>
   );
 }
+
+

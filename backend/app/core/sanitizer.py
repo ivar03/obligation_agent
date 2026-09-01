@@ -112,5 +112,26 @@ def sanitize_for_audit(data: Any, max_depth: int = 6) -> Any:
         }
         return sanitize_for_audit(safe_dict, max_depth - 1)
 
-    return str(data)
+sanitize_metadata = sanitize_for_audit
+
+# Regex patterns for regex token redaction in text
+SENSITIVE_PATTERNS = [
+    re.compile(r"xox[baprs]-[0-9a-zA-Z-]{10,72}"),
+    re.compile(r"(?:Bearer\s+)[A-Za-z0-9\-_=]{20,}"),
+    re.compile(r"(?:password\s*[:=]\s*)([^\s,]+)", re.IGNORECASE),
+    re.compile(r"(?:api_key\s*[:=]\s*)([^\s,]+)", re.IGNORECASE),
+    re.compile(r"(?:token\s*[:=]\s*)([^\s,]+)", re.IGNORECASE),
+    re.compile(r"AKIA[0-9A-Z]{16}"),
+]
+
+
+def sanitize_text(text: str) -> str:
+    """Scrubs sensitive credentials, tokens, and keys from raw text."""
+    if not text or not isinstance(text, str):
+        return text or ""
+    res = text
+    for pattern in SENSITIVE_PATTERNS:
+        res = pattern.sub("[REDACTED]", res)
+    return res
+
 

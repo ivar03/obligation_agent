@@ -1,25 +1,25 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { CheckCircle2, ShieldCheck, Key, RefreshCw } from "lucide-react";
 
-interface IntegrationItem {
-  provider: string;
-  is_active: boolean;
-}
+import { CheckCircle2, ShieldCheck, Key, RefreshCw } from "lucide-react";
+import { integrationsApi } from "@/lib/api/obligations";
 
 export default function IntegrationsSettingsPage() {
   const [slackConnected, setSlackConnected] = useState(false);
 
   useEffect(() => {
-    fetch("/api/integrations")
-      .then((res) => res.json())
-      .then((data: IntegrationItem[]) => {
-        const hasSlack = Array.isArray(data) && data.some((i) => i.provider === "slack" && i.is_active);
+    integrationsApi
+      .list()
+      .then((res) => {
+        const hasSlack = (res.connections || []).some(
+          (i) => i.provider.toLowerCase() === "slack" && i.status === "CONNECTED"
+        );
         setSlackConnected(hasSlack);
       })
       .catch(() => {});
   }, []);
+
 
   return (
     <div className="space-y-6">

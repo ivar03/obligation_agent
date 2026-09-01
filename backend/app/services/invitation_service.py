@@ -225,6 +225,18 @@ class InvitationService:
         workspace_id: str,
         user_id: str,
     ) -> List[WorkspaceInvitationResponse]:
+        # Verify caller has ADMIN or OWNER role in workspace
+        stmt_mem = select(WorkspaceMembership).where(
+            WorkspaceMembership.workspace_id == workspace_id,
+            WorkspaceMembership.user_id == user_id,
+        )
+        caller_mem = (await session.execute(stmt_mem)).scalar_one_or_none()
+        if not caller_mem or ROLE_HIERARCHY.get(caller_mem.role, 0) < ROLE_HIERARCHY.get(WorkspaceRole.ADMIN, 0):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Only workspace ADMIN or OWNER can view workspace invitations.",
+            )
+
         stmt = (
             select(WorkspaceInvitation)
             .where(WorkspaceInvitation.workspace_id == workspace_id)
@@ -254,8 +266,21 @@ class InvitationService:
         user_id: str,
         invitation_id: str,
     ):
+        stmt_mem = select(WorkspaceMembership).where(
+            WorkspaceMembership.workspace_id == workspace_id,
+            WorkspaceMembership.user_id == user_id,
+        )
+        caller_mem = (await session.execute(stmt_mem)).scalar_one_or_none()
+        if not caller_mem or ROLE_HIERARCHY.get(caller_mem.role, 0) < ROLE_HIERARCHY.get(WorkspaceRole.ADMIN, 0):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Only workspace ADMIN or OWNER can cancel workspace invitations.",
+            )
+
         inv = await session.get(WorkspaceInvitation, invitation_id)
         if not inv or inv.workspace_id != workspace_id:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Invitation not found.")
         inv.status = InvitationStatus.CANCELLED
+        await session.commit()
+
         await session.commit()

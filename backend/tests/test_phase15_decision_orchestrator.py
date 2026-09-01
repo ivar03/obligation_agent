@@ -518,9 +518,46 @@ async def test_25_api_decision_queue(client: AsyncClient, test_session: AsyncSes
 
 
 @pytest.mark.asyncio
+async def test_25b_api_decision_queue_with_list_recommended_actions(client: AsyncClient, test_session: AsyncSession):
+    ob = Obligation(
+        id="api-ob-list-rec",
+        workspace_id="ws-default",
+        owner="Alice",
+        beneficiary="Team",
+        action="Deploy cluster",
+        status=ObligationStatus.IN_PROGRESS,
+        obligation_type=ObligationType.OWED_BY_ME,
+    )
+    plan_with_list = DecisionPlan(
+        id="plan-list-rec-001",
+        workspace_id="ws-default",
+        target_obligation_id=ob.id,
+        primary_objective="Deploy cluster safely",
+        overall_urgency="HIGH",
+        overall_risk=0.5,
+        decision_confidence=0.9,
+        recommended_actions=[
+            {"action": "Execute deployment", "strategy_name": "ROLLOUT", "priority": "HIGH"},
+            {"action": "Check health", "priority": "MEDIUM"},
+        ],
+        status=DecisionPlanStatus.GENERATED,
+    )
+    test_session.add_all([ob, plan_with_list])
+    await test_session.commit()
+
+    queue_res = await client.get("/api/intelligence/decision/queue")
+    assert queue_res.status_code == 200
+    data = queue_res.json()
+    matched = [item for item in data["items"] if item["id"] == "plan-list-rec-001"]
+    assert len(matched) == 1
+    assert matched[0]["recommended_strategy_name"] in ["ROLLOUT", "Execute deployment"]
+
+
+@pytest.mark.asyncio
 async def test_26_api_404_not_found(client: AsyncClient):
     res = await client.get("/api/intelligence/decision/non-existent-ob")
     assert res.status_code == 404
+
 
 
 # ==============================================================================

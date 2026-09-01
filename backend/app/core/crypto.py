@@ -80,8 +80,8 @@ class CryptoService:
             decrypted_bytes = cipher.decrypt(payload.encode("utf-8"))
             return decrypted_bytes.decode("utf-8")
         except InvalidToken:
-            logger.error("Failed to decrypt secret envelope: InvalidToken or mismatching encryption key.")
-            raise ValueError("Unable to decrypt credential: Invalid encryption key or corrupted ciphertext.")
+            logger.error("Failed to decrypt secret: invalid token or corrupted key.")
+            raise ValueError("Decryption failed: corrupted ciphertext or invalid encryption key.")
 
     @classmethod
     def mask_secret(cls, secret: str, visible_chars: int = 4) -> str:
@@ -95,3 +95,10 @@ class CryptoService:
         prefix = secret[:visible_chars]
         suffix = secret[-visible_chars:]
         return f"{prefix}****{suffix}"
+
+
+encrypt_secret = CryptoService.encrypt
+decrypt_secret = CryptoService.decrypt
+mask_secret = CryptoService.mask_secret
+
+

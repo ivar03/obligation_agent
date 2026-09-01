@@ -39,12 +39,16 @@ from app.api.routes import execution as execution_router
 from app.api.routes import monitoring as monitoring_router
 from app.api.routes import search as search_router
 from app.api.routes import queues as queues_router
+
 from app.api.routes import events_queue as events_queue_router
 from app.api.routes import notifications as notifications_router
 from app.api.routes import import_export as import_export_router
 from app.api.routes import llm_intelligence as llm_intelligence_router
+from app.api.routes import ops_observability as ops_observability_router
 
 from app.core.worker import worker_queue
+
+
 
 
 
@@ -118,10 +122,14 @@ app = FastAPI(
 # Middleware (order matters — outermost is registered last)
 # ---------------------------------------------------------------------------
 
-# 1. Request correlation / access logging / metrics
+# 1. Security Headers (CSP, X-Content-Type-Options, Anti-Clickjacking, Referrer-Policy)
+from app.core.security_headers import SecurityHeadersMiddleware
+app.add_middleware(SecurityHeadersMiddleware)
+
+# 2. Request correlation / access logging / metrics
 app.add_middleware(RequestContextMiddleware)
 
-# 2. CORS
+# 3. CORS
 origins = settings.cors_origins
 app.add_middleware(
     CORSMiddleware,
@@ -130,6 +138,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 
 # ---------------------------------------------------------------------------
@@ -215,7 +224,9 @@ app.include_router(queues_router.router, prefix="/api")
 app.include_router(notifications_router.router, prefix="/api")
 app.include_router(import_export_router.router, prefix="/api")
 app.include_router(llm_intelligence_router.router)
+app.include_router(ops_observability_router.router)
 app.include_router(audit_router.router)
+
 
 
 
