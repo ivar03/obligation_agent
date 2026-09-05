@@ -399,8 +399,8 @@ export default function ObligationDetailPage({ params }: PageProps) {
   if (loading) {
     return (
       <div className="max-w-4xl mx-auto space-y-6">
-        <div className="h-6 w-32 bg-zinc-900 rounded animate-pulse" />
-        <div className="h-80 bg-zinc-900/60 rounded-2xl animate-pulse" />
+        <div className="h-6 w-32 bg-stone-100 rounded animate-pulse" />
+        <div className="h-80 bg-stone-100/60 rounded-2xl animate-pulse" />
       </div>
     );
   }
@@ -409,9 +409,9 @@ export default function ObligationDetailPage({ params }: PageProps) {
     return (
       <div className="max-w-xl mx-auto text-center py-16 space-y-4">
         <AlertCircle className="w-12 h-12 text-rose-400 mx-auto" />
-        <h2 className="text-lg font-bold text-white">Obligation Not Found</h2>
-        <p className="text-sm text-zinc-400">The requested obligation record does not exist or was deleted.</p>
-        <Link href="/" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-zinc-800 text-white text-xs">
+        <h2 className="text-lg font-bold text-stone-950">Obligation Not Found</h2>
+        <p className="text-sm text-stone-600">The requested obligation record does not exist or was deleted.</p>
+        <Link href="/" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-stone-200 text-stone-950 text-xs">
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Dashboard</span>
         </Link>
@@ -429,7 +429,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
       <div className="flex items-center justify-between">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-xs font-semibold text-zinc-400 hover:text-zinc-200 transition-colors"
+          className="inline-flex items-center gap-2 text-xs font-semibold text-stone-600 hover:text-stone-800 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Dashboard</span>
@@ -438,7 +438,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setIsEditing(!isEditing)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-zinc-800 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs font-medium transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-stone-200 bg-stone-100/80 hover:bg-stone-200 text-stone-800 text-xs font-medium transition-colors"
           >
             <Edit className="w-3.5 h-3.5" />
             <span>{isEditing ? "Cancel Edit" : "Edit Details"}</span>
@@ -472,30 +472,30 @@ export default function ObligationDetailPage({ params }: PageProps) {
             {pendingSuggestedEvidence.map((ev) => (
               <div
                 key={ev.id}
-                className="p-4 rounded-xl bg-zinc-950/80 border border-emerald-500/30 space-y-3"
+                className="p-4 rounded-xl bg-stone-50/80 border border-emerald-500/30 space-y-3"
               >
                 <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
                   <div className="flex items-center gap-2">
-                    <span className="font-semibold text-zinc-200">
+                    <span className="font-semibold text-stone-800">
                       {ev.actor || "External Actor"}
                     </span>
-                    <span className="text-zinc-500">•</span>
-                    <span className="text-zinc-400 capitalize">{ev.source_type}</span>
+                    <span className="text-stone-500">•</span>
+                    <span className="text-stone-600 capitalize">{ev.source_type}</span>
                     {ev.source_ref && (
-                      <span className="text-zinc-500 font-mono text-[11px]">({ev.source_ref})</span>
+                      <span className="text-stone-500 font-mono text-[11px]">({ev.source_ref})</span>
                     )}
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-emerald-400 font-bold text-xs">
                       Match: {Math.round(ev.correlation_confidence * 100)}%
                     </span>
-                    <span className="text-zinc-500 text-[11px]">
+                    <span className="text-stone-500 text-[11px]">
                       {new Date(ev.observed_at).toLocaleString()}
                     </span>
                   </div>
                 </div>
 
-                <p className="text-sm text-zinc-100 font-medium bg-zinc-900/60 p-3 rounded-lg border border-zinc-800/80">
+                <p className="text-sm text-stone-900 font-medium bg-stone-100/60 p-3 rounded-lg border border-stone-200/80">
                   &ldquo;{ev.content}&rdquo;
                 </p>
 
@@ -505,11 +505,11 @@ export default function ObligationDetailPage({ params }: PageProps) {
                     <span className="text-[11px] font-semibold text-emerald-400/90 uppercase tracking-wider block">
                       Correlation Match Reasoning:
                     </span>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs text-zinc-300">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs text-stone-700">
                       {ev.reasoning.map((r, ri) => (
                         <div key={ri} className="flex items-center gap-1.5">
                           <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                          <span className="text-zinc-300">{r}</span>
+                          <span className="text-stone-700">{r}</span>
                         </div>
                       ))}
                     </div>
@@ -517,18 +517,18 @@ export default function ObligationDetailPage({ params }: PageProps) {
                 )}
 
                 {/* Human Confirmation Buttons */}
-                <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-zinc-800/80">
+                <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-stone-200/80">
                   <button
                     onClick={() => handleRejectEvidence(ev.id)}
                     disabled={updating}
-                    className="px-3.5 py-1.5 rounded-lg border border-zinc-800 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 text-xs font-medium transition-colors"
+                    className="px-3.5 py-1.5 rounded-lg border border-stone-200 hover:bg-stone-200 text-stone-600 hover:text-stone-800 text-xs font-medium transition-colors"
                   >
                     Reject Evidence
                   </button>
                   <button
                     onClick={() => handleConfirmEvidence(ev.id)}
                     disabled={updating}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md shadow-emerald-600/20 active:scale-95 transition-all"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-stone-950 text-xs font-bold shadow-md shadow-emerald-600/20 active:scale-95 transition-all"
                   >
                     <CheckCircle2 className="w-4 h-4" />
                     <span>Confirm Completion</span>
@@ -561,15 +561,15 @@ export default function ObligationDetailPage({ params }: PageProps) {
                 {graph.blockers.map((blocker) => (
                   <div
                     key={blocker.obligation_id}
-                    className="p-3.5 rounded-xl bg-zinc-950/80 border border-rose-500/30 flex flex-wrap items-center justify-between gap-3 text-xs"
+                    className="p-3.5 rounded-xl bg-stone-50/80 border border-rose-500/30 flex flex-wrap items-center justify-between gap-3 text-xs"
                   >
                     <div className="space-y-1 max-w-xl">
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-zinc-100">{blocker.owner}</span>
-                        <span className="text-zinc-500">•</span>
+                        <span className="font-bold text-stone-900">{blocker.owner}</span>
+                        <span className="text-stone-500">•</span>
                         <StatusBadge status={blocker.status} />
                       </div>
-                      <div className="text-zinc-300 font-medium">{blocker.action}</div>
+                      <div className="text-stone-700 font-medium">{blocker.action}</div>
                       <div className="text-[11px] text-rose-300/80 italic">{blocker.reason}</div>
                     </div>
 
@@ -598,11 +598,11 @@ export default function ObligationDetailPage({ params }: PageProps) {
               ? "bg-amber-950/20 border-amber-500/40 shadow-amber-950/20"
               : riskAssessment.risk_level === "MEDIUM"
               ? "bg-blue-950/20 border-blue-500/30 shadow-blue-950/10"
-              : "bg-zinc-900/60 border-zinc-800"
+              : "bg-stone-100/60 border-stone-200"
           }`}
         >
           {/* Header Row */}
-          <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-zinc-800/80">
+          <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-stone-200/80">
             <div className="flex items-center gap-3">
               <div
                 className={`w-10 h-10 rounded-xl flex items-center justify-center border ${
@@ -611,7 +611,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
                     : riskAssessment.risk_level === "HIGH"
                     ? "bg-amber-500/20 text-amber-400 border-amber-500/30"
                     : riskAssessment.risk_level === "MEDIUM"
-                    ? "bg-blue-500/20 text-blue-400 border-blue-500/30"
+                    ? "bg-blue-500/20 text-blue-500 border-blue-500/30"
                     : "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
                 }`}
               >
@@ -619,7 +619,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h2 className="text-base font-bold text-white">
+                  <h2 className="text-base font-bold text-stone-950">
                     Proactive Risk & Deadline Rescue Inspector
                   </h2>
                   <span
@@ -629,23 +629,23 @@ export default function ObligationDetailPage({ params }: PageProps) {
                         : riskAssessment.risk_level === "HIGH"
                         ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
                         : riskAssessment.risk_level === "MEDIUM"
-                        ? "bg-blue-500/20 text-blue-300 border-blue-500/40"
+                        ? "bg-blue-500/20 text-blue-600 border-blue-500/40"
                         : "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
                     }`}
                   >
                     {riskAssessment.risk_level} Risk · {Math.round(riskAssessment.risk_score * 100)}%
                   </span>
                 </div>
-                <p className="text-xs text-zinc-400 mt-0.5">
+                <p className="text-xs text-stone-600 mt-0.5">
                   Multi-signal failure probability analysis & graph cascade evaluation.
                 </p>
               </div>
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="px-3 py-1.5 rounded-lg bg-zinc-950/80 border border-zinc-800 text-xs">
-                <span className="text-zinc-500 font-medium">Priority Score: </span>
-                <span className="text-zinc-200 font-bold font-mono">
+              <div className="px-3 py-1.5 rounded-lg bg-stone-50/80 border border-stone-200 text-xs">
+                <span className="text-stone-500 font-medium">Priority Score: </span>
+                <span className="text-stone-800 font-bold font-mono">
                   {Math.round(riskAssessment.priority_score * 100)} / 100
                 </span>
               </div>
@@ -659,32 +659,32 @@ export default function ObligationDetailPage({ params }: PageProps) {
           </div>
 
           {/* Recommended Next Action Banner */}
-          <div className="p-4 rounded-xl bg-zinc-950/80 border border-zinc-800 space-y-2">
+          <div className="p-4 rounded-xl bg-stone-50/80 border border-stone-200 space-y-2">
             <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-blue-600/20 text-blue-300 border border-blue-500/30">
+              <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-blue-600/20 text-blue-600 border border-blue-500/30">
                 RECOMMENDED ACTION: {riskAssessment.action_type.replace(/_/g, " ")}
               </span>
             </div>
-            <p className="text-sm font-semibold text-zinc-100">
+            <p className="text-sm font-semibold text-stone-900">
               {riskAssessment.recommended_action}
             </p>
           </div>
 
           {/* Multi-Signal Breakdown Meters */}
           <div className="space-y-3">
-            <div className="text-xs uppercase tracking-wider font-semibold text-zinc-400">
+            <div className="text-xs uppercase tracking-wider font-semibold text-stone-600">
               Risk Component Breakdown:
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               {/* Deadline Pressure */}
-              <div className="p-3 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-2">
+              <div className="p-3 rounded-xl bg-stone-50/60 border border-stone-200/80 space-y-2">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-zinc-400">Deadline Urgency</span>
-                  <span className="font-mono font-bold text-zinc-200">
+                  <span className="text-stone-600">Deadline Urgency</span>
+                  <span className="font-mono font-bold text-stone-800">
                     +{Math.round(riskAssessment.breakdown.deadline_pressure * 100)}%
                   </span>
                 </div>
-                <div className="w-full h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                <div className="w-full h-1.5 bg-stone-200 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-gradient-to-r from-yellow-500 to-red-500"
                     style={{
@@ -695,14 +695,14 @@ export default function ObligationDetailPage({ params }: PageProps) {
               </div>
 
               {/* Dependency Risk */}
-              <div className="p-3 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-2">
+              <div className="p-3 rounded-xl bg-stone-50/60 border border-stone-200/80 space-y-2">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-zinc-400">Dependency Health</span>
-                  <span className="font-mono font-bold text-zinc-200">
+                  <span className="text-stone-600">Dependency Health</span>
+                  <span className="font-mono font-bold text-stone-800">
                     +{Math.round(riskAssessment.breakdown.dependency_risk * 100)}%
                   </span>
                 </div>
-                <div className="w-full h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                <div className="w-full h-1.5 bg-stone-200 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-gradient-to-r from-purple-500 to-rose-500"
                     style={{
@@ -713,21 +713,21 @@ export default function ObligationDetailPage({ params }: PageProps) {
               </div>
 
               {/* Progress Risk / Recency */}
-              <div className="p-3 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-2">
+              <div className="p-3 rounded-xl bg-stone-50/60 border border-stone-200/80 space-y-2">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-zinc-400">Progress Evidence</span>
+                  <span className="text-stone-600">Progress Evidence</span>
                   <span
                     className={`font-mono font-bold ${
                       riskAssessment.breakdown.progress_risk < 0
                         ? "text-emerald-400"
-                        : "text-zinc-200"
+                        : "text-stone-800"
                     }`}
                   >
                     {riskAssessment.breakdown.progress_risk > 0 ? "+" : ""}
                     {Math.round(riskAssessment.breakdown.progress_risk * 100)}%
                   </span>
                 </div>
-                <div className="w-full h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                <div className="w-full h-1.5 bg-stone-200 rounded-full overflow-hidden">
                   <div
                     className={`h-full ${
                       riskAssessment.breakdown.progress_risk < 0 ? "bg-emerald-500" : "bg-amber-500"
@@ -743,16 +743,16 @@ export default function ObligationDetailPage({ params }: PageProps) {
               </div>
 
               {/* Ownership Clarity */}
-              <div className="p-3 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-2">
+              <div className="p-3 rounded-xl bg-stone-50/60 border border-stone-200/80 space-y-2">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-zinc-400">Ownership Clarity</span>
-                  <span className="font-mono font-bold text-zinc-200">
+                  <span className="text-stone-600">Ownership Clarity</span>
+                  <span className="font-mono font-bold text-stone-800">
                     +{Math.round(riskAssessment.breakdown.ownership_risk * 100)}%
                   </span>
                 </div>
-                <div className="w-full h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                <div className="w-full h-1.5 bg-stone-200 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-indigo-500"
+                    className="h-full bg-blue-600"
                     style={{
                       width: `${Math.min(100, riskAssessment.breakdown.ownership_risk * 500)}%`,
                     }}
@@ -765,14 +765,14 @@ export default function ObligationDetailPage({ params }: PageProps) {
           {/* Active Risk Signals */}
           {riskAssessment.signals && riskAssessment.signals.length > 0 && (
             <div className="space-y-2">
-              <div className="text-xs uppercase tracking-wider font-semibold text-zinc-400">
+              <div className="text-xs uppercase tracking-wider font-semibold text-stone-600">
                 Observed Risk Signals:
               </div>
               <div className="space-y-2">
                 {riskAssessment.signals.map((sig, si) => (
                   <div
                     key={si}
-                    className="p-3 rounded-xl bg-zinc-950/60 border border-zinc-800 flex flex-wrap items-center justify-between gap-3 text-xs"
+                    className="p-3 rounded-xl bg-stone-50/60 border border-stone-200 flex flex-wrap items-center justify-between gap-3 text-xs"
                   >
                     <div className="flex items-center gap-2.5">
                       <span
@@ -782,17 +782,17 @@ export default function ObligationDetailPage({ params }: PageProps) {
                             : sig.severity === "HIGH"
                             ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
                             : sig.severity === "MEDIUM"
-                            ? "bg-blue-500/20 text-blue-300 border-blue-500/40"
+                            ? "bg-blue-500/20 text-blue-600 border-blue-500/40"
                             : "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
                         }`}
                       >
                         {sig.severity}
                       </span>
-                      <span className="font-mono text-zinc-400">{sig.signal_type}</span>
-                      <span className="text-zinc-200">{sig.explanation}</span>
+                      <span className="font-mono text-stone-600">{sig.signal_type}</span>
+                      <span className="text-stone-800">{sig.explanation}</span>
                     </div>
 
-                    <span className="font-mono text-zinc-500 text-[11px]">
+                    <span className="font-mono text-stone-500 text-[11px]">
                       Weight: {sig.contribution > 0 ? "+" : ""}
                       {sig.contribution.toFixed(2)}
                     </span>
@@ -807,8 +807,8 @@ export default function ObligationDetailPage({ params }: PageProps) {
       {/* Main Content Card */}
       {isEditing ? (
         /* Edit Form */
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-xl space-y-5">
-          <h2 className="text-lg font-bold text-white pb-3 border-b border-zinc-800">
+        <div className="bg-stone-100 border border-stone-200 rounded-2xl p-6 shadow-xl space-y-5">
+          <h2 className="text-lg font-bold text-stone-950 pb-3 border-b border-stone-200">
             Edit Obligation
           </h2>
           <form onSubmit={handleSaveEdit} className="space-y-4">
@@ -818,8 +818,8 @@ export default function ObligationDetailPage({ params }: PageProps) {
                 onClick={() => setEditType("OWED_BY_ME")}
                 className={`p-3 rounded-xl border text-left text-xs font-medium ${
                   editType === "OWED_BY_ME"
-                    ? "bg-blue-600/20 border-blue-500 text-white"
-                    : "bg-zinc-950 border-zinc-800 text-zinc-400"
+                    ? "bg-blue-600/20 border-blue-500 text-stone-950"
+                    : "bg-stone-50 border-stone-200 text-stone-600"
                 }`}
               >
                 You Owe (Outgoing)
@@ -829,8 +829,8 @@ export default function ObligationDetailPage({ params }: PageProps) {
                 onClick={() => setEditType("OWED_TO_ME")}
                 className={`p-3 rounded-xl border text-left text-xs font-medium ${
                   editType === "OWED_TO_ME"
-                    ? "bg-emerald-600/20 border-emerald-500 text-white"
-                    : "bg-zinc-950 border-zinc-800 text-zinc-400"
+                    ? "bg-emerald-600/20 border-emerald-500 text-stone-950"
+                    : "bg-stone-50 border-stone-200 text-stone-600"
                 }`}
               >
                 Others Owe You (Incoming)
@@ -839,81 +839,81 @@ export default function ObligationDetailPage({ params }: PageProps) {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-zinc-300 mb-1">Owner</label>
+                <label className="block text-xs font-semibold text-stone-700 mb-1">Owner</label>
                 <input
                   type="text"
                   value={editOwner}
                   onChange={(e) => setEditOwner(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-sm text-zinc-100"
+                  className="w-full px-3 py-2 rounded-lg bg-stone-50 border border-stone-200 text-sm text-stone-900"
                   required
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-zinc-300 mb-1">Beneficiary</label>
+                <label className="block text-xs font-semibold text-stone-700 mb-1">Beneficiary</label>
                 <input
                   type="text"
                   value={editBeneficiary}
                   onChange={(e) => setEditBeneficiary(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-sm text-zinc-100"
+                  className="w-full px-3 py-2 rounded-lg bg-stone-50 border border-stone-200 text-sm text-stone-900"
                   required
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-zinc-300 mb-1">Action</label>
+              <label className="block text-xs font-semibold text-stone-700 mb-1">Action</label>
               <textarea
                 rows={2}
                 value={editAction}
                 onChange={(e) => setEditAction(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-sm text-zinc-100"
+                className="w-full px-3 py-2 rounded-lg bg-stone-50 border border-stone-200 text-sm text-stone-900"
                 required
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-zinc-300 mb-1">Deadline</label>
+                <label className="block text-xs font-semibold text-stone-700 mb-1">Deadline</label>
                 <input
                   type="datetime-local"
                   value={editDeadline}
                   onChange={(e) => setEditDeadline(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-sm text-zinc-100"
+                  className="w-full px-3 py-2 rounded-lg bg-stone-50 border border-stone-200 text-sm text-stone-900"
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-zinc-300 mb-1">Conditions</label>
+                <label className="block text-xs font-semibold text-stone-700 mb-1">Conditions</label>
                 <input
                   type="text"
                   value={editConditions}
                   onChange={(e) => setEditConditions(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-sm text-zinc-100"
+                  className="w-full px-3 py-2 rounded-lg bg-stone-50 border border-stone-200 text-sm text-stone-900"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-zinc-300 mb-1">Next Action</label>
+              <label className="block text-xs font-semibold text-stone-700 mb-1">Next Action</label>
               <input
                 type="text"
                 value={editNextAction}
                 onChange={(e) => setEditNextAction(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-sm text-zinc-100"
+                className="w-full px-3 py-2 rounded-lg bg-stone-50 border border-stone-200 text-sm text-stone-900"
               />
             </div>
 
-            <div className="flex items-center justify-end gap-3 pt-3 border-t border-zinc-800">
+            <div className="flex items-center justify-end gap-3 pt-3 border-t border-stone-200">
               <button
                 type="button"
                 onClick={() => setIsEditing(false)}
-                className="px-4 py-2 rounded-lg text-xs text-zinc-400 hover:text-zinc-200"
+                className="px-4 py-2 rounded-lg text-xs text-stone-600 hover:text-stone-800"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={updating}
-                className="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold"
+                className="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-stone-950 text-xs font-semibold"
               >
                 Save Changes
               </button>
@@ -922,17 +922,17 @@ export default function ObligationDetailPage({ params }: PageProps) {
         </div>
       ) : (
         /* Detailed View */
-        <div className="bg-zinc-900/80 border border-zinc-800 rounded-2xl p-6 sm:p-8 shadow-xl space-y-8">
+        <div className="bg-stone-100/80 border border-stone-200 rounded-2xl p-6 sm:p-8 shadow-xl space-y-8">
           {/* Header row */}
-          <div className="flex flex-wrap items-start justify-between gap-4 pb-6 border-b border-zinc-800">
+          <div className="flex flex-wrap items-start justify-between gap-4 pb-6 border-b border-stone-200">
             <div className="space-y-2">
-              <div className="flex items-center gap-2 text-xs font-medium text-zinc-400">
-                <span className={`w-2.5 h-2.5 rounded-full ${isOwedByMe ? "bg-blue-400" : "bg-emerald-400"}`} />
+              <div className="flex items-center gap-2 text-xs font-medium text-stone-600">
+                <span className={`w-2.5 h-2.5 rounded-full ${isOwedByMe ? "bg-blue-500" : "bg-emerald-400"}`} />
                 <span>
                   {isOwedByMe ? "Outgoing Commitment (You Owe)" : "Incoming Commitment (Others Owe You)"}
                 </span>
               </div>
-              <h1 className="text-xl sm:text-2xl font-bold text-white leading-snug">
+              <h1 className="text-xl sm:text-2xl font-bold text-stone-950 leading-snug">
                 {obligation.action}
               </h1>
             </div>
@@ -950,21 +950,21 @@ export default function ObligationDetailPage({ params }: PageProps) {
 
           {/* Reciprocal Parties Visualization */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="p-4 rounded-xl bg-zinc-950/80 border border-zinc-800/80 space-y-1">
-              <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
+            <div className="p-4 rounded-xl bg-stone-50/80 border border-stone-200/80 space-y-1">
+              <span className="text-[11px] font-semibold text-stone-600 uppercase tracking-wider">
                 Duty Bearer (Owner)
               </span>
-              <div className="text-base font-bold text-zinc-100 flex items-center gap-2">
-                <User className="w-4 h-4 text-blue-400" />
+              <div className="text-base font-bold text-stone-900 flex items-center gap-2">
+                <User className="w-4 h-4 text-blue-500" />
                 <span>{obligation.owner}</span>
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-zinc-950/80 border border-zinc-800/80 space-y-1">
-              <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
+            <div className="p-4 rounded-xl bg-stone-50/80 border border-stone-200/80 space-y-1">
+              <span className="text-[11px] font-semibold text-stone-600 uppercase tracking-wider">
                 Obligee (Beneficiary)
               </span>
-              <div className="text-base font-bold text-zinc-100 flex items-center gap-2">
+              <div className="text-base font-bold text-stone-900 flex items-center gap-2">
                 <User className="w-4 h-4 text-emerald-400" />
                 <span>{obligation.beneficiary}</span>
               </div>
@@ -973,11 +973,11 @@ export default function ObligationDetailPage({ params }: PageProps) {
 
           {/* Temporal & Conditions Block */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="p-4 rounded-xl bg-zinc-950/80 border border-zinc-800/80 space-y-1">
-              <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
+            <div className="p-4 rounded-xl bg-stone-50/80 border border-stone-200/80 space-y-1">
+              <span className="text-[11px] font-semibold text-stone-600 uppercase tracking-wider">
                 Deadline
               </span>
-              <div className="text-sm font-semibold text-zinc-200 flex items-center gap-2">
+              <div className="text-sm font-semibold text-stone-800 flex items-center gap-2">
                 <Clock className="w-4 h-4 text-amber-400" />
                 <span>
                   {obligation.deadline
@@ -990,15 +990,15 @@ export default function ObligationDetailPage({ params }: PageProps) {
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-zinc-950/80 border border-zinc-800/80 space-y-1">
-              <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
+            <div className="p-4 rounded-xl bg-stone-50/80 border border-stone-200/80 space-y-1">
+              <span className="text-[11px] font-semibold text-stone-600 uppercase tracking-wider">
                 Conditions / Triggers
               </span>
-              <div className="text-sm text-zinc-300">
+              <div className="text-sm text-stone-700">
                 {obligation.conditions ? (
                   <span className="text-amber-300 font-medium">{String(obligation.conditions)}</span>
                 ) : (
-                  <span className="text-zinc-400 italic">None (Unconditional)</span>
+                  <span className="text-stone-600 italic">None (Unconditional)</span>
                 )}
               </div>
             </div>
@@ -1007,24 +1007,24 @@ export default function ObligationDetailPage({ params }: PageProps) {
           {/* Next Action Callout */}
           {obligation.next_action && (
             <div className="p-4 rounded-xl bg-blue-950/30 border border-blue-500/30 space-y-1">
-              <span className="text-[11px] font-semibold text-blue-400 uppercase tracking-wider">
+              <span className="text-[11px] font-semibold text-blue-500 uppercase tracking-wider">
                 Immediate Next Step
               </span>
-              <div className="text-sm text-zinc-200 font-medium">{obligation.next_action}</div>
+              <div className="text-sm text-stone-800 font-medium">{obligation.next_action}</div>
             </div>
           )}
 
           {/* Provenance & Confidence */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="p-4 rounded-xl bg-zinc-950/80 border border-zinc-800/80 space-y-1">
-              <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
+            <div className="p-4 rounded-xl bg-stone-50/80 border border-stone-200/80 space-y-1">
+              <span className="text-[11px] font-semibold text-stone-600 uppercase tracking-wider">
                 Source Reference
               </span>
-              <div className="text-xs text-zinc-300">{obligation.source_ref || "Manual Input"}</div>
+              <div className="text-xs text-stone-700">{obligation.source_ref || "Manual Input"}</div>
             </div>
 
-            <div className="p-4 rounded-xl bg-zinc-950/80 border border-zinc-800/80 space-y-1">
-              <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
+            <div className="p-4 rounded-xl bg-stone-50/80 border border-stone-200/80 space-y-1">
+              <span className="text-[11px] font-semibold text-stone-600 uppercase tracking-wider">
                 AI Confidence Breakdown
               </span>
               <div>
@@ -1039,21 +1039,21 @@ export default function ObligationDetailPage({ params }: PageProps) {
           </div>
 
           {/* PHASE 3: RELATIONSHIPS SECTION */}
-          <div className="space-y-4 pt-6 border-t border-zinc-800">
+          <div className="space-y-4 pt-6 border-t border-stone-200">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <GitFork className="w-4 h-4 text-blue-400" />
+                <h3 className="text-sm font-bold text-stone-950 flex items-center gap-2">
+                  <GitFork className="w-4 h-4 text-blue-500" />
                   <span>Obligation Relationships & Dependency Graph</span>
                 </h3>
-                <p className="text-[11px] text-zinc-400">
+                <p className="text-[11px] text-stone-600">
                   Connected commitments, prerequisite blockers, and reciprocal dependencies.
                 </p>
               </div>
 
               <button
                 onClick={handleOpenAddEdgeModal}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/30 text-xs font-semibold transition-colors"
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-blue-600/20 hover:bg-blue-600/30 text-blue-600 border border-blue-500/30 text-xs font-semibold transition-colors"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Add Relationship</span>
@@ -1062,11 +1062,11 @@ export default function ObligationDetailPage({ params }: PageProps) {
 
             {/* Prerequisites (Depends On) */}
             <div className="space-y-2">
-              <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider">
+              <span className="text-[11px] font-bold text-stone-600 uppercase tracking-wider">
                 Prerequisites (This depends on):
               </span>
               {!graph || graph.dependencies.length === 0 ? (
-                <div className="p-3 rounded-xl bg-zinc-950/60 border border-zinc-800/60 text-xs text-zinc-500 italic">
+                <div className="p-3 rounded-xl bg-stone-50/60 border border-stone-200/60 text-xs text-stone-500 italic">
                   No prerequisite dependencies. This obligation can proceed independently.
                 </div>
               ) : (
@@ -1075,15 +1075,15 @@ export default function ObligationDetailPage({ params }: PageProps) {
                     <Link
                       key={dep.id}
                       href={`/obligations/${dep.id}`}
-                      className="p-3.5 rounded-xl bg-zinc-950 border border-zinc-800 hover:border-zinc-700 transition-all space-y-1.5 block group"
+                      className="p-3.5 rounded-xl bg-stone-50 border border-stone-200 hover:border-stone-300 transition-all space-y-1.5 block group"
                     >
                       <div className="flex items-center justify-between text-xs">
-                        <span className="font-semibold text-zinc-300 group-hover:text-blue-400 transition-colors">
+                        <span className="font-semibold text-stone-700 group-hover:text-blue-500 transition-colors">
                           {dep.owner}
                         </span>
                         <StatusBadge status={dep.status} />
                       </div>
-                      <p className="text-xs text-zinc-200 font-medium line-clamp-2">{dep.action}</p>
+                      <p className="text-xs text-stone-800 font-medium line-clamp-2">{dep.action}</p>
                     </Link>
                   ))}
                 </div>
@@ -1092,11 +1092,11 @@ export default function ObligationDetailPage({ params }: PageProps) {
 
             {/* Dependents (Completing This Unblocks) */}
             <div className="space-y-2 pt-2">
-              <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider">
+              <span className="text-[11px] font-bold text-stone-600 uppercase tracking-wider">
                 Dependents (Completing this unblocks):
               </span>
               {!graph || graph.dependents.length === 0 ? (
-                <div className="p-3 rounded-xl bg-zinc-950/60 border border-zinc-800/60 text-xs text-zinc-500 italic">
+                <div className="p-3 rounded-xl bg-stone-50/60 border border-stone-200/60 text-xs text-stone-500 italic">
                   No other obligations depend on this deliverable.
                 </div>
               ) : (
@@ -1105,15 +1105,15 @@ export default function ObligationDetailPage({ params }: PageProps) {
                     <Link
                       key={dep.id}
                       href={`/obligations/${dep.id}`}
-                      className="p-3.5 rounded-xl bg-zinc-950 border border-zinc-800 hover:border-zinc-700 transition-all space-y-1.5 block group"
+                      className="p-3.5 rounded-xl bg-stone-50 border border-stone-200 hover:border-stone-300 transition-all space-y-1.5 block group"
                     >
                       <div className="flex items-center justify-between text-xs">
-                        <span className="font-semibold text-zinc-300 group-hover:text-emerald-400 transition-colors">
+                        <span className="font-semibold text-stone-700 group-hover:text-emerald-400 transition-colors">
                           {dep.owner}
                         </span>
                         <StatusBadge status={dep.status} />
                       </div>
-                      <p className="text-xs text-zinc-200 font-medium line-clamp-2">{dep.action}</p>
+                      <p className="text-xs text-stone-800 font-medium line-clamp-2">{dep.action}</p>
                     </Link>
                   ))}
                 </div>
@@ -1122,11 +1122,11 @@ export default function ObligationDetailPage({ params }: PageProps) {
 
             {/* Linked / Reciprocal Obligations */}
             <div className="space-y-2 pt-2">
-              <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider">
+              <span className="text-[11px] font-bold text-stone-600 uppercase tracking-wider">
                 Linked & Reciprocal Commitments:
               </span>
               {!graph || graph.linked.length === 0 ? (
-                <div className="p-3 rounded-xl bg-zinc-950/60 border border-zinc-800/60 text-xs text-zinc-500 italic">
+                <div className="p-3 rounded-xl bg-stone-50/60 border border-stone-200/60 text-xs text-stone-500 italic">
                   No linked reciprocal obligations.
                 </div>
               ) : (
@@ -1144,7 +1144,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
                         </span>
                         <StatusBadge status={link.status} />
                       </div>
-                      <p className="text-xs text-zinc-200 font-medium line-clamp-2">{link.action}</p>
+                      <p className="text-xs text-stone-800 font-medium line-clamp-2">{link.action}</p>
                     </Link>
                   ))}
                 </div>
@@ -1153,14 +1153,14 @@ export default function ObligationDetailPage({ params }: PageProps) {
           </div>
 
           {/* PHASE 6: HUMAN-CONTROLLED INTERVENTIONS & FOLLOW-UP HISTORY */}
-          <div className="bg-zinc-900/80 border border-zinc-800 rounded-2xl p-6 space-y-4 shadow-md">
+          <div className="bg-stone-100/80 border border-stone-200 rounded-2xl p-6 space-y-4 shadow-md">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="space-y-0.5">
-                <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                <h3 className="text-sm font-bold text-stone-950 flex items-center gap-2">
                   <Sparkles className="w-4 h-4 text-amber-400" />
                   <span>Interventions & Follow-Up History ({interventions.length})</span>
                 </h3>
-                <p className="text-[11px] text-zinc-400">
+                <p className="text-[11px] text-stone-600">
                   Human-authorized follow-up drafts, scheduled check-ins, and execution tracking.
                 </p>
               </div>
@@ -1169,7 +1169,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
                 <button
                   onClick={handlePlanIntervention}
                   disabled={planningIntervention}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 text-xs font-bold transition-all shadow-md shadow-amber-500/20 active:scale-95 disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-50 text-xs font-bold transition-all shadow-md shadow-amber-500/20 active:scale-95 disabled:opacity-50"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
                   <span>{planningIntervention ? "Planning..." : "⚡ Plan Follow-Up"}</span>
@@ -1178,7 +1178,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
             </div>
 
             {interventions.length === 0 ? (
-              <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/60 text-xs text-zinc-400 italic">
+              <div className="p-4 rounded-xl bg-stone-50/60 border border-stone-200/60 text-xs text-stone-600 italic">
                 No interventions planned or executed yet for this commitment.
               </div>
             ) : (
@@ -1224,14 +1224,14 @@ export default function ObligationDetailPage({ params }: PageProps) {
             if (calendarEvs.length === 0) return null;
 
             return (
-              <div className="bg-gradient-to-r from-emerald-950/30 via-slate-900 to-slate-900 border border-emerald-800/40 rounded-2xl p-6 space-y-4 shadow-md">
+              <div className="bg-gradient-to-r from-emerald-950/30 via-stone-100 to-stone-100 border border-emerald-800/40 rounded-2xl p-6 space-y-4 shadow-md">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="space-y-0.5">
-                    <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                    <h3 className="text-sm font-bold text-stone-950 flex items-center gap-2">
                       <Calendar className="w-4 h-4 text-emerald-400" />
                       <span>Temporal Context &amp; Related Meetings ({calendarEvs.length})</span>
                     </h3>
-                    <p className="text-[11px] text-zinc-400">
+                    <p className="text-[11px] text-stone-600">
                       Observed Google Calendar meetings correlating with this commitment.
                     </p>
                   </div>
@@ -1252,14 +1252,14 @@ export default function ObligationDetailPage({ params }: PageProps) {
                     return (
                       <div
                         key={cev.id}
-                        className="p-4 rounded-xl bg-zinc-950/90 border border-emerald-900/40 space-y-2.5 text-xs"
+                        className="p-4 rounded-xl bg-stone-50/90 border border-emerald-900/40 space-y-2.5 text-xs"
                       >
                         <div className="flex flex-wrap items-center justify-between gap-2">
                           <div className="flex items-center gap-2">
                             <span
                               className={`px-2 py-0.5 rounded-full font-bold uppercase text-[10px] ${
                                 mStatus === "MEETING_COMPLETED"
-                                  ? "bg-blue-950/80 text-blue-300 border border-blue-800/60"
+                                  ? "bg-blue-950/80 text-blue-600 border border-blue-800/60"
                                   : mStatus === "MEETING_CANCELLED"
                                   ? "bg-rose-950/80 text-rose-300 border border-rose-800/60"
                                   : mStatus === "MEETING_RESCHEDULED"
@@ -1269,13 +1269,13 @@ export default function ObligationDetailPage({ params }: PageProps) {
                             >
                               {mStatus.replace("MEETING_", "")}
                             </span>
-                            <span className="font-semibold text-zinc-200">
+                            <span className="font-semibold text-stone-800">
                               {summary}
                             </span>
                           </div>
 
                           {startTime && (
-                            <span className="text-zinc-400 flex items-center gap-1 font-mono text-[11px]">
+                            <span className="text-stone-600 flex items-center gap-1 font-mono text-[11px]">
                               <Clock className="w-3 h-3 text-emerald-400" />
                               {new Date(startTime).toLocaleString(undefined, {
                                 month: "short",
@@ -1287,17 +1287,17 @@ export default function ObligationDetailPage({ params }: PageProps) {
                           )}
                         </div>
 
-                        <p className="text-zinc-300 bg-zinc-900/60 p-2.5 rounded-lg border border-zinc-800/80">
+                        <p className="text-stone-700 bg-stone-100/60 p-2.5 rounded-lg border border-stone-200/80">
                           {cev.content}
                         </p>
 
-                        <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-zinc-400">
+                        <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-stone-600">
                           <span>
-                            Organizer: <strong className="text-zinc-300">{cev.actor || organizer}</strong>
+                            Organizer: <strong className="text-stone-700">{cev.actor || organizer}</strong>
                           </span>
                           {attendees.length > 0 && (
                             <span>
-                              Attendees: <strong className="text-zinc-300">{attendees.join(", ")}</strong>
+                              Attendees: <strong className="text-stone-700">{attendees.join(", ")}</strong>
                             </span>
                           )}
                         </div>
@@ -1306,7 +1306,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
                   })}
                 </div>
 
-                <p className="text-[11px] text-zinc-400 italic">
+                <p className="text-[11px] text-stone-600 italic">
                   Note: Calendar meetings provide temporal context and meeting proximity signals to the Risk Engine. They do not automatically overwrite this obligation&apos;s deadline or mark it completed without human approval.
                 </p>
               </div>
@@ -1318,19 +1318,19 @@ export default function ObligationDetailPage({ params }: PageProps) {
             <div
               className={`border rounded-2xl p-6 space-y-4 shadow-md transition-all ${
                 reconciliation.status === "CONFLICTING"
-                  ? "bg-gradient-to-r from-rose-950/30 via-zinc-900 to-zinc-900 border-rose-800/40"
+                  ? "bg-gradient-to-r from-rose-950/30 via-stone-100 to-stone-100 border-rose-800/40"
                   : reconciliation.status === "CONSISTENT"
-                  ? "bg-gradient-to-r from-emerald-950/30 via-zinc-900 to-zinc-900 border-emerald-800/40"
-                  : "bg-zinc-900 border-zinc-800"
+                  ? "bg-gradient-to-r from-emerald-950/30 via-stone-100 to-stone-100 border-emerald-800/40"
+                  : "bg-stone-100 border-stone-200"
               }`}
             >
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="space-y-0.5">
-                  <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                    <Scale className="w-4 h-4 text-indigo-400" />
+                  <h3 className="text-sm font-bold text-stone-950 flex items-center gap-2">
+                    <Scale className="w-4 h-4 text-blue-500" />
                     <span>Cross-Provider Reconciliation &amp; Contradiction Status</span>
                   </h3>
-                  <p className="text-[11px] text-zinc-400">
+                  <p className="text-[11px] text-stone-600">
                     Continuous cross-source consistency analysis synthesized across Slack, Gmail, and Google Calendar.
                   </p>
                 </div>
@@ -1348,7 +1348,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
                   </span>
                   <button
                     onClick={() => setShowReconciliationModal(true)}
-                    className="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-lg shadow-sm transition-all"
+                    className="px-3 py-1 bg-blue-700 hover:bg-blue-600 text-stone-950 text-xs font-semibold rounded-lg shadow-sm transition-all"
                   >
                     Adjudicate Decision
                   </button>
@@ -1357,14 +1357,14 @@ export default function ObligationDetailPage({ params }: PageProps) {
 
               {/* Consistency vs Contradiction Meters */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                <div className="p-3 bg-zinc-950/60 rounded-xl border border-zinc-800 space-y-1.5">
+                <div className="p-3 bg-stone-50/60 rounded-xl border border-stone-200 space-y-1.5">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="text-zinc-400">Consistency Score</span>
+                    <span className="text-stone-600">Consistency Score</span>
                     <span className="text-emerald-400 font-bold">
                       {(reconciliation.consistency_score * 100).toFixed(0)}%
                     </span>
                   </div>
-                  <div className="w-full bg-zinc-800 rounded-full h-1.5 overflow-hidden">
+                  <div className="w-full bg-stone-200 rounded-full h-1.5 overflow-hidden">
                     <div
                       className="bg-emerald-500 h-1.5 rounded-full"
                       style={{ width: `${Math.min(100, reconciliation.consistency_score * 100)}%` }}
@@ -1372,14 +1372,14 @@ export default function ObligationDetailPage({ params }: PageProps) {
                   </div>
                 </div>
 
-                <div className="p-3 bg-zinc-950/60 rounded-xl border border-zinc-800 space-y-1.5">
+                <div className="p-3 bg-stone-50/60 rounded-xl border border-stone-200 space-y-1.5">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="text-zinc-400">Contradiction Score</span>
+                    <span className="text-stone-600">Contradiction Score</span>
                     <span className="text-rose-400 font-bold">
                       {(reconciliation.contradiction_score * 100).toFixed(0)}%
                     </span>
                   </div>
-                  <div className="w-full bg-zinc-800 rounded-full h-1.5 overflow-hidden">
+                  <div className="w-full bg-stone-200 rounded-full h-1.5 overflow-hidden">
                     <div
                       className="bg-rose-500 h-1.5 rounded-full"
                       style={{ width: `${Math.min(100, reconciliation.contradiction_score * 100)}%` }}
@@ -1390,26 +1390,26 @@ export default function ObligationDetailPage({ params }: PageProps) {
 
               {/* Finding notes */}
               {reconciliation.explanation && reconciliation.explanation.length > 0 && (
-                <div className="p-3 bg-zinc-950/70 rounded-xl border border-zinc-800 text-xs text-zinc-300 space-y-1">
-                  <span className="text-zinc-400 font-medium text-[11px] uppercase tracking-wider block mb-1">
+                <div className="p-3 bg-stone-50/70 rounded-xl border border-stone-200 text-xs text-stone-700 space-y-1">
+                  <span className="text-stone-600 font-medium text-[11px] uppercase tracking-wider block mb-1">
                     Intelligence Findings:
                   </span>
                   {reconciliation.explanation.map((exp: string, idx: number) => (
-                    <p key={idx} className="text-zinc-300 flex items-start gap-1.5">
-                      <span className="text-indigo-400 font-mono">•</span>
+                    <p key={idx} className="text-stone-700 flex items-start gap-1.5">
+                      <span className="text-blue-500 font-mono">•</span>
                       <span>{exp}</span>
                     </p>
                   ))}
                 </div>
               )}
 
-              <div className="flex items-center justify-between text-xs text-zinc-400 pt-1">
+              <div className="flex items-center justify-between text-xs text-stone-600 pt-1">
                 <span>
-                  Recommended Action: <strong className="text-indigo-300">{reconciliation.recommended_action || "REVIEW"}</strong>
+                  Recommended Action: <strong className="text-blue-600">{reconciliation.recommended_action || "REVIEW"}</strong>
                 </span>
                 <Link
                   href={`/reconciliation/${reconciliation.id}`}
-                  className="text-indigo-400 hover:text-indigo-300 font-medium flex items-center gap-1"
+                  className="text-blue-500 hover:text-blue-600 font-medium flex items-center gap-1"
                 >
                   <span>Full Evidence Timeline &rarr;</span>
                 </Link>
@@ -1419,21 +1419,21 @@ export default function ObligationDetailPage({ params }: PageProps) {
 
           {/* PHASE 12: PREDICTIVE INTELLIGENCE & PATTERN LEARNING */}
           {prediction && (
-            <div className="bg-gradient-to-r from-indigo-950/30 via-slate-900 to-slate-900 border border-indigo-500/30 rounded-2xl p-6 space-y-6 shadow-md">
+            <div className="bg-gradient-to-r from-indigo-950/30 via-stone-100 to-stone-100 border border-blue-600/30 rounded-2xl p-6 space-y-6 shadow-md">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="w-8 h-8 rounded-lg bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-indigo-400">
+                    <span className="w-8 h-8 rounded-lg bg-blue-600/20 border border-blue-600/40 flex items-center justify-center text-blue-500">
                       <Brain className="w-4 h-4" />
                     </span>
                     <div>
-                      <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                      <h3 className="text-sm font-bold text-stone-950 flex items-center gap-2">
                         <span>Predictive Intelligence &amp; Pattern Learning</span>
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-600/20 text-blue-600 border border-blue-600/40">
                           {prediction.model_version}
                         </span>
                       </h3>
-                      <p className="text-[11px] text-zinc-400">
+                      <p className="text-[11px] text-stone-600">
                         Historical pattern learning, explainable delay forecasting, and calibrated predictive signals.
                       </p>
                     </div>
@@ -1441,10 +1441,10 @@ export default function ObligationDetailPage({ params }: PageProps) {
                 </div>
 
                 <div className="text-right">
-                  <div className="text-xl font-bold font-mono text-indigo-300">
+                  <div className="text-xl font-bold font-mono text-blue-600">
                     {Math.round(prediction.failure_probability * 100)}% Failure Prob.
                   </div>
-                  <div className="text-[11px] text-zinc-400">
+                  <div className="text-[11px] text-stone-600">
                     Confidence: {Math.round(prediction.confidence * 100)}%
                   </div>
                 </div>
@@ -1452,7 +1452,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
 
               {/* Progress Bar */}
               <div className="space-y-1.5">
-                <div className="flex justify-between text-xs font-medium text-zinc-400">
+                <div className="flex justify-between text-xs font-medium text-stone-600">
                   <span className="text-emerald-400 flex items-center gap-1">
                     <CheckCircle2 className="w-3.5 h-3.5" />
                     Completion Likelihood: {Math.round(prediction.completion_probability * 100)}%
@@ -1462,7 +1462,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
                     Failure / Delay Likelihood: {Math.round(prediction.failure_probability * 100)}%
                   </span>
                 </div>
-                <div className="w-full bg-zinc-800 rounded-full h-2 overflow-hidden flex">
+                <div className="w-full bg-stone-200 rounded-full h-2 overflow-hidden flex">
                   <div
                     className="bg-rose-500 h-full transition-all duration-500"
                     style={{ width: `${Math.round(prediction.failure_probability * 100)}%` }}
@@ -1472,42 +1472,42 @@ export default function ObligationDetailPage({ params }: PageProps) {
 
               {/* Projections Matrix */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div className="p-3 bg-zinc-950/60 rounded-xl border border-zinc-800 space-y-1">
-                  <div className="text-[11px] text-zinc-400">Expected Delay Latency</div>
+                <div className="p-3 bg-stone-50/60 rounded-xl border border-stone-200 space-y-1">
+                  <div className="text-[11px] text-stone-600">Expected Delay Latency</div>
                   <div className="text-base font-bold text-amber-300 font-mono">
                     {prediction.expected_delay_hours > 0 ? `+${prediction.expected_delay_hours}h` : "On Schedule"}
                   </div>
-                  <div className="text-[10px] text-zinc-500">Derived from historical priors</div>
+                  <div className="text-[10px] text-stone-500">Derived from historical priors</div>
                 </div>
 
-                <div className="p-3 bg-zinc-950/60 rounded-xl border border-zinc-800 space-y-1">
-                  <div className="text-[11px] text-zinc-400">Intervention Likelihood</div>
-                  <div className="text-base font-bold text-indigo-300 font-mono">
+                <div className="p-3 bg-stone-50/60 rounded-xl border border-stone-200 space-y-1">
+                  <div className="text-[11px] text-stone-600">Intervention Likelihood</div>
+                  <div className="text-base font-bold text-blue-600 font-mono">
                     {Math.round(prediction.intervention_likelihood * 100)}%
                   </div>
-                  <div className="text-[10px] text-zinc-500">Likely to need check-in</div>
+                  <div className="text-[10px] text-stone-500">Likely to need check-in</div>
                 </div>
 
-                <div className="p-3 bg-zinc-950/60 rounded-xl border border-zinc-800 space-y-1">
-                  <div className="text-[11px] text-zinc-400">Blockage Risk</div>
+                <div className="p-3 bg-stone-50/60 rounded-xl border border-stone-200 space-y-1">
+                  <div className="text-[11px] text-stone-600">Blockage Risk</div>
                   <div className="text-base font-bold text-rose-300 font-mono">
                     {Math.round(prediction.blockage_likelihood * 100)}%
                   </div>
-                  <div className="text-[10px] text-zinc-500">Prerequisite bottleneck risk</div>
+                  <div className="text-[10px] text-stone-500">Prerequisite bottleneck risk</div>
                 </div>
               </div>
 
               {/* Explainable Causal Reasons */}
               {prediction.reasons && prediction.reasons.length > 0 && (
                 <div className="space-y-2">
-                  <div className="text-xs font-semibold text-zinc-300 uppercase tracking-wider">
+                  <div className="text-xs font-semibold text-stone-700 uppercase tracking-wider">
                     Explainable Predictive Signals (Why?):
                   </div>
                   <div className="space-y-1.5">
                     {prediction.reasons.map((r, i) => (
                       <div
                         key={i}
-                        className="flex items-start gap-2.5 p-2.5 rounded-lg bg-zinc-950/50 border border-zinc-800/80 text-xs"
+                        className="flex items-start gap-2.5 p-2.5 rounded-lg bg-stone-50/50 border border-stone-200/80 text-xs"
                       >
                         <span
                           className={`font-mono text-[10px] font-bold px-1.5 py-0.5 rounded shrink-0 ${
@@ -1516,7 +1516,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
                         >
                           {r.impact > 0 ? `+${r.impact}` : r.impact}
                         </span>
-                        <span className="text-zinc-300 leading-relaxed">{r.explanation}</span>
+                        <span className="text-stone-700 leading-relaxed">{r.explanation}</span>
                       </div>
                     ))}
                   </div>
@@ -1525,32 +1525,32 @@ export default function ObligationDetailPage({ params }: PageProps) {
 
               {/* Owner Context Insights */}
               {ownerContext && ownerContext.total_obligations >= 2 && (
-                <div className="p-3 bg-zinc-950/40 rounded-xl border border-zinc-800 text-xs space-y-1.5">
-                  <div className="flex items-center justify-between text-zinc-300">
+                <div className="p-3 bg-stone-50/40 rounded-xl border border-stone-200 text-xs space-y-1.5">
+                  <div className="flex items-center justify-between text-stone-700">
                     <span className="font-semibold">Owner Delivery Profile ({ownerContext.owner}):</span>
-                    <span className="text-[10px] text-zinc-400">
+                    <span className="text-[10px] text-stone-600">
                       {Math.round(ownerContext.on_time_rate * 100)}% On-Time • Avg Delay: ~{ownerContext.avg_delay_hours}h
                     </span>
                   </div>
-                  <p className="text-zinc-400 text-[11px]">{ownerContext.insights[0]}</p>
+                  <p className="text-stone-600 text-[11px]">{ownerContext.insights[0]}</p>
                 </div>
               )}
 
               {/* Similar Past Obligations */}
               {similarObligations.length > 0 && (
-                <div className="space-y-2 pt-2 border-t border-zinc-800/80">
-                  <div className="text-xs font-semibold text-zinc-300 uppercase tracking-wider flex items-center justify-between">
+                <div className="space-y-2 pt-2 border-t border-stone-200/80">
+                  <div className="text-xs font-semibold text-stone-700 uppercase tracking-wider flex items-center justify-between">
                     <span>Historically Similar Commitments ({similarObligations.length}):</span>
-                    <span className="text-[10px] text-zinc-500 font-normal">Ranked by feature similarity</span>
+                    <span className="text-[10px] text-stone-500 font-normal">Ranked by feature similarity</span>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                     {similarObligations.map((sim) => (
                       <div
                         key={sim.obligation_id}
-                        className="p-3 bg-zinc-950/40 rounded-lg border border-zinc-800 text-xs space-y-1.5"
+                        className="p-3 bg-stone-50/40 rounded-lg border border-stone-200 text-xs space-y-1.5"
                       >
                         <div className="flex items-center justify-between">
-                          <span className="font-semibold text-zinc-200 truncate max-w-[180px]">
+                          <span className="font-semibold text-stone-800 truncate max-w-[180px]">
                             {sim.owner}
                           </span>
                           <span
@@ -1563,8 +1563,8 @@ export default function ObligationDetailPage({ params }: PageProps) {
                             {sim.outcome_type.replace(/_/g, " ")}
                           </span>
                         </div>
-                        <p className="text-zinc-400 line-clamp-1">{sim.action}</p>
-                        <div className="text-[10px] text-zinc-500">
+                        <p className="text-stone-600 line-clamp-1">{sim.action}</p>
+                        <div className="text-[10px] text-stone-500">
                           Similarity: {Math.round(sim.similarity_score * 100)}% • {sim.shared_features[0] || "Shared pattern"}
                         </div>
                       </div>
@@ -1575,48 +1575,48 @@ export default function ObligationDetailPage({ params }: PageProps) {
 
               {/* PHASE 13: MODEL COMPARISON BREAKDOWN */}
               {modelComparison && (
-                <div className="space-y-3 pt-3 border-t border-indigo-500/20">
+                <div className="space-y-3 pt-3 border-t border-blue-600/20">
                   <div className="flex items-center justify-between">
-                    <h4 className="text-xs font-semibold text-slate-200 uppercase tracking-wider flex items-center gap-1.5">
-                      <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+                    <h4 className="text-xs font-semibold text-stone-800 uppercase tracking-wider flex items-center gap-1.5">
+                      <Sparkles className="w-3.5 h-3.5 text-blue-500" />
                       <span>Model Comparison: predictive-v1 vs adaptive-v1</span>
                     </h4>
-                    <span className="text-[11px] font-mono text-indigo-300 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/30">
+                    <span className="text-[11px] font-mono text-blue-600 bg-blue-600/10 px-2 py-0.5 rounded border border-blue-600/30">
                       Variance: {modelComparison.probability_variance >= 0 ? `+${(modelComparison.probability_variance * 100).toFixed(1)}%` : `${(modelComparison.probability_variance * 100).toFixed(1)}%`}
                     </span>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div className="p-3 bg-slate-950/50 rounded-xl border border-slate-800 space-y-1">
+                    <div className="p-3 bg-stone-50/50 rounded-xl border border-stone-200 space-y-1">
                       <div className="flex items-center justify-between text-[11px]">
-                        <span className="font-semibold text-slate-300">predictive-v1 (Baseline)</span>
-                        <span className="font-mono text-slate-400">
+                        <span className="font-semibold text-stone-700">predictive-v1 (Baseline)</span>
+                        <span className="font-mono text-stone-600">
                           {Math.round(modelComparison.predictive_v1.failure_probability * 100)}% Failure
                         </span>
                       </div>
-                      <div className="text-[11px] text-slate-500">
+                      <div className="text-[11px] text-stone-500">
                         Expected Delay: ~{modelComparison.predictive_v1.expected_delay_hours}h • Conf: {Math.round(modelComparison.predictive_v1.confidence * 100)}%
                       </div>
                     </div>
 
-                    <div className="p-3 bg-slate-950/50 rounded-xl border border-indigo-500/40 space-y-1">
+                    <div className="p-3 bg-stone-50/50 rounded-xl border border-blue-600/40 space-y-1">
                       <div className="flex items-center justify-between text-[11px]">
-                        <span className="font-semibold text-indigo-300">adaptive-v1 (Calibrated)</span>
-                        <span className="font-mono text-indigo-400 font-bold">
+                        <span className="font-semibold text-blue-600">adaptive-v1 (Calibrated)</span>
+                        <span className="font-mono text-blue-500 font-bold">
                           {Math.round(modelComparison.adaptive_v1.failure_probability * 100)}% Failure
                         </span>
                       </div>
-                      <div className="text-[11px] text-slate-400">
+                      <div className="text-[11px] text-stone-600">
                         Expected Delay: ~{modelComparison.adaptive_v1.expected_delay_hours}h • Conf: {Math.round(modelComparison.adaptive_v1.confidence * 100)}%
                       </div>
                     </div>
                   </div>
 
                   {modelComparison.adjustment_reasons.length > 0 && (
-                    <div className="p-2.5 bg-slate-950/40 rounded-lg text-[11px] text-slate-400 space-y-0.5">
+                    <div className="p-2.5 bg-stone-50/40 rounded-lg text-[11px] text-stone-600 space-y-0.5">
                       {modelComparison.adjustment_reasons.map((r, i) => (
-                        <div key={i} className="flex items-center gap-1.5 text-slate-300">
-                          <span className="text-indigo-400">•</span>
+                        <div key={i} className="flex items-center gap-1.5 text-stone-700">
+                          <span className="text-blue-500">•</span>
                           <span>{r}</span>
                         </div>
                       ))}
@@ -1627,8 +1627,8 @@ export default function ObligationDetailPage({ params }: PageProps) {
 
               {/* PHASE 13: PREDICTION HISTORY TIMELINE */}
               {predictionHistory.length > 0 && (
-                <div className="space-y-3 pt-3 border-t border-indigo-500/20">
-                  <h4 className="text-xs font-semibold text-slate-200 uppercase tracking-wider flex items-center gap-1.5">
+                <div className="space-y-3 pt-3 border-t border-blue-600/20">
+                  <h4 className="text-xs font-semibold text-stone-800 uppercase tracking-wider flex items-center gap-1.5">
                     <Clock className="w-3.5 h-3.5 text-amber-400" />
                     <span>Prediction & Feedback History ({predictionHistory.length})</span>
                   </h4>
@@ -1637,28 +1637,28 @@ export default function ObligationDetailPage({ params }: PageProps) {
                     {predictionHistory.map((item) => (
                       <div
                         key={item.prediction_id}
-                        className="p-3 bg-slate-950/40 rounded-xl border border-slate-800 text-xs flex flex-wrap items-center justify-between gap-2"
+                        className="p-3 bg-stone-50/40 rounded-xl border border-stone-200 text-xs flex flex-wrap items-center justify-between gap-2"
                       >
                         <div>
                           <div className="flex items-center gap-2">
-                            <span className="font-mono text-indigo-300 font-semibold">{item.model_version}</span>
-                            <span className="text-slate-500 text-[10px]">
+                            <span className="font-mono text-blue-600 font-semibold">{item.model_version}</span>
+                            <span className="text-stone-500 text-[10px]">
                               {new Date(item.predicted_at).toLocaleString()}
                             </span>
                           </div>
-                          <div className="text-[11px] text-slate-400 mt-0.5">
-                            Failure Prob: <span className="text-slate-200 font-mono font-semibold">{Math.round(item.failure_probability * 100)}%</span> •
+                          <div className="text-[11px] text-stone-600 mt-0.5">
+                            Failure Prob: <span className="text-stone-800 font-mono font-semibold">{Math.round(item.failure_probability * 100)}%</span> •
                             Exp Delay: <span className="text-amber-300 font-mono">~{item.expected_delay_hours}h</span>
                           </div>
                         </div>
 
                         {item.observed_outcome && (
                           <div className="text-right text-[11px]">
-                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-300">
+                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-stone-200 text-stone-700">
                               Observed: {item.observed_outcome}
                             </span>
                             {item.prediction_error !== null && item.prediction_error !== undefined && (
-                              <div className="text-[10px] text-slate-500 mt-0.5">
+                              <div className="text-[10px] text-stone-500 mt-0.5">
                                 Error: {item.prediction_error.toFixed(2)}
                               </div>
                             )}
@@ -1671,16 +1671,16 @@ export default function ObligationDetailPage({ params }: PageProps) {
               )}
 
               {/* Preventative Advisory Recommendation */}
-              <div className="p-3.5 bg-indigo-950/40 rounded-xl border border-indigo-500/30 flex items-start gap-3 text-xs">
-                <ShieldAlert className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />
+              <div className="p-3.5 bg-indigo-950/40 rounded-xl border border-blue-600/30 flex items-start gap-3 text-xs">
+                <ShieldAlert className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
                 <div>
-                  <div className="font-semibold text-indigo-200">
+                  <div className="font-semibold text-blue-700">
                     Recommended Preventative Action:
                   </div>
-                  <div className="text-zinc-300 mt-0.5">
+                  <div className="text-stone-700 mt-0.5">
                     {prediction.preventative_recommendation || "Maintain standard monitoring."}
                   </div>
-                  <div className="text-[10px] text-zinc-500 mt-1 italic">
+                  <div className="text-[10px] text-stone-500 mt-1 italic">
                     Safety Invariant: Predictive intelligence is strictly advisory. It never automatically completes obligations or alters lifecycle states.
                   </div>
                 </div>
@@ -1689,14 +1689,14 @@ export default function ObligationDetailPage({ params }: PageProps) {
           )}
 
           {/* PHASE 4: EVIDENCE & CONTINUITY TIMELINE */}
-          <div className="space-y-4 pt-6 border-t border-zinc-800">
+          <div className="space-y-4 pt-6 border-t border-stone-200">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                <h3 className="text-sm font-bold text-stone-950 flex items-center gap-2">
                   <Activity className="w-4 h-4 text-emerald-400" />
                   <span>Evidence & Continuity Timeline ({evidenceList.length})</span>
                 </h3>
-                <p className="text-[11px] text-zinc-400">
+                <p className="text-[11px] text-stone-600">
                   Chronological record of observed messages, progress updates, and completion evidence.
                 </p>
               </div>
@@ -1704,7 +1704,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
               {obligation.status !== "COMPLETED" && (
                 <button
                   onClick={() => setShowEvidenceModal(true)}
-                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-semibold transition-colors"
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-stone-200 hover:bg-stone-300 text-stone-800 text-xs font-semibold transition-colors"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Attach Manual Note</span>
@@ -1713,11 +1713,11 @@ export default function ObligationDetailPage({ params }: PageProps) {
             </div>
 
             {evidenceList.length === 0 ? (
-              <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/60 text-xs text-zinc-400 italic">
+              <div className="p-4 rounded-xl bg-stone-50/60 border border-stone-200/60 text-xs text-stone-600 italic">
                 No observations or evidence recorded yet. External messages correlating with this task will appear here.
               </div>
             ) : (
-              <div className="space-y-3 relative before:absolute before:left-3 before:top-3 before:bottom-3 before:w-0.5 before:bg-zinc-800">
+              <div className="space-y-3 relative before:absolute before:left-3 before:top-3 before:bottom-3 before:w-0.5 before:bg-stone-200">
                 {evidenceList.map((ev) => (
                   <div
                     key={ev.id}
@@ -1725,16 +1725,16 @@ export default function ObligationDetailPage({ params }: PageProps) {
                   >
                     {/* Timeline dot */}
                     <div
-                      className={`absolute left-1.5 top-1.5 w-3 h-3 rounded-full border-2 bg-zinc-950 ${
+                      className={`absolute left-1.5 top-1.5 w-3 h-3 rounded-full border-2 bg-stone-50 ${
                         ev.correlation_status === "CONFIRMED"
                           ? "border-emerald-400"
                           : ev.correlation_status === "REJECTED"
                           ? "border-rose-400"
-                          : "border-blue-400"
+                          : "border-blue-500"
                       }`}
                     />
 
-                    <div className="p-3.5 rounded-xl bg-zinc-950 border border-zinc-800 space-y-2">
+                    <div className="p-3.5 rounded-xl bg-stone-50 border border-stone-200 space-y-2">
                       <div className="flex flex-wrap items-center justify-between gap-2 text-[11px]">
                         <div className="flex items-center gap-2">
                           <span
@@ -1743,16 +1743,16 @@ export default function ObligationDetailPage({ params }: PageProps) {
                                 ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
                                 : ev.correlation_status === "REJECTED"
                                 ? "bg-rose-500/20 text-rose-300 border border-rose-500/30"
-                                : "bg-blue-500/20 text-blue-300 border border-blue-500/30"
+                                : "bg-blue-500/20 text-blue-600 border border-blue-500/30"
                             }`}
                           >
                             {ev.correlation_status}
                           </span>
-                          <span className="text-zinc-300 font-semibold">{ev.actor || "Actor"}</span>
-                          <span className="text-zinc-500">•</span>
-                          <span className="text-zinc-400 capitalize">{ev.source_type}</span>
+                          <span className="text-stone-700 font-semibold">{ev.actor || "Actor"}</span>
+                          <span className="text-stone-500">•</span>
+                          <span className="text-stone-600 capitalize">{ev.source_type}</span>
                         </div>
-                        <span className="text-zinc-500">
+                        <span className="text-stone-500">
                           {new Date(ev.observed_at).toLocaleString(undefined, {
                             month: "short",
                             day: "numeric",
@@ -1762,13 +1762,13 @@ export default function ObligationDetailPage({ params }: PageProps) {
                         </span>
                       </div>
 
-                      <p className="text-zinc-200 font-medium">&ldquo;{ev.content}&rdquo;</p>
+                      <p className="text-stone-800 font-medium">&ldquo;{ev.content}&rdquo;</p>
 
                       {ev.reasoning && Array.isArray(ev.reasoning) && ev.reasoning.length > 0 && (
-                        <div className="text-[11px] text-zinc-400 space-y-0.5 pt-1 border-t border-zinc-900">
+                        <div className="text-[11px] text-stone-600 space-y-0.5 pt-1 border-t border-stone-100">
                           {ev.reasoning.map((r, idx) => (
                             <div key={idx} className="flex items-center gap-1.5">
-                              <span className="text-zinc-600">•</span>
+                              <span className="text-stone-400">•</span>
                               <span>{r}</span>
                             </div>
                           ))}
@@ -1783,14 +1783,14 @@ export default function ObligationDetailPage({ params }: PageProps) {
 
           {/* PHASE 14: ROOT-CAUSE ANALYSIS, IMPACT BLAST RADIUS & RESOLUTION PLANNING */}
           {rootCause && (
-            <div className="space-y-4 pt-6 border-t border-zinc-800">
+            <div className="space-y-4 pt-6 border-t border-stone-200">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div className="space-y-0.5">
-                  <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                    <Brain className="w-4 h-4 text-indigo-400" />
+                  <h3 className="text-sm font-bold text-stone-950 flex items-center gap-2">
+                    <Brain className="w-4 h-4 text-blue-500" />
                     <span>Causal Root-Cause & Blast Radius Intelligence</span>
                   </h3>
-                  <p className="text-[11px] text-zinc-400">
+                  <p className="text-[11px] text-stone-600">
                     Upstream graph causality, multi-signal attribution, and critical path risk reasoning.
                   </p>
                 </div>
@@ -1802,7 +1802,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
                         ? "bg-emerald-950/60 text-emerald-300 border-emerald-500/40"
                         : rootCause.confidence_level === "MEDIUM"
                         ? "bg-amber-950/60 text-amber-300 border-amber-500/40"
-                        : "bg-zinc-800 text-zinc-400 border-zinc-700"
+                        : "bg-stone-200 text-stone-600 border-stone-300"
                     }`}
                   >
                     Causal Confidence: {Math.round(rootCause.confidence * 100)}% ({rootCause.confidence_level})
@@ -1811,53 +1811,53 @@ export default function ObligationDetailPage({ params }: PageProps) {
               </div>
 
               {/* Primary Cause Card */}
-              <div className="p-4 rounded-xl bg-indigo-950/20 border border-indigo-500/30 space-y-2">
+              <div className="p-4 rounded-xl bg-indigo-950/20 border border-blue-600/30 space-y-2">
                 <div className="flex items-center justify-between">
-                  <div className="text-[11px] font-mono text-indigo-400 uppercase font-bold flex items-center gap-1.5">
+                  <div className="text-[11px] font-mono text-blue-500 uppercase font-bold flex items-center gap-1.5">
                     <Zap className="w-3.5 h-3.5" />
                     <span>Primary Root Cause</span>
                   </div>
-                  <span className="px-1.5 py-0.2 rounded text-[10px] font-mono bg-indigo-950 text-indigo-300 border border-indigo-500/40">
+                  <span className="px-1.5 py-0.2 rounded text-[10px] font-mono bg-indigo-950 text-blue-600 border border-blue-600/40">
                     {rootCause.root_cause_type}
                   </span>
                 </div>
-                <div className="text-xs font-bold text-white">{rootCause.primary_root_cause}</div>
-                <p className="text-xs text-zinc-300 leading-relaxed">{rootCause.overall_explanation}</p>
+                <div className="text-xs font-bold text-stone-950">{rootCause.primary_root_cause}</div>
+                <p className="text-xs text-stone-700 leading-relaxed">{rootCause.overall_explanation}</p>
               </div>
 
               {/* Impact & Blast Radius Grid */}
               {impact && (
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  <div className="p-3 rounded-xl bg-zinc-950/60 border border-zinc-800 space-y-0.5">
-                    <div className="text-[10px] text-zinc-500 uppercase tracking-wider">Impact Score</div>
-                    <div className="text-xl font-bold font-mono text-indigo-400">
+                  <div className="p-3 rounded-xl bg-stone-50/60 border border-stone-200 space-y-0.5">
+                    <div className="text-[10px] text-stone-500 uppercase tracking-wider">Impact Score</div>
+                    <div className="text-xl font-bold font-mono text-blue-500">
                       {impact.impact_score.toFixed(2)}
                     </div>
-                    <div className="text-[10px] text-zinc-400 uppercase">{impact.impact_level} Blast Radius</div>
+                    <div className="text-[10px] text-stone-600 uppercase">{impact.impact_level} Blast Radius</div>
                   </div>
 
-                  <div className="p-3 rounded-xl bg-zinc-950/60 border border-zinc-800 space-y-0.5">
-                    <div className="text-[10px] text-zinc-500 uppercase tracking-wider">Downstream Total</div>
-                    <div className="text-xl font-bold font-mono text-zinc-200">
+                  <div className="p-3 rounded-xl bg-stone-50/60 border border-stone-200 space-y-0.5">
+                    <div className="text-[10px] text-stone-500 uppercase tracking-wider">Downstream Total</div>
+                    <div className="text-xl font-bold font-mono text-stone-800">
                       {impact.total_downstream_dependents_count}
                     </div>
-                    <div className="text-[10px] text-zinc-400">Commitments affected</div>
+                    <div className="text-[10px] text-stone-600">Commitments affected</div>
                   </div>
 
-                  <div className="p-3 rounded-xl bg-zinc-950/60 border border-zinc-800 space-y-0.5">
-                    <div className="text-[10px] text-zinc-500 uppercase tracking-wider">Max Depth</div>
-                    <div className="text-xl font-bold font-mono text-zinc-200">
+                  <div className="p-3 rounded-xl bg-stone-50/60 border border-stone-200 space-y-0.5">
+                    <div className="text-[10px] text-stone-500 uppercase tracking-wider">Max Depth</div>
+                    <div className="text-xl font-bold font-mono text-stone-800">
                       {impact.maximum_dependency_depth}
                     </div>
-                    <div className="text-[10px] text-zinc-400">Hops downstream</div>
+                    <div className="text-[10px] text-stone-600">Hops downstream</div>
                   </div>
 
-                  <div className="p-3 rounded-xl bg-zinc-950/60 border border-zinc-800 space-y-0.5">
-                    <div className="text-[10px] text-zinc-500 uppercase tracking-wider">Affected Owners</div>
-                    <div className="text-xl font-bold font-mono text-zinc-200">
+                  <div className="p-3 rounded-xl bg-stone-50/60 border border-stone-200 space-y-0.5">
+                    <div className="text-[10px] text-stone-500 uppercase tracking-wider">Affected Owners</div>
+                    <div className="text-xl font-bold font-mono text-stone-800">
                       {impact.affected_owners.length}
                     </div>
-                    <div className="text-[10px] text-zinc-400">Team members</div>
+                    <div className="text-[10px] text-stone-600">Team members</div>
                   </div>
                 </div>
               )}
@@ -1866,17 +1866,17 @@ export default function ObligationDetailPage({ params }: PageProps) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {/* Critical Path Card */}
                 {criticalPath && (
-                  <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800 space-y-2">
-                    <div className="text-xs font-bold text-zinc-200 flex items-center gap-1.5">
-                      <Route className="w-3.5 h-3.5 text-indigo-400" />
+                  <div className="p-4 rounded-xl bg-stone-50/60 border border-stone-200 space-y-2">
+                    <div className="text-xs font-bold text-stone-800 flex items-center gap-1.5">
+                      <Route className="w-3.5 h-3.5 text-blue-500" />
                       <span>Critical Dependency Path ({criticalPath.critical_path_length} hops)</span>
                     </div>
-                    <p className="text-[11px] text-zinc-400">{criticalPath.explanation}</p>
+                    <p className="text-[11px] text-stone-600">{criticalPath.explanation}</p>
                     {criticalPath.root_blocker_action && (
                       <div className="p-2 rounded bg-rose-950/30 border border-rose-500/30 text-[11px] space-y-0.5">
                         <div className="text-[10px] font-mono text-rose-300 uppercase font-bold">Root Upstream Blocker</div>
-                        <div className="text-zinc-200 font-semibold">{criticalPath.root_blocker_action}</div>
-                        <div className="text-zinc-400 text-[10px]">Owner: {criticalPath.root_blocker_owner}</div>
+                        <div className="text-stone-800 font-semibold">{criticalPath.root_blocker_action}</div>
+                        <div className="text-stone-600 text-[10px]">Owner: {criticalPath.root_blocker_owner}</div>
                       </div>
                     )}
                   </div>
@@ -1894,10 +1894,10 @@ export default function ObligationDetailPage({ params }: PageProps) {
                         {resolutionPlan.strategy}
                       </span>
                     </div>
-                    <div className="text-xs font-semibold text-zinc-200">
+                    <div className="text-xs font-semibold text-stone-800">
                       Target: {resolutionPlan.target_action} ({resolutionPlan.target_owner})
                     </div>
-                    <p className="text-[11px] text-zinc-300 leading-relaxed">{resolutionPlan.rationale}</p>
+                    <p className="text-[11px] text-stone-700 leading-relaxed">{resolutionPlan.rationale}</p>
                     <div className="text-[10px] text-emerald-400 font-mono">
                       Expected Impact: {resolutionPlan.expected_impact}
                     </div>
@@ -1908,21 +1908,21 @@ export default function ObligationDetailPage({ params }: PageProps) {
           )}
 
           {/* PHASE 15: ENTERPRISE AUDIT & GOVERNANCE PROVENANCE TIMELINE */}
-          <div className="space-y-4 pt-6 border-t border-zinc-800">
+          <div className="space-y-4 pt-6 border-t border-stone-200">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-indigo-400" />
+                <h3 className="text-sm font-bold text-stone-950 flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-blue-500" />
                   <span>Authoritative Audit & Provenance History ({auditTrail.length})</span>
                 </h3>
-                <p className="text-[11px] text-zinc-400">
+                <p className="text-[11px] text-stone-600">
                   Cryptographic SHA-256 hash-chained lifecycle record with operator attribution & zero-secret state diffs.
                 </p>
               </div>
 
               <Link
                 href="/audit"
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white text-xs font-semibold transition-colors"
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-stone-200 hover:bg-stone-300 text-stone-700 hover:text-stone-950 text-xs font-semibold transition-colors"
               >
                 <span>Governance Center</span>
                 <ArrowRight className="w-3 h-3" />
@@ -1930,7 +1930,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
             </div>
 
             {auditTrail.length === 0 ? (
-              <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/60 text-xs text-zinc-500 italic">
+              <div className="p-4 rounded-xl bg-stone-50/60 border border-stone-200/60 text-xs text-stone-500 italic">
                 No audit events recorded for this obligation yet.
               </div>
             ) : (
@@ -1938,46 +1938,46 @@ export default function ObligationDetailPage({ params }: PageProps) {
                 {auditTrail.map((item) => (
                   <div key={item.id} className="pl-8 relative space-y-2 text-xs">
                     {/* Timeline dot */}
-                    <div className="absolute left-1.5 top-2 -translate-x-1/2 w-3.5 h-3.5 rounded-full border-2 border-indigo-500 bg-zinc-950" />
+                    <div className="absolute left-1.5 top-2 -translate-x-1/2 w-3.5 h-3.5 rounded-full border-2 border-blue-600 bg-stone-50" />
 
-                    <div className="p-4 rounded-xl bg-zinc-950/80 border border-zinc-800/80 space-y-2">
+                    <div className="p-4 rounded-xl bg-stone-50/80 border border-stone-200/80 space-y-2">
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <div className="flex items-center gap-2">
-                          <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-indigo-950/60 text-indigo-300 border border-indigo-500/30 font-mono">
+                          <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-indigo-950/60 text-blue-600 border border-blue-600/30 font-mono">
                             {item.action}
                           </span>
-                          <span className="text-zinc-400 font-semibold">
+                          <span className="text-stone-600 font-semibold">
                             {item.actor_name || (item.source === "SYSTEM_WORKER" ? "System Worker" : "Anonymous")}
                           </span>
                           {item.actor_role && (
-                            <span className="px-1.5 py-0.2 rounded text-[10px] bg-zinc-800 text-zinc-400 border border-zinc-700">
+                            <span className="px-1.5 py-0.2 rounded text-[10px] bg-stone-200 text-stone-600 border border-stone-300">
                               {item.actor_role}
                             </span>
                           )}
                         </div>
 
-                        <div className="flex items-center gap-2 font-mono text-[11px] text-zinc-500">
+                        <div className="flex items-center gap-2 font-mono text-[11px] text-stone-500">
                           <Clock className="w-3 h-3" />
                           <span>{new Date(item.timestamp).toLocaleString()}</span>
                         </div>
                       </div>
 
                       {item.reason && (
-                        <p className="text-zinc-300 italic text-[11px]">&ldquo;{item.reason}&rdquo;</p>
+                        <p className="text-stone-700 italic text-[11px]">&ldquo;{item.reason}&rdquo;</p>
                       )}
 
                       {/* State Changes Diff (if present) */}
                       {(item.before_state || item.after_state) && (
-                        <div className="p-2.5 rounded-lg bg-zinc-900/90 border border-zinc-800/60 space-y-1.5 text-[11px] font-mono">
+                        <div className="p-2.5 rounded-lg bg-stone-100/90 border border-stone-200/60 space-y-1.5 text-[11px] font-mono">
                           {item.before_state && (
-                            <div className="text-zinc-400">
-                              <span className="text-zinc-500 font-sans">Before: </span>
+                            <div className="text-stone-600">
+                              <span className="text-stone-500 font-sans">Before: </span>
                               <span>{JSON.stringify(item.before_state)}</span>
                             </div>
                           )}
                           {item.after_state && (
                             <div className="text-emerald-400">
-                              <span className="text-zinc-500 font-sans">After: </span>
+                              <span className="text-stone-500 font-sans">After: </span>
                               <span>{JSON.stringify(item.after_state)}</span>
                             </div>
                           )}
@@ -1985,7 +1985,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
                       )}
 
                       {/* Cryptographic SHA-256 Provenance Proof */}
-                      <div className="flex items-center justify-between pt-1 border-t border-zinc-900 text-[10px] font-mono text-zinc-500">
+                      <div className="flex items-center justify-between pt-1 border-t border-stone-100 text-[10px] font-mono text-stone-500">
                         <div className="flex items-center gap-1.5 text-emerald-400/80">
                           <Shield className="w-3 h-3" />
                           <span>Hash: {item.event_hash.slice(0, 16)}...</span>
@@ -2002,8 +2002,8 @@ export default function ObligationDetailPage({ params }: PageProps) {
           </div>
 
           {/* Controlled Status Transition Action Bar */}
-          <div className="pt-6 border-t border-zinc-800 space-y-3">
-            <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider block">
+          <div className="pt-6 border-t border-stone-200 space-y-3">
+            <span className="text-[11px] font-semibold text-stone-600 uppercase tracking-wider block">
               Controlled State Machine Actions
             </span>
 
@@ -2014,7 +2014,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
                   <button
                     onClick={() => handleStatusChange("IN_PROGRESS")}
                     disabled={updating}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold shadow-md shadow-amber-600/20 active:scale-95 transition-all"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-stone-950 text-xs font-semibold shadow-md shadow-amber-600/20 active:scale-95 transition-all"
                   >
                     <PlayCircle className="w-4 h-4" />
                     <span>Start Work (In Progress)</span>
@@ -2022,7 +2022,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
                   <button
                     onClick={() => setShowEvidenceModal(true)}
                     disabled={updating}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-md shadow-emerald-600/20 active:scale-95 transition-all"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-stone-950 text-xs font-semibold shadow-md shadow-emerald-600/20 active:scale-95 transition-all"
                   >
                     <CheckCircle2 className="w-4 h-4" />
                     <span>Complete & Attach Evidence</span>
@@ -2030,14 +2030,14 @@ export default function ObligationDetailPage({ params }: PageProps) {
                   <button
                     onClick={() => handleStatusChange("BLOCKED")}
                     disabled={updating}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-medium transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-stone-200 hover:bg-stone-300 text-stone-700 text-xs font-medium transition-colors"
                   >
                     <span>Mark Blocked</span>
                   </button>
                   <button
                     onClick={() => handleStatusChange("CANCELLED")}
                     disabled={updating}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-zinc-200 text-xs font-medium transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-stone-200 hover:bg-stone-300 text-stone-600 hover:text-stone-800 text-xs font-medium transition-colors"
                   >
                     <span>Cancel Obligation</span>
                   </button>
@@ -2050,7 +2050,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
                   <button
                     onClick={() => setShowEvidenceModal(true)}
                     disabled={updating}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-md shadow-emerald-600/20 active:scale-95 transition-all"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-stone-950 text-xs font-semibold shadow-md shadow-emerald-600/20 active:scale-95 transition-all"
                   >
                     <CheckCircle2 className="w-4 h-4" />
                     <span>Complete & Attach Evidence</span>
@@ -2058,14 +2058,14 @@ export default function ObligationDetailPage({ params }: PageProps) {
                   <button
                     onClick={() => handleStatusChange("BLOCKED")}
                     disabled={updating}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-medium transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-stone-200 hover:bg-stone-300 text-stone-700 text-xs font-medium transition-colors"
                   >
                     <span>Mark Blocked</span>
                   </button>
                   <button
                     onClick={() => handleStatusChange("CANCELLED")}
                     disabled={updating}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-zinc-200 text-xs font-medium transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-stone-200 hover:bg-stone-300 text-stone-600 hover:text-stone-800 text-xs font-medium transition-colors"
                   >
                     <span>Cancel Obligation</span>
                   </button>
@@ -2078,7 +2078,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
                   <button
                     onClick={() => handleStatusChange("IN_PROGRESS")}
                     disabled={updating}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold transition-all"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-stone-950 text-xs font-semibold transition-all"
                   >
                     <PlayCircle className="w-4 h-4" />
                     <span>Override & Resume (In Progress)</span>
@@ -2086,7 +2086,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
                   <button
                     onClick={() => handleStatusChange("CONFIRMED")}
                     disabled={updating}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-medium transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-stone-200 hover:bg-stone-300 text-stone-700 text-xs font-medium transition-colors"
                   >
                     <Unlock className="w-3.5 h-3.5" />
                     <span>Return to Confirmed</span>
@@ -2100,7 +2100,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
                   <button
                     onClick={() => handleStatusChange("IN_PROGRESS")}
                     disabled={updating}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold transition-all"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-stone-950 text-xs font-semibold transition-all"
                   >
                     <PlayCircle className="w-4 h-4" />
                     <span>Work on Overdue Item</span>
@@ -2108,7 +2108,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
                   <button
                     onClick={() => setShowEvidenceModal(true)}
                     disabled={updating}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition-all"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-stone-950 text-xs font-semibold transition-all"
                   >
                     <CheckCircle2 className="w-4 h-4" />
                     <span>Complete Now</span>
@@ -2121,7 +2121,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
                 <button
                   onClick={() => handleStatusChange("IN_PROGRESS")}
                   disabled={updating}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-medium transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-stone-200 hover:bg-stone-300 text-stone-700 text-xs font-medium transition-colors"
                 >
                   <span>Reopen Obligation (In Progress)</span>
                 </button>
@@ -2132,7 +2132,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
                 <button
                   onClick={() => handleStatusChange("CONFIRMED")}
                   disabled={updating}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-medium transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-stone-200 hover:bg-stone-300 text-stone-700 text-xs font-medium transition-colors"
                 >
                   <span>Reactivate Obligation</span>
                 </button>
@@ -2145,15 +2145,15 @@ export default function ObligationDetailPage({ params }: PageProps) {
       {/* Add Relationship Modal */}
       {showAddEdgeModal && (
         <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <GitFork className="w-5 h-5 text-blue-400" />
+          <div className="bg-stone-100 border border-stone-200 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-stone-200">
+              <h3 className="text-base font-bold text-stone-950 flex items-center gap-2">
+                <GitFork className="w-5 h-5 text-blue-500" />
                 <span>Connect Obligation Relationship</span>
               </h3>
               <button
                 onClick={() => setShowAddEdgeModal(false)}
-                className="text-zinc-400 hover:text-white p-1"
+                className="text-stone-600 hover:text-stone-950 p-1"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -2161,7 +2161,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
 
             <form onSubmit={handleCreateEdge} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-zinc-300 mb-2">
+                <label className="block text-xs font-semibold text-stone-700 mb-2">
                   Relationship Type
                 </label>
                 <div className="grid grid-cols-2 gap-3">
@@ -2171,7 +2171,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
                     className={`p-3 rounded-xl border text-left text-xs space-y-1 ${
                       edgeType === "DEPENDS_ON"
                         ? "bg-amber-600/20 border-amber-500 text-amber-200"
-                        : "bg-zinc-950 border-zinc-800 text-zinc-400"
+                        : "bg-stone-50 border-stone-200 text-stone-600"
                     }`}
                   >
                     <div className="font-bold flex items-center gap-1.5">
@@ -2188,7 +2188,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
                     className={`p-3 rounded-xl border text-left text-xs space-y-1 ${
                       edgeType === "LINKED"
                         ? "bg-purple-600/20 border-purple-500 text-purple-200"
-                        : "bg-zinc-950 border-zinc-800 text-zinc-400"
+                        : "bg-stone-50 border-stone-200 text-stone-600"
                     }`}
                   >
                     <div className="font-bold flex items-center gap-1.5">
@@ -2203,16 +2203,16 @@ export default function ObligationDetailPage({ params }: PageProps) {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-zinc-300 mb-1">
+                <label className="block text-xs font-semibold text-stone-700 mb-1">
                   Select Target Obligation
                 </label>
                 {loadingAll ? (
-                  <div className="text-xs text-zinc-400 py-3 text-center">Loading ledger...</div>
+                  <div className="text-xs text-stone-600 py-3 text-center">Loading ledger...</div>
                 ) : (
                   <select
                     value={targetObligationId}
                     onChange={(e) => setTargetObligationId(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-zinc-100"
+                    className="w-full px-3 py-2 rounded-lg bg-stone-50 border border-stone-200 text-xs text-stone-900"
                     required
                   >
                     <option value="">-- Choose an obligation from the ledger --</option>
@@ -2225,18 +2225,18 @@ export default function ObligationDetailPage({ params }: PageProps) {
                 )}
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-zinc-800">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-stone-200">
                 <button
                   type="button"
                   onClick={() => setShowAddEdgeModal(false)}
-                  className="px-3 py-1.5 rounded-lg text-xs text-zinc-400 hover:text-zinc-200"
+                  className="px-3 py-1.5 rounded-lg text-xs text-stone-600 hover:text-stone-800"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={updating || !targetObligationId}
-                  className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold transition-all disabled:opacity-50"
+                  className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-stone-950 text-xs font-semibold transition-all disabled:opacity-50"
                 >
                   Create Edge
                 </button>
@@ -2249,27 +2249,27 @@ export default function ObligationDetailPage({ params }: PageProps) {
       {/* Manual Evidence Attachment Modal */}
       {showEvidenceModal && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
+          <div className="bg-stone-100 border border-stone-200 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-stone-200">
+              <h3 className="text-base font-bold text-stone-950 flex items-center gap-2">
                 <CheckCircle2 className="w-5 h-5 text-emerald-400" />
                 <span>Complete Obligation</span>
               </h3>
               <button
                 onClick={() => setShowEvidenceModal(false)}
-                className="text-zinc-400 hover:text-white p-1"
+                className="text-stone-600 hover:text-stone-950 p-1"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <p className="text-xs text-zinc-400">
+            <p className="text-xs text-stone-600">
               Attach optional verification evidence or audit notes before completing this obligation.
             </p>
 
             <div className="space-y-3">
               <div>
-                <label className="block text-xs font-semibold text-zinc-300 mb-1">
+                <label className="block text-xs font-semibold text-stone-700 mb-1">
                   Evidence Note / Summary
                 </label>
                 <textarea
@@ -2277,12 +2277,12 @@ export default function ObligationDetailPage({ params }: PageProps) {
                   value={evidenceNote}
                   onChange={(e) => setEvidenceNote(e.target.value)}
                   placeholder="e.g. Sent report via email to client, confirmed received."
-                  className="w-full px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-zinc-100"
+                  className="w-full px-3 py-2 rounded-lg bg-stone-50 border border-stone-200 text-xs text-stone-900"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-zinc-300 mb-1">
+                <label className="block text-xs font-semibold text-stone-700 mb-1">
                   Artifact Link / URL (Optional)
                 </label>
                 <input
@@ -2290,15 +2290,15 @@ export default function ObligationDetailPage({ params }: PageProps) {
                   value={evidenceUrl}
                   onChange={(e) => setEvidenceUrl(e.target.value)}
                   placeholder="https://..."
-                  className="w-full px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-zinc-100"
+                  className="w-full px-3 py-2 rounded-lg bg-stone-50 border border-stone-200 text-xs text-stone-900"
                 />
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-2 pt-3 border-t border-zinc-800">
+            <div className="flex items-center justify-end gap-2 pt-3 border-t border-stone-200">
               <button
                 onClick={() => setShowEvidenceModal(false)}
-                className="px-3 py-1.5 rounded-lg text-xs text-zinc-400 hover:text-zinc-200"
+                className="px-3 py-1.5 rounded-lg text-xs text-stone-600 hover:text-stone-800"
               >
                 Cancel
               </button>
@@ -2312,7 +2312,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
                   )
                 }
                 disabled={updating}
-                className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition-all"
+                className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-stone-950 text-xs font-semibold transition-all"
               >
                 Confirm Completion
               </button>

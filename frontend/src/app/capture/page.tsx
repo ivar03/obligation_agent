@@ -254,23 +254,23 @@ export default function CapturePage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-2.5">
-            <Sparkles className="w-7 h-7 text-blue-400" />
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-stone-950 flex items-center gap-2.5">
+            <Sparkles className="w-7 h-7 text-blue-500" />
             <span>AI Obligation & Event Intelligence</span>
           </h1>
-          <p className="text-sm text-zinc-400 mt-1">
+          <p className="text-sm text-stone-600 mt-1">
             Extract new obligations or correlate external fulfillment events with existing commitments.
           </p>
         </div>
 
         {/* Mode Selector Tabs */}
-        <div className="flex items-center p-1 bg-zinc-900 border border-zinc-800 rounded-xl">
+        <div className="flex items-center p-1 bg-stone-100 border border-stone-200 rounded-xl">
           <button
             onClick={() => setMode("extraction")}
             className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
               mode === "extraction"
-                ? "bg-blue-600/20 text-blue-300 border border-blue-500/30"
-                : "text-zinc-400 hover:text-zinc-200"
+                ? "bg-blue-600/20 text-blue-600 border border-blue-500/30"
+                : "text-stone-600 hover:text-stone-800"
             }`}
           >
             Extract Obligation
@@ -280,7 +280,7 @@ export default function CapturePage() {
             className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
               mode === "event_simulator"
                 ? "bg-emerald-600/20 text-emerald-300 border border-emerald-500/30"
-                : "text-zinc-400 hover:text-zinc-200"
+                : "text-stone-600 hover:text-stone-800"
             }`}
           >
             Event Correlation Simulator
@@ -293,7 +293,7 @@ export default function CapturePage() {
         <div className="space-y-6">
           {/* Canonical Scenarios Accordion / Chips */}
           <div className="space-y-2">
-            <span className="text-xs font-semibold text-zinc-400 uppercase tracking-wider block">
+            <span className="text-xs font-semibold text-stone-600 uppercase tracking-wider block">
               Quick Test Scenarios:
             </span>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
@@ -305,12 +305,12 @@ export default function CapturePage() {
                     setInputMessage(sc.text);
                     setExtractionResult(null);
                   }}
-                  className="p-2.5 rounded-xl bg-zinc-900/80 border border-zinc-800 hover:border-zinc-700 hover:bg-zinc-850 text-left transition-all text-xs space-y-0.5 group"
+                  className="p-2.5 rounded-xl bg-stone-100/80 border border-stone-200 hover:border-stone-300 hover:bg-stone-200 text-left transition-all text-xs space-y-0.5 group"
                 >
-                  <div className="font-semibold text-zinc-200 group-hover:text-blue-400 transition-colors">
+                  <div className="font-semibold text-stone-800 group-hover:text-blue-500 transition-colors">
                     {sc.label}
                   </div>
-                  <div className="text-[11px] text-zinc-400 line-clamp-1">{sc.text}</div>
+                  <div className="text-[11px] text-stone-600 line-clamp-1">{sc.text}</div>
                 </button>
               ))}
             </div>
@@ -319,10 +319,10 @@ export default function CapturePage() {
           {/* Main Input Form */}
           <form
             onSubmit={handleAnalyzeExtraction}
-            className="bg-zinc-900/80 border border-zinc-800 rounded-2xl p-6 shadow-xl space-y-4"
+            className="bg-stone-100/80 border border-stone-200 rounded-2xl p-6 shadow-xl space-y-4"
           >
             <div>
-              <label htmlFor="raw-message" className="block text-xs font-semibold text-zinc-300 mb-2">
+              <label htmlFor="raw-message" className="block text-xs font-semibold text-stone-700 mb-2">
                 Raw Communication Text / Message
               </label>
               <textarea
@@ -331,39 +331,39 @@ export default function CapturePage() {
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 placeholder="Paste an email, Slack message, or commitment snippet..."
-                className="w-full px-4 py-3 rounded-xl bg-zinc-950 border border-zinc-800 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition-colors resize-y font-normal"
+                className="w-full px-4 py-3 rounded-xl bg-stone-50 border border-stone-200 text-sm text-stone-900 placeholder-stone-500 focus:outline-none focus:border-blue-500 transition-colors resize-y font-normal"
                 required
               />
             </div>
 
             {/* Collapsible Context Config */}
-            <div className="border border-zinc-800 rounded-xl overflow-hidden bg-zinc-950/60">
+            <div className="border border-stone-200 rounded-xl overflow-hidden bg-stone-50/60">
               <button
                 type="button"
                 onClick={() => setShowContextPanel(!showContextPanel)}
-                className="w-full px-4 py-2.5 flex items-center justify-between text-xs font-medium text-zinc-400 hover:text-zinc-200 transition-colors"
+                className="w-full px-4 py-2.5 flex items-center justify-between text-xs font-medium text-stone-600 hover:text-stone-800 transition-colors"
               >
                 <div className="flex items-center gap-2">
-                  <Settings2 className="w-3.5 h-3.5 text-blue-400" />
+                  <Settings2 className="w-3.5 h-3.5 text-blue-500" />
                   <span>Advanced Context & Reference Timestamp</span>
                 </div>
                 {showContextPanel ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
               </button>
 
               {showContextPanel && (
-                <div className="p-4 border-t border-zinc-800/80 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="p-4 border-t border-stone-200/80 grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-[11px] font-semibold text-zinc-400 mb-1">Sender</label>
+                    <label className="block text-[11px] font-semibold text-stone-600 mb-1">Sender</label>
                     <input
                       type="text"
                       value={sender}
                       onChange={(e) => setSender(e.target.value)}
                       placeholder="e.g. Rahul"
-                      className="w-full px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200"
+                      className="w-full px-3 py-1.5 rounded-lg bg-stone-100 border border-stone-200 text-xs text-stone-800"
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] font-semibold text-zinc-400 mb-1">
+                    <label className="block text-[11px] font-semibold text-stone-600 mb-1">
                       Recipients (comma-separated)
                     </label>
                     <input
@@ -371,18 +371,18 @@ export default function CapturePage() {
                       value={recipients}
                       onChange={(e) => setRecipients(e.target.value)}
                       placeholder="e.g. Ravi, Team"
-                      className="w-full px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200"
+                      className="w-full px-3 py-1.5 rounded-lg bg-stone-100 border border-stone-200 text-xs text-stone-800"
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] font-semibold text-zinc-400 mb-1">
+                    <label className="block text-[11px] font-semibold text-stone-600 mb-1">
                       Reference Time
                     </label>
                     <input
                       type="datetime-local"
                       value={refDatetime}
                       onChange={(e) => setRefDatetime(e.target.value)}
-                      className="w-full px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200"
+                      className="w-full px-3 py-1.5 rounded-lg bg-stone-100 border border-stone-200 text-xs text-stone-800"
                     />
                   </div>
                 </div>
@@ -393,7 +393,7 @@ export default function CapturePage() {
               <button
                 type="submit"
                 disabled={analyzing || !inputMessage.trim()}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold transition-all shadow-md shadow-blue-600/20 active:scale-95 disabled:opacity-50"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-stone-950 text-xs font-semibold transition-all shadow-md shadow-blue-600/20 active:scale-95 disabled:opacity-50"
               >
                 <Sparkles className={`w-4 h-4 ${analyzing ? "animate-spin" : ""}`} />
                 <span>{analyzing ? "Reasoning..." : "Analyze & Extract Obligation"}</span>
@@ -424,7 +424,7 @@ export default function CapturePage() {
         <div className="space-y-6">
           {/* Canonical Event Scenarios */}
           <div className="space-y-2">
-            <span className="text-xs font-semibold text-zinc-400 uppercase tracking-wider block">
+            <span className="text-xs font-semibold text-stone-600 uppercase tracking-wider block">
               Test Event Scenarios:
             </span>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2">
@@ -442,12 +442,12 @@ export default function CapturePage() {
                     setEventAnalysis(null);
                     setEventIngestionResult(null);
                   }}
-                  className="p-2.5 rounded-xl bg-zinc-900/80 border border-zinc-800 hover:border-zinc-700 hover:bg-zinc-850 text-left transition-all text-xs space-y-0.5 group"
+                  className="p-2.5 rounded-xl bg-stone-100/80 border border-stone-200 hover:border-stone-300 hover:bg-stone-200 text-left transition-all text-xs space-y-0.5 group"
                 >
-                  <div className="font-semibold text-zinc-200 group-hover:text-emerald-400 transition-colors">
+                  <div className="font-semibold text-stone-800 group-hover:text-emerald-400 transition-colors">
                     {sc.label}
                   </div>
-                  <div className="text-[11px] text-zinc-400 line-clamp-1">{sc.content}</div>
+                  <div className="text-[11px] text-stone-600 line-clamp-1">{sc.content}</div>
                 </button>
               ))}
             </div>
@@ -456,22 +456,22 @@ export default function CapturePage() {
           {/* Event Ingestion & Simulation Form */}
           <form
             onSubmit={handleAnalyzeEvent}
-            className="bg-zinc-900/80 border border-zinc-800 rounded-2xl p-6 shadow-xl space-y-4"
+            className="bg-stone-100/80 border border-stone-200 rounded-2xl p-6 shadow-xl space-y-4"
           >
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
-                <label className="block text-xs font-semibold text-zinc-300 mb-1">Sender / Actor</label>
+                <label className="block text-xs font-semibold text-stone-700 mb-1">Sender / Actor</label>
                 <input
                   type="text"
                   value={eventSender}
                   onChange={(e) => setEventSender(e.target.value)}
                   placeholder="e.g. Rahul"
-                  className="w-full px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-zinc-100"
+                  className="w-full px-3 py-2 rounded-lg bg-stone-50 border border-stone-200 text-xs text-stone-900"
                   required
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-zinc-300 mb-1">
+                <label className="block text-xs font-semibold text-stone-700 mb-1">
                   Recipients (comma-separated)
                 </label>
                 <input
@@ -479,15 +479,15 @@ export default function CapturePage() {
                   value={eventRecipients}
                   onChange={(e) => setEventRecipients(e.target.value)}
                   placeholder="e.g. Ravi"
-                  className="w-full px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-zinc-100"
+                  className="w-full px-3 py-2 rounded-lg bg-stone-50 border border-stone-200 text-xs text-stone-900"
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-zinc-300 mb-1">Source Type</label>
+                <label className="block text-xs font-semibold text-stone-700 mb-1">Source Type</label>
                 <select
                   value={eventSourceType}
                   onChange={(e) => setEventSourceType(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-zinc-100"
+                  className="w-full px-3 py-2 rounded-lg bg-stone-50 border border-stone-200 text-xs text-stone-900"
                 >
                   <option value="slack">Slack Message</option>
                   <option value="email">Email</option>
@@ -496,19 +496,19 @@ export default function CapturePage() {
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-zinc-300 mb-1">Source Ref ID</label>
+                <label className="block text-xs font-semibold text-stone-700 mb-1">Source Ref ID</label>
                 <input
                   type="text"
                   value={eventSourceRef}
                   onChange={(e) => setEventSourceRef(e.target.value)}
                   placeholder="e.g. msg_123"
-                  className="w-full px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-zinc-100"
+                  className="w-full px-3 py-2 rounded-lg bg-stone-50 border border-stone-200 text-xs text-stone-900"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-zinc-300 mb-1">
+              <label className="block text-xs font-semibold text-stone-700 mb-1">
                 Event Content / Observation Text
               </label>
               <textarea
@@ -516,42 +516,42 @@ export default function CapturePage() {
                 value={eventContent}
                 onChange={(e) => setEventContent(e.target.value)}
                 placeholder="e.g. Attached benchmark_results.csv or Sent the API documentation..."
-                className="w-full px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-zinc-100 resize-y"
+                className="w-full px-3 py-2 rounded-lg bg-stone-50 border border-stone-200 text-xs text-stone-900 resize-y"
                 required
               />
             </div>
 
             {/* Attachment Config */}
             <div className="flex flex-wrap items-center gap-4 pt-1">
-              <label className="flex items-center gap-2 text-xs text-zinc-300 cursor-pointer">
+              <label className="flex items-center gap-2 text-xs text-stone-700 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={hasAttachment}
                   onChange={(e) => setHasAttachment(e.target.checked)}
-                  className="rounded border-zinc-800 text-blue-600"
+                  className="rounded border-stone-200 text-blue-600"
                 />
                 <span>Includes Attachment</span>
               </label>
 
               {hasAttachment && (
-                <div className="flex items-center gap-1.5 text-xs text-zinc-400">
-                  <Paperclip className="w-3.5 h-3.5 text-zinc-500" />
+                <div className="flex items-center gap-1.5 text-xs text-stone-600">
+                  <Paperclip className="w-3.5 h-3.5 text-stone-500" />
                   <input
                     type="text"
                     value={attachmentName}
                     onChange={(e) => setAttachmentName(e.target.value)}
                     placeholder="e.g. benchmark_results.csv"
-                    className="px-2.5 py-1 rounded bg-zinc-950 border border-zinc-800 text-xs text-zinc-200 w-52"
+                    className="px-2.5 py-1 rounded bg-stone-50 border border-stone-200 text-xs text-stone-800 w-52"
                   />
                 </div>
               )}
             </div>
 
-            <div className="flex items-center justify-end gap-3 pt-3 border-t border-zinc-800">
+            <div className="flex items-center justify-end gap-3 pt-3 border-t border-stone-200">
               <button
                 type="submit"
                 disabled={analyzing || !eventContent.trim()}
-                className="px-4 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-semibold transition-all"
+                className="px-4 py-2 rounded-xl bg-stone-200 hover:bg-stone-300 text-stone-800 text-xs font-semibold transition-all"
               >
                 Analyze Event (Stateless)
               </button>
@@ -559,7 +559,7 @@ export default function CapturePage() {
                 type="button"
                 onClick={handleIngestEvent}
                 disabled={analyzing || !eventContent.trim()}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow-md shadow-emerald-600/20 active:scale-95"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-stone-950 text-xs font-bold transition-all shadow-md shadow-emerald-600/20 active:scale-95"
               >
                 <FileCheck className="w-4 h-4" />
                 <span>Ingest & Create Suggested Evidence</span>
@@ -574,7 +574,7 @@ export default function CapturePage() {
                 <FileCheck className="w-5 h-5 text-emerald-400" />
                 <span>Event Ingested Successfully</span>
               </div>
-              <p className="text-xs text-zinc-300">
+              <p className="text-xs text-stone-700">
                 Created {eventIngestionResult.evidence_records.length} suggested evidence record(s).
                 View and confirm completion directly on the obligation page or below.
               </p>
@@ -583,21 +583,21 @@ export default function CapturePage() {
 
           {/* Event Analysis Results */}
           {eventAnalysis && (
-            <div className="bg-zinc-900/80 border border-zinc-800 rounded-2xl p-6 shadow-xl space-y-4 animate-in fade-in">
-              <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
+            <div className="bg-stone-100/80 border border-stone-200 rounded-2xl p-6 shadow-xl space-y-4 animate-in fade-in">
+              <div className="flex items-center justify-between pb-3 border-b border-stone-200">
                 <div className="flex items-center gap-2">
                   <Activity className="w-4 h-4 text-emerald-400" />
-                  <h3 className="text-sm font-bold text-white">Event Correlation Results</h3>
+                  <h3 className="text-sm font-bold text-stone-950">Event Correlation Results</h3>
                 </div>
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-500/20 text-blue-600 border border-blue-500/30">
                   Role: {eventAnalysis.semantic_role}
                 </span>
               </div>
 
-              <p className="text-xs text-zinc-300 italic">{eventAnalysis.summary}</p>
+              <p className="text-xs text-stone-700 italic">{eventAnalysis.summary}</p>
 
               {eventAnalysis.matches.length === 0 ? (
-                <div className="p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/60 text-xs text-zinc-500 text-center">
+                <div className="p-4 rounded-xl bg-stone-50/60 border border-stone-200/60 text-xs text-stone-500 text-center">
                   No active obligations matched this event.
                 </div>
               ) : (
@@ -608,12 +608,12 @@ export default function CapturePage() {
                       className={`p-4 rounded-xl border space-y-2.5 ${
                         match.is_completion_candidate
                           ? "bg-emerald-950/20 border-emerald-500/40"
-                          : "bg-zinc-950 border-zinc-800"
+                          : "bg-stone-50 border-stone-200"
                       }`}
                     >
                       <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
                         <div className="flex items-center gap-2">
-                          <span className="font-bold text-zinc-100">
+                          <span className="font-bold text-stone-900">
                             [{match.owner} &rarr; {match.beneficiary}]
                           </span>
                           <StatusBadge status={match.status} />
@@ -625,14 +625,14 @@ export default function CapturePage() {
                                 ? "text-emerald-400"
                                 : match.correlation_confidence >= 0.60
                                 ? "text-amber-400"
-                                : "text-zinc-400"
+                                : "text-stone-600"
                             }`}
                           >
                             Match: {Math.round(match.correlation_confidence * 100)}% ({match.confidence_level})
                           </span>
                           <Link
                             href={`/obligations/${match.obligation_id}`}
-                            className="inline-flex items-center gap-1 text-blue-400 hover:underline font-semibold"
+                            className="inline-flex items-center gap-1 text-blue-500 hover:underline font-semibold"
                           >
                             <span>Open Obligation</span>
                             <ArrowRight className="w-3 h-3" />
@@ -640,10 +640,10 @@ export default function CapturePage() {
                         </div>
                       </div>
 
-                      <p className="text-xs text-zinc-200 font-medium">{match.action}</p>
+                      <p className="text-xs text-stone-800 font-medium">{match.action}</p>
 
                       {/* Signals */}
-                      <div className="space-y-1 pt-1 border-t border-zinc-900 text-[11px]">
+                      <div className="space-y-1 pt-1 border-t border-stone-100 text-[11px]">
                         {match.matched_signals.map((s, si) => (
                           <div key={si} className="flex items-center gap-1 text-emerald-300">
                             <Check className="w-3 h-3 shrink-0" />
@@ -651,7 +651,7 @@ export default function CapturePage() {
                           </div>
                         ))}
                         {match.unmatched_signals.map((s, si) => (
-                          <div key={si} className="flex items-center gap-1 text-zinc-500">
+                          <div key={si} className="flex items-center gap-1 text-stone-500">
                             <span className="shrink-0">&times;</span>
                             <span>{s}</span>
                           </div>

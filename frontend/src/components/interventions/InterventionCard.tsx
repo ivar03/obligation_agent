@@ -48,13 +48,13 @@ export function InterventionCard({
         );
       case "MEDIUM":
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-500/20 text-blue-300 border border-blue-500/30">
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-500/20 text-blue-600 border border-blue-500/30">
             MEDIUM
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-zinc-800 text-zinc-300 border border-zinc-700">
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-stone-200 text-stone-700 border border-stone-300">
             LOW
           </span>
         );
@@ -86,8 +86,8 @@ export function InterventionCard({
         );
       case "EXECUTED":
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-300 border border-blue-500/30">
-            <Send className="w-3 h-3 text-blue-400" />
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-600 border border-blue-500/30">
+            <Send className="w-3 h-3 text-blue-500" />
             Executed
           </span>
         );
@@ -100,20 +100,20 @@ export function InterventionCard({
         );
       case "RESOLVED":
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-zinc-800 text-zinc-400 border border-zinc-700">
-            <CheckCircle2 className="w-3 h-3 text-zinc-400" />
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-stone-200 text-stone-600 border border-stone-300">
+            <CheckCircle2 className="w-3 h-3 text-stone-600" />
             Resolved
           </span>
         );
       case "CANCELLED":
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-zinc-900 text-zinc-500 border border-zinc-800">
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-stone-100 text-stone-500 border border-stone-200">
             Cancelled
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-zinc-800 text-zinc-400 border border-zinc-700">
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-stone-200 text-stone-600 border border-stone-300">
             {intervention.status}
           </span>
         );
@@ -126,14 +126,14 @@ export function InterventionCard({
     <div
       className={`rounded-2xl border transition-all duration-200 p-5 ${
         isUrgent
-          ? "bg-zinc-900/90 border-amber-500/40 hover:border-amber-500/60 shadow-lg shadow-amber-950/20"
-          : "bg-zinc-900/70 border-zinc-800/80 hover:border-zinc-700 shadow-md"
+          ? "bg-stone-100/90 border-amber-500/40 hover:border-amber-500/60 shadow-lg shadow-amber-950/20"
+          : "bg-stone-100/70 border-stone-200/80 hover:border-stone-300 shadow-md"
       }`}
     >
       {/* Header: Type, Urgency, Status */}
       <div className="flex flex-wrap items-center justify-between gap-2.5 mb-3">
         <div className="flex items-center gap-2">
-          <span className="px-2.5 py-0.5 rounded-lg text-xs font-bold uppercase tracking-wider bg-zinc-800 text-zinc-300 border border-zinc-700">
+          <span className="px-2.5 py-0.5 rounded-lg text-xs font-bold uppercase tracking-wider bg-stone-200 text-stone-700 border border-stone-300">
             {formattedType}
           </span>
           {getUrgencyBadge()}
@@ -143,20 +143,20 @@ export function InterventionCard({
 
       {/* Title & Target */}
       <div className="space-y-1 mb-3">
-        <h3 className="text-base font-bold text-white tracking-tight flex items-center justify-between gap-2">
+        <h3 className="text-base font-bold text-stone-950 tracking-tight flex items-center justify-between gap-2">
           <span>{intervention.title}</span>
           <Link
             href={`/interventions/${intervention.id}`}
-            className="text-zinc-400 hover:text-blue-400 transition-colors"
+            className="text-stone-600 hover:text-blue-500 transition-colors"
             title="Inspect Audit Detail"
           >
             <ArrowUpRight className="w-4 h-4" />
           </Link>
         </h3>
-        <div className="flex flex-wrap items-center gap-3 text-xs text-zinc-400">
-          <span className="inline-flex items-center gap-1 font-medium text-zinc-300">
-            <User className="w-3.5 h-3.5 text-blue-400" />
-            Target: <strong className="text-white font-semibold">{intervention.target_owner}</strong>
+        <div className="flex flex-wrap items-center gap-3 text-xs text-stone-600">
+          <span className="inline-flex items-center gap-1 font-medium text-stone-700">
+            <User className="w-3.5 h-3.5 text-blue-500" />
+            Target: <strong className="text-stone-950 font-semibold">{intervention.target_owner}</strong>
           </span>
           {intervention.chain_depth > 1 && (
             <span className="inline-flex items-center gap-1 text-amber-300 font-medium bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20">
@@ -167,34 +167,34 @@ export function InterventionCard({
       </div>
 
       {/* Rationale Explanation */}
-      <p className="text-xs text-zinc-300 mb-3.5 bg-zinc-950/60 p-2.5 rounded-xl border border-zinc-800/80 leading-relaxed">
-        <strong className="text-zinc-400 font-medium">Why: </strong>
+      <p className="text-xs text-stone-700 mb-3.5 bg-stone-50/60 p-2.5 rounded-xl border border-stone-200/80 leading-relaxed">
+        <strong className="text-stone-600 font-medium">Why: </strong>
         {intervention.rationale}
       </p>
 
       {/* Suggested / Approved Message Draft Snippet */}
-      <div className="mb-4 bg-zinc-950 border border-zinc-800 rounded-xl p-3">
-        <div className="flex items-center justify-between text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">
+      <div className="mb-4 bg-stone-50 border border-stone-200 rounded-xl p-3">
+        <div className="flex items-center justify-between text-[11px] font-semibold text-stone-600 uppercase tracking-wider mb-1.5">
           <span className="flex items-center gap-1">
-            <Sparkles className="w-3 h-3 text-blue-400" />
+            <Sparkles className="w-3 h-3 text-blue-500" />
             {intervention.approved_message && intervention.status !== "PENDING_REVIEW"
               ? "Approved Message Draft"
               : "Suggested Message Draft"}
           </span>
-          <span className="text-zinc-400 lowercase font-normal">human approval required</span>
+          <span className="text-stone-600 lowercase font-normal">human approval required</span>
         </div>
-        <p className="text-xs text-zinc-200 italic line-clamp-3 leading-relaxed">
+        <p className="text-xs text-stone-800 italic line-clamp-3 leading-relaxed">
           &ldquo;{intervention.approved_message || intervention.message_draft}&rdquo;
         </p>
       </div>
 
       {/* Footer & Actions */}
-      <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-zinc-800/80">
+      <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-stone-200/80">
         <Link
           href={`/obligations/${intervention.obligation_id}`}
-          className="text-xs text-zinc-400 hover:text-zinc-200 transition-colors inline-flex items-center gap-1"
+          className="text-xs text-stone-600 hover:text-stone-800 transition-colors inline-flex items-center gap-1"
         >
-          <Layers className="w-3.5 h-3.5 text-zinc-400" />
+          <Layers className="w-3.5 h-3.5 text-stone-600" />
           <span>View Linked Obligation</span>
         </Link>
 
@@ -202,7 +202,7 @@ export function InterventionCard({
           {intervention.status === "APPROVED" && onExecute && (
             <button
               onClick={() => onExecute(intervention)}
-              className="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-sm transition-all active:scale-95 flex items-center gap-1.5"
+              className="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-stone-950 text-xs font-semibold shadow-sm transition-all active:scale-95 flex items-center gap-1.5"
             >
               <Send className="w-3.5 h-3.5" />
               <span>Execute Mock</span>
@@ -214,8 +214,8 @@ export function InterventionCard({
               onClick={() => onReview(intervention)}
               className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all active:scale-95 flex items-center gap-1.5 ${
                 intervention.status === "PENDING_REVIEW"
-                  ? "bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold shadow-md shadow-amber-500/20"
-                  : "bg-zinc-800 hover:bg-zinc-700 text-zinc-200"
+                  ? "bg-amber-500 hover:bg-amber-400 text-stone-50 font-bold shadow-md shadow-amber-500/20"
+                  : "bg-stone-200 hover:bg-stone-300 text-stone-800"
               }`}
             >
               <Sparkles className="w-3.5 h-3.5" />
@@ -227,7 +227,7 @@ export function InterventionCard({
 
           <Link
             href={`/interventions/${intervention.id}`}
-            className="p-1.5 rounded-lg border border-zinc-800 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 transition-colors"
+            className="p-1.5 rounded-lg border border-stone-200 hover:bg-stone-200 text-stone-600 hover:text-stone-800 transition-colors"
             title="Full Audit Details"
           >
             <ArrowUpRight className="w-3.5 h-3.5" />

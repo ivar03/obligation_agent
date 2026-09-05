@@ -62,11 +62,11 @@ function ObligationsContent() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-2.5">
-            <Layers className="w-7 h-7 text-blue-400" />
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-stone-950 flex items-center gap-2.5">
+            <Layers className="w-7 h-7 text-blue-500" />
             <span>Obligation Ledger</span>
           </h1>
-          <p className="text-sm text-zinc-400 mt-1">
+          <p className="text-sm text-stone-600 mt-1">
             Complete reciprocal obligation database with multi-dimensional filtering.
           </p>
         </div>
@@ -78,14 +78,14 @@ function ObligationsContent() {
               fetchObligations();
             }}
             disabled={loading}
-            className="p-2 rounded-lg border border-zinc-800 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-300 transition-colors"
+            className="p-2 rounded-lg border border-stone-200 bg-stone-100/80 hover:bg-stone-200 text-stone-700 transition-colors"
             title="Refresh"
           >
-            <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin text-blue-400" : ""}`} />
+            <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin text-blue-500" : ""}`} />
           </button>
           <Link
             href="/capture"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold transition-all shadow-md shadow-blue-600/20 active:scale-95"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-stone-950 text-sm font-semibold transition-all shadow-md shadow-blue-600/20 active:scale-95"
           >
             <Sparkles className="w-4 h-4" />
             <span>Capture Obligation</span>
@@ -94,16 +94,16 @@ function ObligationsContent() {
       </div>
 
       {/* Filter Controls Bar */}
-      <div className="bg-zinc-900/70 border border-zinc-800 rounded-2xl p-4 shadow-md space-y-4">
+      <div className="bg-stone-100/70 border border-stone-200 rounded-2xl p-4 shadow-md space-y-4">
         <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
           {/* Direction Filter */}
-          <div className="flex items-center gap-1 p-1 bg-zinc-950 border border-zinc-800 rounded-xl">
+          <div className="flex items-center gap-1 p-1 bg-stone-50 border border-stone-200 rounded-xl">
             <button
               onClick={() => setTypeFilter("ALL")}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
                 typeFilter === "ALL"
-                  ? "bg-zinc-800 text-white shadow-sm"
-                  : "text-zinc-400 hover:text-zinc-200"
+                  ? "bg-stone-200 text-stone-950 shadow-sm"
+                  : "text-stone-600 hover:text-stone-800"
               }`}
             >
               All Types
@@ -112,8 +112,8 @@ function ObligationsContent() {
               onClick={() => setTypeFilter("OWED_BY_ME")}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
                 typeFilter === "OWED_BY_ME"
-                  ? "bg-blue-600/20 text-blue-300 border border-blue-500/30"
-                  : "text-zinc-400 hover:text-zinc-200"
+                  ? "bg-blue-600/20 text-blue-600 border border-blue-500/30"
+                  : "text-stone-600 hover:text-stone-800"
               }`}
             >
               You Owe
@@ -123,7 +123,7 @@ function ObligationsContent() {
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
                 typeFilter === "OWED_TO_ME"
                   ? "bg-emerald-600/20 text-emerald-300 border border-emerald-500/30"
-                  : "text-zinc-400 hover:text-zinc-200"
+                  : "text-stone-600 hover:text-stone-800"
               }`}
             >
               Others Owe You
@@ -136,7 +136,7 @@ function ObligationsContent() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as ObligationStatus | "ALL")}
-              className="px-3 py-1.5 rounded-xl bg-zinc-950 border border-zinc-800 text-xs text-zinc-200 focus:outline-none focus:border-blue-500"
+              className="px-3 py-1.5 rounded-xl bg-stone-50 border border-stone-200 text-xs text-stone-800 focus:outline-none focus:border-blue-500"
             >
               <option value="ALL">All Statuses</option>
               <option value="CONFIRMED">Confirmed</option>
@@ -153,7 +153,7 @@ function ObligationsContent() {
               className={`px-3 py-1.5 rounded-xl text-xs font-medium border transition-colors ${
                 atRiskOnly
                   ? "bg-rose-500/20 text-rose-300 border-rose-500/40"
-                  : "bg-zinc-950 border-zinc-800 text-zinc-400 hover:text-zinc-200"
+                  : "bg-stone-50 border-stone-200 text-stone-600 hover:text-stone-800"
               }`}
             >
               🔥 At Risk Only
@@ -161,13 +161,13 @@ function ObligationsContent() {
 
             {/* Search Input */}
             <div className="relative w-full sm:w-60">
-              <Search className="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search className="w-3.5 h-3.5 text-stone-600 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search action or person..."
-                className="w-full pl-8 pr-3 py-1.5 rounded-xl bg-zinc-950 border border-zinc-800 text-xs text-zinc-100 placeholder-zinc-400 focus:outline-none focus:border-blue-500"
+                className="w-full pl-8 pr-3 py-1.5 rounded-xl bg-stone-50 border border-stone-200 text-xs text-stone-900 placeholder-stone-600 focus:outline-none focus:border-blue-500"
               />
             </div>
           </div>
@@ -175,10 +175,10 @@ function ObligationsContent() {
       </div>
 
       {/* Results Header */}
-      <div className="flex items-center justify-between text-xs text-zinc-400">
+      <div className="flex items-center justify-between text-xs text-stone-600">
         <div>
-          Showing <span className="font-semibold text-zinc-200">{obligations.length}</span> of{" "}
-          <span className="font-semibold text-zinc-200">{total}</span> obligations
+          Showing <span className="font-semibold text-stone-800">{obligations.length}</span> of{" "}
+          <span className="font-semibold text-stone-800">{total}</span> obligations
         </div>
       </div>
 
@@ -188,21 +188,21 @@ function ObligationsContent() {
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <div
               key={i}
-              className="h-44 rounded-xl bg-zinc-900/40 border border-zinc-800/60 animate-pulse"
+              className="h-44 rounded-xl bg-stone-100/40 border border-stone-200/60 animate-pulse"
             />
           ))}
         </div>
       ) : obligations.length === 0 ? (
-        <div className="p-12 rounded-2xl bg-zinc-900/40 border border-dashed border-zinc-800 text-center space-y-3">
-          <Inbox className="w-10 h-10 mx-auto text-zinc-600" />
-          <div className="text-sm font-semibold text-zinc-300">No obligations found</div>
-          <p className="text-xs text-zinc-400 max-w-sm mx-auto">
+        <div className="p-12 rounded-2xl bg-stone-100/40 border border-dashed border-stone-200 text-center space-y-3">
+          <Inbox className="w-10 h-10 mx-auto text-stone-400" />
+          <div className="text-sm font-semibold text-stone-700">No obligations found</div>
+          <p className="text-xs text-stone-600 max-w-sm mx-auto">
             Try adjusting your search query or filters, or capture a new obligation from a message.
           </p>
           <div className="pt-2">
             <Link
               href="/capture"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-stone-950 text-xs font-semibold transition-colors"
             >
               <Sparkles className="w-3.5 h-3.5" />
               <span>Capture Message</span>
@@ -230,8 +230,8 @@ export default function ObligationsPage() {
     <Suspense
       fallback={
         <div className="space-y-6 animate-pulse">
-          <div className="h-8 w-48 bg-zinc-900 rounded-lg" />
-          <div className="h-16 bg-zinc-900 rounded-xl" />
+          <div className="h-8 w-48 bg-stone-100 rounded-lg" />
+          <div className="h-16 bg-stone-100 rounded-xl" />
         </div>
       }
     >

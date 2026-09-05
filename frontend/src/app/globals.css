@@ -1,8 +1,12 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f7f5f0;
+  --foreground: #24211d;
+  --surface: #ffffff;
+  --surface-muted: #f1eee8;
+  --border: #e5dfd5;
+  --accent: #3566d4;
 }
 
 @theme inline {
@@ -12,15 +16,86 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+}
+
+* {
+  border-color: var(--border);
+}
+
+::selection {
+  background: #c9d8fb;
+  color: #163477;
+}
+
+button, a, input, textarea, select {
+  -webkit-tap-highlight-color: transparent;
+}
+
+input:focus, textarea:focus, select:focus {
+  box-shadow: 0 0 0 3px rgba(53, 102, 212, 0.14);
+}
+
+/* Shared action language: calm navy primaries with semantic colors reserved for outcomes. */
+button.bg-blue-600, button.bg-blue-700,
+a.bg-blue-600, a.bg-blue-700,
+button.bg-violet-600, button.bg-purple-600, button.bg-cyan-600,
+a.bg-violet-600, a.bg-purple-600, a.bg-cyan-600,
+button[class*="from-violet-"], button[class*="from-purple-"],
+a[class*="from-violet-"], a[class*="from-purple-"] {
+  background-color: #234a84 !important;
+  background-image: none !important;
+  border-color: #234a84 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(35, 74, 132, 0.16);
+}
+
+button.bg-blue-600:hover, button.bg-blue-700:hover,
+a.bg-blue-600:hover, a.bg-blue-700:hover,
+button.bg-violet-600:hover, button.bg-purple-600:hover, button.bg-cyan-600:hover,
+a.bg-violet-600:hover, a.bg-purple-600:hover, a.bg-cyan-600:hover,
+button[class*="from-violet-"]:hover, button[class*="from-purple-"]:hover,
+a[class*="from-violet-"]:hover, a[class*="from-purple-"]:hover {
+  background-color: #193968 !important;
+  border-color: #193968 !important;
+}
+
+button.bg-emerald-600, a.bg-emerald-600 {
+  background-color: #267a62 !important;
+  border-color: #267a62 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(38, 122, 98, 0.14);
+}
+
+button.bg-emerald-600:hover, a.bg-emerald-600:hover {
+  background-color: #1f654f !important;
+  border-color: #1f654f !important;
+}
+
+button.bg-rose-600, a.bg-rose-600 {
+  background-color: #b33f50 !important;
+  border-color: #b33f50 !important;
+  color: #ffffff !important;
+}
+
+button.bg-rose-600:hover, a.bg-rose-600:hover {
+  background-color: #933244 !important;
+  border-color: #933244 !important;
+}
+
+button.bg-amber-500, button.bg-amber-600,
+a.bg-amber-500, a.bg-amber-600 {
+  background-color: #9a6700 !important;
+  border-color: #9a6700 !important;
+  color: #ffffff !important;
+}
+
+button.bg-amber-500:hover, button.bg-amber-600:hover,
+a.bg-amber-500:hover, a.bg-amber-600:hover {
+  background-color: #7d5300 !important;
+  border-color: #7d5300 !important;
 }

@@ -39,7 +39,7 @@ export const ObligationCard: React.FC<ObligationCardProps> = ({
   // Relationship description
   const relationshipText = isOwedByMe ? (
     <span>
-      You owe <span className="font-semibold text-blue-300">{obligation.beneficiary}</span>
+      You owe <span className="font-semibold text-blue-600">{obligation.beneficiary}</span>
     </span>
   ) : (
     <span>
@@ -115,20 +115,20 @@ export const ObligationCard: React.FC<ObligationCardProps> = ({
 
   return (
     <div
-      className={`relative group bg-zinc-900/70 hover:bg-zinc-900 border rounded-xl p-5 transition-all duration-200 shadow-sm hover:shadow-md ${
+      className={`relative group bg-stone-100/70 hover:bg-stone-100 border rounded-xl p-5 transition-all duration-200 shadow-sm hover:shadow-md ${
         isBlocked
           ? "border-rose-500/50 hover:border-rose-500/70 bg-rose-950/20"
           : obligation.is_at_risk
           ? "border-rose-500/40 hover:border-rose-500/60 bg-rose-950/10"
-          : "border-zinc-800 hover:border-zinc-700"
+          : "border-stone-200 hover:border-stone-300"
       }`}
     >
       {/* Top row: Relationship & Status badges */}
       <div className="flex items-start justify-between gap-3 mb-3">
-        <div className="flex items-center gap-2 text-xs font-medium text-zinc-400">
+        <div className="flex items-center gap-2 text-xs font-medium text-stone-600">
           <span
             className={`w-2 h-2 rounded-full ${
-              isOwedByMe ? "bg-blue-400" : "bg-emerald-400"
+              isOwedByMe ? "bg-blue-500" : "bg-emerald-400"
             }`}
           />
           {relationshipText}
@@ -154,7 +154,7 @@ export const ObligationCard: React.FC<ObligationCardProps> = ({
       <div className="mb-3">
         <Link
           href={`/obligations/${obligation.id}`}
-          className="text-base font-semibold text-zinc-100 hover:text-blue-400 transition-colors line-clamp-2 inline-flex items-baseline gap-1"
+          className="text-base font-semibold text-stone-900 hover:text-blue-500 transition-colors line-clamp-2 inline-flex items-baseline gap-1"
         >
           <span>{obligation.action}</span>
           <ArrowRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
@@ -171,9 +171,9 @@ export const ObligationCard: React.FC<ObligationCardProps> = ({
 
       {/* Next Action Callout if available */}
       {obligation.next_action && !isBlocked && (
-        <div className="mb-3.5 px-3 py-2 rounded-lg bg-zinc-950/70 border border-zinc-800/80 text-xs">
-          <span className="text-zinc-400 font-medium">Next Step: </span>
-          <span className="text-zinc-200">{obligation.next_action}</span>
+        <div className="mb-3.5 px-3 py-2 rounded-lg bg-stone-50/70 border border-stone-200/80 text-xs">
+          <span className="text-stone-600 font-medium">Next Step: </span>
+          <span className="text-stone-800">{obligation.next_action}</span>
         </div>
       )}
 
@@ -187,12 +187,12 @@ export const ObligationCard: React.FC<ObligationCardProps> = ({
       )}
 
       {/* Metadata footer */}
-      <div className="pt-3 border-t border-zinc-800/60 flex flex-wrap items-center justify-between gap-3 text-xs text-zinc-400">
+      <div className="pt-3 border-t border-stone-200/60 flex flex-wrap items-center justify-between gap-3 text-xs text-stone-600">
         <div className="flex items-center gap-3">
           {/* Deadline */}
           <div
             className={`flex items-center gap-1.5 ${
-              isOverdue ? "text-rose-400 font-semibold" : "text-zinc-400"
+              isOverdue ? "text-rose-400 font-semibold" : "text-stone-600"
             }`}
           >
             <Clock className="w-3.5 h-3.5" />
@@ -219,7 +219,7 @@ export const ObligationCard: React.FC<ObligationCardProps> = ({
             <button
               onClick={() => handleStatusTransition("IN_PROGRESS")}
               disabled={updating}
-              className="px-2.5 py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-medium transition-colors"
+              className="px-2.5 py-1 rounded bg-stone-200 hover:bg-stone-300 text-stone-800 text-xs font-medium transition-colors"
             >
               Start
             </button>
@@ -238,7 +238,7 @@ export const ObligationCard: React.FC<ObligationCardProps> = ({
 
           <Link
             href={`/obligations/${obligation.id}`}
-            className="p-1 rounded text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-colors"
+            className="p-1 rounded text-stone-600 hover:text-stone-900 hover:bg-stone-200 transition-colors"
             title="View Details"
           >
             <ExternalLink className="w-3.5 h-3.5" />
@@ -247,7 +247,7 @@ export const ObligationCard: React.FC<ObligationCardProps> = ({
           <button
             onClick={handleDelete}
             disabled={updating}
-            className="p-1 rounded text-zinc-400 hover:text-rose-400 hover:bg-rose-950/20 transition-colors"
+            className="p-1 rounded text-stone-600 hover:text-rose-400 hover:bg-rose-950/20 transition-colors"
             title="Delete Obligation"
           >
             <Trash2 className="w-3.5 h-3.5" />

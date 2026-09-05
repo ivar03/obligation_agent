@@ -129,8 +129,8 @@ export default function EventsActivityCenterPage() {
         );
       case EventSemanticRole.PROGRESS_UPDATE:
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-950/60 text-blue-300 border border-blue-800/60">
-            <Clock className="w-3 h-3 text-blue-400" /> Progress Update
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-950/60 text-blue-600 border border-blue-800/60">
+            <Clock className="w-3 h-3 text-blue-500" /> Progress Update
           </span>
         );
       case EventSemanticRole.NON_COMPLETION_SIGNAL:
@@ -153,7 +153,7 @@ export default function EventsActivityCenterPage() {
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-800/80 text-slate-400 border border-slate-700/60">
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-stone-200/80 text-stone-600 border border-stone-300/60">
             Chatter / Irrelevant
           </span>
         );
@@ -176,7 +176,7 @@ export default function EventsActivityCenterPage() {
         );
       case "NO_MATCH":
         return (
-          <span className="px-2 py-0.5 text-xs font-bold rounded bg-slate-800 text-slate-400 border border-slate-700">
+          <span className="px-2 py-0.5 text-xs font-bold rounded bg-stone-200 text-stone-600 border border-stone-300">
             NO MATCH
           </span>
         );
@@ -188,7 +188,7 @@ export default function EventsActivityCenterPage() {
         );
       default:
         return (
-          <span className="px-2 py-0.5 text-xs font-bold rounded bg-slate-800 text-slate-300">
+          <span className="px-2 py-0.5 text-xs font-bold rounded bg-stone-200 text-stone-700">
             {status}
           </span>
         );
@@ -196,23 +196,23 @@ export default function EventsActivityCenterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 p-6 lg:p-8">
+    <div className="min-h-screen bg-stone-50 text-stone-900 p-6 lg:p-8">
       {/* Header */}
       <div className="max-w-7xl mx-auto space-y-8">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800/80 pb-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-stone-200/80 pb-6">
           <div>
             <div className="flex items-center gap-3 mb-2">
               <div className="p-2.5 rounded-xl bg-gradient-to-tr from-cyan-600 to-blue-600 shadow-lg shadow-cyan-900/30">
-                <Activity className="w-6 h-6 text-white" />
+                <Activity className="w-6 h-6 text-stone-950" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+                <h1 className="text-2xl font-bold tracking-tight text-stone-950 flex items-center gap-2">
                   Event Activity Center
                   <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-cyan-950 text-cyan-400 border border-cyan-800/60">
                     Phase 7 Active
                   </span>
                 </h1>
-                <p className="text-sm text-slate-400">
+                <p className="text-sm text-stone-600">
                   Continuous provider event ingestion, deduplication, semantic correlation, and immutable audit logs.
                 </p>
               </div>
@@ -222,7 +222,7 @@ export default function EventsActivityCenterPage() {
           <div className="flex items-center gap-3">
             <button
               onClick={() => setShowCustomModal(true)}
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-stone-200 hover:bg-stone-300 text-stone-800 border border-stone-300 transition"
             >
               <Send className="w-4 h-4 text-cyan-400" />
               Ingest Custom Event
@@ -230,7 +230,7 @@ export default function EventsActivityCenterPage() {
             <button
               onClick={loadData}
               disabled={loading}
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white shadow-md shadow-cyan-950 transition disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-cyan-600 hover:bg-cyan-500 text-stone-950 shadow-md shadow-cyan-950 transition disabled:opacity-50"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
               Refresh Feed
@@ -239,14 +239,14 @@ export default function EventsActivityCenterPage() {
         </div>
 
         {/* Live Simulation Toolbar */}
-        <div className="p-5 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-900 to-slate-950 border border-slate-800 shadow-xl">
+        <div className="p-5 rounded-2xl bg-gradient-to-r from-stone-100 via-stone-100 to-stone-50 border border-stone-200 shadow-xl">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div>
-              <div className="flex items-center gap-2 font-semibold text-white text-sm mb-1">
+              <div className="flex items-center gap-2 font-semibold text-stone-950 text-sm mb-1">
                 <Sparkles className="w-4 h-4 text-amber-400" />
                 Live Event Simulator Toolbar
               </div>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-stone-600">
                 Trigger canonical provider scenarios to observe automated classification, deduplication, and intervention correlation in real-time.
               </p>
             </div>
@@ -264,7 +264,7 @@ export default function EventsActivityCenterPage() {
               <button
                 onClick={() => handleSimulate("SCENARIO_B_PROGRESS", "Scenario B")}
                 disabled={simulating !== null}
-                className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-blue-950/70 hover:bg-blue-900 text-blue-300 border border-blue-800/70 transition flex items-center gap-1.5 disabled:opacity-50"
+                className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-blue-950/70 hover:bg-blue-900 text-blue-600 border border-blue-800/70 transition flex items-center gap-1.5 disabled:opacity-50"
               >
                 <Clock className="w-3.5 h-3.5" />
                 Scenario B (Progress)
@@ -291,7 +291,7 @@ export default function EventsActivityCenterPage() {
               <button
                 onClick={() => handleSimulate("SCENARIO_E_CHATTER", "Scenario E")}
                 disabled={simulating !== null}
-                className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition flex items-center gap-1.5 disabled:opacity-50"
+                className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-stone-200 hover:bg-stone-300 text-stone-700 border border-stone-300 transition flex items-center gap-1.5 disabled:opacity-50"
               >
                 <Info className="w-3.5 h-3.5" />
                 Scenario E (Chatter)
@@ -301,12 +301,12 @@ export default function EventsActivityCenterPage() {
 
           {/* Last Simulation Toast */}
           {lastResult && (
-            <div className="mt-4 pt-4 border-t border-slate-800 flex items-center justify-between text-xs">
+            <div className="mt-4 pt-4 border-t border-stone-200 flex items-center justify-between text-xs">
               <div className="flex items-center gap-3">
-                <span className="text-slate-400 font-medium">Last Ingestion Result:</span>
+                <span className="text-stone-600 font-medium">Last Ingestion Result:</span>
                 {getStatusBadge(lastResult.status)}
                 {getRoleBadge(lastResult.semantic_role)}
-                <span className="text-slate-300 italic">{lastResult.message}</span>
+                <span className="text-stone-700 italic">{lastResult.message}</span>
               </div>
               <Link
                 href={`/events/${lastResult.event_id}`}
@@ -320,39 +320,39 @@ export default function EventsActivityCenterPage() {
 
         {/* Metrics Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
-            <div className="text-xs font-medium text-slate-400 mb-1">Total Ingested Events</div>
-            <div className="text-2xl font-bold text-white">{total}</div>
+          <div className="p-4 rounded-xl bg-stone-100/80 border border-stone-200">
+            <div className="text-xs font-medium text-stone-600 mb-1">Total Ingested Events</div>
+            <div className="text-2xl font-bold text-stone-950">{total}</div>
             <div className="text-xs text-cyan-400 mt-1 flex items-center gap-1">
               <ShieldCheck className="w-3.5 h-3.5" /> Immutable Audit Log
             </div>
           </div>
 
-          <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
-            <div className="text-xs font-medium text-slate-400 mb-1">Correlated & Processed</div>
+          <div className="p-4 rounded-xl bg-stone-100/80 border border-stone-200">
+            <div className="text-xs font-medium text-stone-600 mb-1">Correlated & Processed</div>
             <div className="text-2xl font-bold text-teal-400">{processedCount}</div>
-            <div className="text-xs text-slate-400 mt-1">
+            <div className="text-xs text-stone-600 mt-1">
               {total > 0 ? `${Math.round((processedCount / total) * 100)}% match rate` : "No events"}
             </div>
           </div>
 
-          <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
-            <div className="text-xs font-medium text-slate-400 mb-1">Suggested Evidence Created</div>
+          <div className="p-4 rounded-xl bg-stone-100/80 border border-stone-200">
+            <div className="text-xs font-medium text-stone-600 mb-1">Suggested Evidence Created</div>
             <div className="text-2xl font-bold text-emerald-400">{evidenceCount}</div>
-            <div className="text-xs text-slate-400 mt-1">Pending human confirmation</div>
+            <div className="text-xs text-stone-600 mt-1">Pending human confirmation</div>
           </div>
 
-          <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
-            <div className="text-xs font-medium text-slate-400 mb-1">Deduplicated (Skipped)</div>
+          <div className="p-4 rounded-xl bg-stone-100/80 border border-stone-200">
+            <div className="text-xs font-medium text-stone-600 mb-1">Deduplicated (Skipped)</div>
             <div className="text-2xl font-bold text-amber-400">{duplicateCount}</div>
-            <div className="text-xs text-slate-400 mt-1">Idempotency guaranteed</div>
+            <div className="text-xs text-stone-600 mt-1">Idempotency guaranteed</div>
           </div>
         </div>
 
         {/* Filter Controls */}
-        <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+        <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl bg-stone-100/60 border border-stone-200">
           <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-2 text-xs font-medium text-slate-400">
+            <div className="flex items-center gap-2 text-xs font-medium text-stone-600">
               <Filter className="w-3.5 h-3.5 text-cyan-400" />
               Filter By:
             </div>
@@ -362,7 +362,7 @@ export default function EventsActivityCenterPage() {
               value={selectedProvider}
               onChange={(e) => setSelectedProvider(e.target.value)}
               aria-label="Filter by provider"
-              className="bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:border-cyan-500"
+              className="bg-stone-200 border border-stone-300 text-stone-800 text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:border-cyan-500"
             >
               <option value="">All Providers</option>
               {providers.map((p) => (
@@ -377,7 +377,7 @@ export default function EventsActivityCenterPage() {
               value={selectedRole}
               onChange={(e) => setSelectedRole(e.target.value)}
               aria-label="Filter by semantic role"
-              className="bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:border-cyan-500"
+              className="bg-stone-200 border border-stone-300 text-stone-800 text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:border-cyan-500"
             >
               <option value="">All Semantic Roles</option>
               <option value={EventSemanticRole.COMPLETION_SIGNAL}>Completion Signal</option>
@@ -393,7 +393,7 @@ export default function EventsActivityCenterPage() {
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
               aria-label="Filter by processing status"
-              className="bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:border-cyan-500"
+              className="bg-stone-200 border border-stone-300 text-stone-800 text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:border-cyan-500"
             >
               <option value="">All Statuses</option>
               <option value="PROCESSED">Processed</option>
@@ -404,35 +404,35 @@ export default function EventsActivityCenterPage() {
           </div>
 
           <div className="relative">
-            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-stone-600" />
             <input
               type="text"
               placeholder="Search source ref..."
               value={searchRef}
               onChange={(e) => setSearchRef(e.target.value)}
-              className="bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-lg pl-8 pr-3 py-1.5 w-48 focus:outline-none focus:border-cyan-500"
+              className="bg-stone-200 border border-stone-300 text-stone-800 text-xs rounded-lg pl-8 pr-3 py-1.5 w-48 focus:outline-none focus:border-cyan-500"
             />
           </div>
         </div>
 
         {/* Live Ingestion Feed Table */}
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/70 overflow-hidden shadow-xl">
-          <div className="px-6 py-4 border-b border-slate-800/80 flex items-center justify-between">
-            <h2 className="text-base font-semibold text-white flex items-center gap-2">
+        <div className="rounded-2xl border border-stone-200 bg-stone-100/70 overflow-hidden shadow-xl">
+          <div className="px-6 py-4 border-b border-stone-200/80 flex items-center justify-between">
+            <h2 className="text-base font-semibold text-stone-950 flex items-center gap-2">
               <FileText className="w-4 h-4 text-cyan-400" />
               Event Ingestion Audit Trail ({events.length} records shown)
             </h2>
-            <span className="text-xs text-slate-400">Sorted by newest received</span>
+            <span className="text-xs text-stone-600">Sorted by newest received</span>
           </div>
 
           {loading ? (
-            <div className="p-12 text-center text-slate-400">
+            <div className="p-12 text-center text-stone-600">
               <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-cyan-500" />
               Loading event activity feed...
             </div>
           ) : events.length === 0 ? (
-            <div className="p-12 text-center text-slate-500">
-              <Activity className="w-8 h-8 mx-auto mb-2 opacity-50 text-slate-600" />
+            <div className="p-12 text-center text-stone-500">
+              <Activity className="w-8 h-8 mx-auto mb-2 opacity-50 text-stone-400" />
               No events found matching current criteria.
               <div className="mt-3">
                 <button
@@ -444,11 +444,11 @@ export default function EventsActivityCenterPage() {
               </div>
             </div>
           ) : (
-            <div className="divide-y divide-slate-800/60">
+            <div className="divide-y divide-stone-200/60">
               {events.map((evt) => (
                 <div
                   key={evt.id}
-                  className="p-5 hover:bg-slate-800/40 transition flex flex-col md:flex-row md:items-center justify-between gap-4"
+                  className="p-5 hover:bg-stone-200/40 transition flex flex-col md:flex-row md:items-center justify-between gap-4"
                 >
                   <div className="space-y-2 flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
@@ -460,7 +460,7 @@ export default function EventsActivityCenterPage() {
                             ? "bg-red-950/80 text-red-300 border-red-800/80 shadow-sm"
                             : evt.provider.toLowerCase() === "google_calendar" || evt.provider.toLowerCase() === "calendar"
                             ? "bg-emerald-950/80 text-emerald-300 border-emerald-800/80 shadow-sm"
-                            : "bg-slate-800 text-slate-300 border-slate-700"
+                            : "bg-stone-200 text-stone-700 border-stone-300"
                         }`}
                       >
                         {evt.provider.toUpperCase()}
@@ -468,23 +468,23 @@ export default function EventsActivityCenterPage() {
                       {getStatusBadge(evt.processing_status)}
                       {getRoleBadge(evt.semantic_role)}
                       {evt.source_ref && (
-                        <span className="text-xs text-slate-400 font-mono">
+                        <span className="text-xs text-stone-600 font-mono">
                           Ref: {evt.source_ref}
                         </span>
                       )}
                     </div>
 
-                    <p className="text-sm font-medium text-slate-200 line-clamp-2">
+                    <p className="text-sm font-medium text-stone-800 line-clamp-2">
                       &ldquo;{evt.content}&rdquo;
                     </p>
 
-                    <div className="flex flex-wrap items-center gap-4 text-xs text-slate-400">
+                    <div className="flex flex-wrap items-center gap-4 text-xs text-stone-600">
                       <span>
-                        From: <strong className="text-slate-300">{evt.sender || "Unknown"}</strong>
+                        From: <strong className="text-stone-700">{evt.sender || "Unknown"}</strong>
                       </span>
                       {evt.recipients && evt.recipients.length > 0 && (
                         <span>
-                          To: <strong className="text-slate-300">{evt.recipients.join(", ")}</strong>
+                          To: <strong className="text-stone-700">{evt.recipients.join(", ")}</strong>
                         </span>
                       )}
                       <span>
@@ -494,7 +494,7 @@ export default function EventsActivityCenterPage() {
                     </div>
 
                     {evt.match_explanation && (
-                      <div className="text-xs text-slate-400 bg-slate-950/60 p-2 rounded-lg border border-slate-800/60 flex items-start gap-2">
+                      <div className="text-xs text-stone-600 bg-stone-50/60 p-2 rounded-lg border border-stone-200/60 flex items-start gap-2">
                         <Info className="w-3.5 h-3.5 text-cyan-400 flex-shrink-0 mt-0.5" />
                         <span>{evt.match_explanation}</span>
                       </div>
@@ -504,7 +504,7 @@ export default function EventsActivityCenterPage() {
                   <div className="flex flex-col md:items-end gap-2 shrink-0">
                     {evt.correlation_confidence !== null && evt.correlation_confidence !== undefined && (
                       <div className="text-right">
-                        <div className="text-[11px] text-slate-400 font-medium">Correlation Confidence</div>
+                        <div className="text-[11px] text-stone-600 font-medium">Correlation Confidence</div>
                         <div className="text-sm font-bold text-cyan-300">
                           {Math.round(evt.correlation_confidence * 100)}%
                         </div>
@@ -515,7 +515,7 @@ export default function EventsActivityCenterPage() {
                       {evt.correlated_obligation_id && (
                         <Link
                           href={`/obligations/${evt.correlated_obligation_id}`}
-                          className="px-3 py-1 text-xs font-medium rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition flex items-center gap-1"
+                          className="px-3 py-1 text-xs font-medium rounded-lg bg-stone-200 hover:bg-stone-300 text-stone-700 border border-stone-300 transition flex items-center gap-1"
                         >
                           View Obligation <ExternalLink className="w-3 h-3" />
                         </Link>
@@ -539,15 +539,15 @@ export default function EventsActivityCenterPage() {
       {/* Custom Event Ingestion Modal */}
       {showCustomModal && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
+          <div className="bg-stone-100 border border-stone-200 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-stone-200 pb-3">
+              <h3 className="text-base font-bold text-stone-950 flex items-center gap-2">
                 <Send className="w-4 h-4 text-cyan-400" />
                 Ingest Custom External Event
               </h3>
               <button
                 onClick={() => setShowCustomModal(false)}
-                className="text-slate-400 hover:text-white text-sm"
+                className="text-stone-600 hover:text-stone-950 text-sm"
               >
                 &times;
               </button>
@@ -555,11 +555,11 @@ export default function EventsActivityCenterPage() {
 
             <form onSubmit={handleCustomIngest} className="space-y-4">
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">Provider Adapter</label>
+                <label className="block text-xs font-medium text-stone-700 mb-1">Provider Adapter</label>
                 <select
                   value={customProvider}
                   onChange={(e) => setCustomProvider(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-500"
+                  className="w-full bg-stone-200 border border-stone-300 rounded-lg px-3 py-2 text-sm text-stone-800 focus:outline-none focus:border-cyan-500"
                 >
                   <option value="mock">Mock Provider (Default)</option>
                   <option value="direct">Direct Normalized</option>
@@ -571,46 +571,46 @@ export default function EventsActivityCenterPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1">Sender Name</label>
+                  <label className="block text-xs font-medium text-stone-700 mb-1">Sender Name</label>
                   <input
                     type="text"
                     value={customSender}
                     onChange={(e) => setCustomSender(e.target.value)}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-500"
+                    className="w-full bg-stone-200 border border-stone-300 rounded-lg px-3 py-2 text-sm text-stone-800 focus:outline-none focus:border-cyan-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1">Recipient(s)</label>
+                  <label className="block text-xs font-medium text-stone-700 mb-1">Recipient(s)</label>
                   <input
                     type="text"
                     value={customRecipients}
                     onChange={(e) => setCustomRecipients(e.target.value)}
                     placeholder="e.g. Ravi, Team"
-                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-500"
+                    className="w-full bg-stone-200 border border-stone-300 rounded-lg px-3 py-2 text-sm text-stone-800 focus:outline-none focus:border-cyan-500"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">Source Reference (Optional)</label>
+                <label className="block text-xs font-medium text-stone-700 mb-1">Source Reference (Optional)</label>
                 <input
                   type="text"
                   value={customRef}
                   onChange={(e) => setCustomRef(e.target.value)}
                   placeholder="e.g. msg_123456"
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-500 font-mono text-xs"
+                  className="w-full bg-stone-200 border border-stone-300 rounded-lg px-3 py-2 text-sm text-stone-800 focus:outline-none focus:border-cyan-500 font-mono text-xs"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">Event Content / Message</label>
+                <label className="block text-xs font-medium text-stone-700 mb-1">Event Content / Message</label>
                 <textarea
                   rows={4}
                   value={customContent}
                   onChange={(e) => setCustomContent(e.target.value)}
                   placeholder="e.g. Sent the database benchmark numbers to the team."
                   required
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm text-slate-200 focus:outline-none focus:border-cyan-500"
+                  className="w-full bg-stone-200 border border-stone-300 rounded-lg p-3 text-sm text-stone-800 focus:outline-none focus:border-cyan-500"
                 />
               </div>
 
@@ -618,14 +618,14 @@ export default function EventsActivityCenterPage() {
                 <button
                   type="button"
                   onClick={() => setShowCustomModal(false)}
-                  className="px-4 py-2 text-xs font-medium rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 transition"
+                  className="px-4 py-2 text-xs font-medium rounded-lg bg-stone-200 text-stone-700 hover:bg-stone-300 transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={simulating !== null}
-                  className="px-4 py-2 text-xs font-semibold rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white shadow-md shadow-cyan-950 transition disabled:opacity-50"
+                  className="px-4 py-2 text-xs font-semibold rounded-lg bg-cyan-600 hover:bg-cyan-500 text-stone-950 shadow-md shadow-cyan-950 transition disabled:opacity-50"
                 >
                   {simulating ? "Ingesting..." : "Ingest Event"}
                 </button>

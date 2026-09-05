@@ -103,13 +103,13 @@ export default function MembersSettingsPage() {
   return (
     <div className="space-y-6">
       {/* Invite Box */}
-      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-sm space-y-4">
+      <div className="bg-stone-100 border border-stone-200 rounded-2xl p-6 shadow-sm space-y-4">
         <div>
-          <h2 className="text-sm font-bold text-zinc-100 flex items-center gap-2">
-            <UserPlus className="w-4 h-4 text-blue-400" />
+          <h2 className="text-sm font-bold text-stone-900 flex items-center gap-2">
+            <UserPlus className="w-4 h-4 text-blue-500" />
             <span>Invite Team Member</span>
           </h2>
-          <p className="text-xs text-zinc-400 mt-0.5">Issue a single-use expirable invitation link with role-based access.</p>
+          <p className="text-xs text-stone-600 mt-0.5">Issue a single-use expirable invitation link with role-based access.</p>
         </div>
 
         {errorMsg && (
@@ -126,12 +126,12 @@ export default function MembersSettingsPage() {
             placeholder="colleague@company.com"
             value={inviteEmail}
             onChange={(e) => setInviteEmail(e.target.value)}
-            className="flex-1 bg-zinc-950 border border-zinc-800 rounded-xl px-3.5 py-2 text-zinc-200 focus:outline-none focus:border-blue-500"
+            className="flex-1 bg-stone-50 border border-stone-200 rounded-xl px-3.5 py-2 text-stone-800 focus:outline-none focus:border-blue-500"
           />
           <select
             value={inviteRole}
             onChange={(e) => setInviteRole(e.target.value)}
-            className="bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-200 focus:outline-none focus:border-blue-500"
+            className="bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-stone-800 focus:outline-none focus:border-blue-500"
           >
             <option value="MEMBER">Member (Read & Propose)</option>
             <option value="OPERATOR">Operator (Approve & Execute)</option>
@@ -140,7 +140,7 @@ export default function MembersSettingsPage() {
           <button
             type="submit"
             disabled={loading}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white rounded-xl font-semibold shadow transition-all shrink-0"
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-stone-950 rounded-xl font-semibold shadow transition-all shrink-0"
           >
             {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Send Invite"}
           </button>
@@ -154,11 +154,11 @@ export default function MembersSettingsPage() {
                 type="text"
                 readOnly
                 value={`${typeof window !== "undefined" ? window.location.origin : ""}/onboarding/accept?token=${inviteSuccess.invitation_token}`}
-                className="flex-1 bg-zinc-950 border border-zinc-800 rounded-lg px-2.5 py-1.5 text-zinc-300 font-mono text-[11px]"
+                className="flex-1 bg-stone-50 border border-stone-200 rounded-lg px-2.5 py-1.5 text-stone-700 font-mono text-[11px]"
               />
               <button
                 onClick={() => handleCopyLink(inviteSuccess.invitation_token)}
-                className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-lg font-medium flex items-center gap-1 shrink-0"
+                className="px-3 py-1.5 bg-stone-200 hover:bg-stone-300 text-stone-800 rounded-lg font-medium flex items-center gap-1 shrink-0"
               >
                 {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                 <span>{copied ? "Copied!" : "Copy Link"}</span>
@@ -169,33 +169,33 @@ export default function MembersSettingsPage() {
       </div>
 
       {/* Active Members Roster */}
-      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-sm">
-        <div className="px-6 py-4 border-b border-zinc-800 bg-zinc-950/60 flex items-center justify-between">
+      <div className="bg-stone-100 border border-stone-200 rounded-2xl overflow-hidden shadow-sm">
+        <div className="px-6 py-4 border-b border-stone-200 bg-stone-50/60 flex items-center justify-between">
           <div>
-            <h3 className="text-sm font-bold text-zinc-100 flex items-center gap-2">
+            <h3 className="text-sm font-bold text-stone-900 flex items-center gap-2">
               <Users className="w-4 h-4 text-purple-400" />
               <span>Workspace Members</span>
             </h3>
-            <p className="text-xs text-zinc-400">Currently active members and operators in this workspace boundary.</p>
+            <p className="text-xs text-stone-600">Currently active members and operators in this workspace boundary.</p>
           </div>
-          <span className="text-xs font-semibold px-2 py-0.5 rounded bg-zinc-800 text-zinc-300">
+          <span className="text-xs font-semibold px-2 py-0.5 rounded bg-stone-200 text-stone-700">
             {members.length} Total
           </span>
         </div>
 
-        <div className="divide-y divide-zinc-800/60 text-xs">
+        <div className="divide-y divide-stone-200/60 text-xs">
           {members.length === 0 ? (
-            <div className="p-8 text-center text-zinc-500">No members loaded.</div>
+            <div className="p-8 text-center text-stone-500">No members loaded.</div>
           ) : (
             members.map((m) => (
-              <div key={m.id} className="p-4 flex items-center justify-between hover:bg-zinc-800/30 transition-colors">
+              <div key={m.id} className="p-4 flex items-center justify-between hover:bg-stone-200/30 transition-colors">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-xs">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-blue-700 flex items-center justify-center text-stone-950 font-bold text-xs">
                     {(m.display_name || m.email || "U").charAt(0).toUpperCase()}
                   </div>
                   <div>
-                    <div className="font-semibold text-zinc-200">{m.display_name || "Workspace Member"}</div>
-                    <div className="text-zinc-500 text-[11px]">{m.email || m.user_id}</div>
+                    <div className="font-semibold text-stone-800">{m.display_name || "Workspace Member"}</div>
+                    <div className="text-stone-500 text-[11px]">{m.email || m.user_id}</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -204,10 +204,10 @@ export default function MembersSettingsPage() {
                       m.role === "OWNER"
                         ? "bg-purple-500/10 text-purple-400 border border-purple-500/20"
                         : m.role === "ADMIN"
-                        ? "bg-blue-500/10 text-blue-400 border border-blue-500/20"
+                        ? "bg-blue-500/10 text-blue-500 border border-blue-500/20"
                         : m.role === "OPERATOR"
                         ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
-                        : "bg-zinc-800 text-zinc-400"
+                        : "bg-stone-200 text-stone-600"
                     }`}
                   >
                     {m.role}
@@ -221,16 +221,16 @@ export default function MembersSettingsPage() {
 
       {/* Pending Invitations */}
       {invitations.length > 0 && (
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-sm">
-          <div className="px-6 py-4 border-b border-zinc-800 bg-zinc-950/60">
-            <h3 className="text-sm font-bold text-zinc-100">Pending & Historical Invitations</h3>
+        <div className="bg-stone-100 border border-stone-200 rounded-2xl overflow-hidden shadow-sm">
+          <div className="px-6 py-4 border-b border-stone-200 bg-stone-50/60">
+            <h3 className="text-sm font-bold text-stone-900">Pending & Historical Invitations</h3>
           </div>
-          <div className="divide-y divide-zinc-800/60 text-xs">
+          <div className="divide-y divide-stone-200/60 text-xs">
             {invitations.map((inv) => (
-              <div key={inv.id} className="p-4 flex items-center justify-between hover:bg-zinc-800/30 transition-colors">
+              <div key={inv.id} className="p-4 flex items-center justify-between hover:bg-stone-200/30 transition-colors">
                 <div>
-                  <div className="font-medium text-zinc-200">{inv.invited_email}</div>
-                  <div className="text-zinc-500 text-[11px]">Role: {inv.role} • Expires: {new Date(inv.expires_at).toLocaleDateString()}</div>
+                  <div className="font-medium text-stone-800">{inv.invited_email}</div>
+                  <div className="text-stone-500 text-[11px]">Role: {inv.role} • Expires: {new Date(inv.expires_at).toLocaleDateString()}</div>
                 </div>
                 <div className="flex items-center gap-2">
                   <span
@@ -239,7 +239,7 @@ export default function MembersSettingsPage() {
                         ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
                         : inv.status === "ACCEPTED"
                         ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                        : "bg-zinc-800 text-zinc-500"
+                        : "bg-stone-200 text-stone-500"
                     }`}
                   >
                     {inv.status}
@@ -247,7 +247,7 @@ export default function MembersSettingsPage() {
                   {inv.status === "PENDING" && (
                     <button
                       onClick={() => handleCancelInvite(inv.id)}
-                      className="p-1 text-zinc-500 hover:text-rose-400 transition-colors"
+                      className="p-1 text-stone-500 hover:text-rose-400 transition-colors"
                       title="Revoke Invitation"
                     >
                       <Trash2 className="w-3.5 h-3.5" />

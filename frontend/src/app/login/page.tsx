@@ -39,15 +39,15 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-zinc-900/80 backdrop-blur-xl p-8 rounded-2xl border border-zinc-800 shadow-2xl shadow-black/50">
+      <div className="max-w-md w-full space-y-8 bg-stone-100/80 backdrop-blur-xl p-8 rounded-2xl border border-stone-200 shadow-2xl shadow-black/50">
         <div className="text-center space-y-3">
-          <div className="mx-auto w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20 ring-1 ring-white/20">
-            <ShieldCheck className="w-7 h-7 text-white" />
+          <div className="mx-auto w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-blue-700 flex items-center justify-center shadow-lg shadow-blue-500/20 ring-1 ring-blue-100/20">
+            <ShieldCheck className="w-7 h-7 text-stone-950" />
           </div>
-          <h2 className="text-2xl font-bold tracking-tight text-white">
+          <h2 className="text-2xl font-bold tracking-tight text-stone-950">
             Sign in to Obligation Agent
           </h2>
-          <p className="text-xs text-zinc-400">
+          <p className="text-xs text-stone-600">
             Enterprise Reciprocal Commitment & Intelligence Platform
           </p>
         </div>
@@ -62,11 +62,11 @@ export default function LoginPage() {
         <form className="mt-6 space-y-5" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
-              <label className="block text-xs font-medium text-zinc-300 mb-1.5">
+              <label className="block text-xs font-medium text-stone-700 mb-1.5">
                 Email Address
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-zinc-500">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-stone-500">
                   <Mail className="w-4 h-4" />
                 </div>
                 <input
@@ -75,17 +75,17 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="operator@company.com"
-                  className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-zinc-950/80 border border-zinc-800 text-zinc-100 text-sm placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-stone-50/80 border border-stone-200 text-stone-900 text-sm placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-zinc-300 mb-1.5">
+              <label className="block text-xs font-medium text-stone-700 mb-1.5">
                 Password
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-zinc-500">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-stone-500">
                   <Lock className="w-4 h-4" />
                 </div>
                 <input
@@ -94,7 +94,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-zinc-950/80 border border-zinc-800 text-zinc-100 text-sm placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-stone-50/80 border border-stone-200 text-stone-900 text-sm placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 />
               </div>
             </div>
@@ -103,7 +103,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-sm font-semibold shadow-lg shadow-blue-500/25 transition-all disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-stone-950 text-sm font-semibold shadow-lg shadow-blue-500/25 transition-all disabled:opacity-50"
           >
             {loading ? (
               <span className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
@@ -116,19 +116,19 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div className="pt-2 border-t border-zinc-800/80 flex flex-col items-center gap-3">
+        <div className="pt-2 border-t border-stone-200/80 flex flex-col items-center gap-3">
           <button
             type="button"
             onClick={handleDemoFill}
-            className="flex items-center gap-1.5 text-xs text-blue-400 hover:text-blue-300 font-medium transition-colors"
+            className="flex items-center gap-1.5 text-xs text-blue-500 hover:text-blue-600 font-medium transition-colors"
           >
             <Sparkles className="w-3.5 h-3.5" />
             <span>Use Default Demo Account</span>
           </button>
 
-          <div className="text-xs text-zinc-400">
+          <div className="text-xs text-stone-600">
             Don&apos;t have an account?{" "}
-            <Link href="/register" className="text-blue-400 hover:text-blue-300 font-medium">
+            <Link href="/register" className="text-blue-500 hover:text-blue-600 font-medium">
               Create workspace
             </Link>
           </div>

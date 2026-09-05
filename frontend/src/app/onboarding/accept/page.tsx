@@ -76,15 +76,15 @@ function AcceptInvitationContent() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-xl p-8 shadow-2xl">
+    <div className="min-h-screen bg-stone-50 text-stone-900 flex items-center justify-center p-4">
+      <div className="w-full max-w-md bg-stone-100 border border-stone-200 rounded-xl p-8 shadow-2xl">
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-lg bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
+          <div className="w-10 h-10 rounded-lg bg-blue-700/20 border border-blue-600/30 flex items-center justify-center text-blue-500">
             <UserCheck className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-slate-100">Accept Team Invitation</h1>
-            <p className="text-xs text-slate-400">Join your team workspace on Obligation Agent</p>
+            <h1 className="text-xl font-bold text-stone-900">Accept Team Invitation</h1>
+            <p className="text-xs text-stone-600">Join your team workspace on Obligation Agent</p>
           </div>
         </div>
 
@@ -92,7 +92,7 @@ function AcceptInvitationContent() {
           <div className="bg-emerald-950/40 border border-emerald-500/30 rounded-lg p-5 text-center space-y-3">
             <CheckCircle2 className="w-10 h-10 text-emerald-400 mx-auto" />
             <h3 className="text-base font-semibold text-emerald-200">Invitation Accepted!</h3>
-            <p className="text-xs text-slate-300">
+            <p className="text-xs text-stone-700">
               You have joined workspace <span className="font-mono text-emerald-400">{acceptedWorkspaceId}</span>.
               Redirecting to obligations dashboard...
             </p>
@@ -115,38 +115,38 @@ function AcceptInvitationContent() {
             )}
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Invitation Token</label>
+              <label className="block text-xs font-semibold text-stone-700 mb-1">Invitation Token</label>
               <input
                 type="text"
                 value={token}
                 onChange={(e) => setToken(e.target.value)}
                 placeholder="Paste invitation token here"
                 required
-                className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500 font-mono"
+                className="w-full bg-stone-200 border border-stone-300 rounded-lg px-3 py-2 text-xs text-stone-800 focus:outline-none focus:border-blue-600 font-mono"
               />
             </div>
 
             {!isAuthenticated ? (
               <>
-                <div className="p-3 bg-slate-800/60 border border-slate-700/50 rounded-lg text-xs text-slate-300 flex items-start gap-2">
-                  <ShieldCheck className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />
+                <div className="p-3 bg-stone-200/60 border border-stone-300/50 rounded-lg text-xs text-stone-700 flex items-start gap-2">
+                  <ShieldCheck className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
                   <span>Create your account to accept this invitation and join the workspace.</span>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Your Name</label>
+                  <label className="block text-xs font-semibold text-stone-700 mb-1">Your Name</label>
                   <input
                     type="text"
                     value={displayName}
                     onChange={(e) => setDisplayName(e.target.value)}
                     placeholder="e.g. Alex Johnson"
                     required
-                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-stone-200 border border-stone-300 rounded-lg px-3 py-2 text-xs text-stone-800 focus:outline-none focus:border-blue-600"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Password</label>
+                  <label className="block text-xs font-semibold text-stone-700 mb-1">Password</label>
                   <input
                     type="password"
                     value={password}
@@ -154,20 +154,20 @@ function AcceptInvitationContent() {
                     placeholder="At least 8 characters"
                     required
                     minLength={8}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-stone-200 border border-stone-300 rounded-lg px-3 py-2 text-xs text-stone-800 focus:outline-none focus:border-blue-600"
                   />
                 </div>
               </>
             ) : (
-              <div className="p-3 bg-indigo-950/30 border border-indigo-500/20 rounded-lg text-xs text-indigo-300">
-                Logged in as <span className="font-semibold text-indigo-200">{user?.email}</span> ({user?.display_name}). This account will be linked to the workspace.
+              <div className="p-3 bg-indigo-950/30 border border-blue-600/20 rounded-lg text-xs text-blue-600">
+                Logged in as <span className="font-semibold text-blue-700">{user?.email}</span> ({user?.display_name}). This account will be linked to the workspace.
               </div>
             )}
 
             <button
               type="submit"
               disabled={loading || !token.trim()}
-              className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-semibold py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2"
+              className="w-full bg-blue-700 hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed text-stone-950 text-xs font-semibold py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
@@ -180,9 +180,9 @@ function AcceptInvitationContent() {
             </button>
 
             {!isAuthenticated && (
-              <div className="text-center pt-2 text-xs text-slate-400">
+              <div className="text-center pt-2 text-xs text-stone-600">
                 Already have an account?{" "}
-                <Link href="/login" className="text-indigo-400 hover:underline">
+                <Link href="/login" className="text-blue-500 hover:underline">
                   Log in first
                 </Link>
               </div>
@@ -196,7 +196,7 @@ function AcceptInvitationContent() {
 
 export default function AcceptInvitationPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center text-slate-400">Loading invitation...</div>}>
+    <Suspense fallback={<div className="min-h-screen bg-stone-50 flex items-center justify-center text-stone-600">Loading invitation...</div>}>
       <AcceptInvitationContent />
     </Suspense>
   );

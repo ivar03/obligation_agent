@@ -186,13 +186,13 @@ export function LLMIntelligencePanel() {
   return (
     <div className="space-y-6">
       {/* Top Banner: Architectural Guardrails Notice */}
-      <div className="bg-indigo-950/40 border border-indigo-500/30 rounded-xl p-4 flex items-start gap-3">
-        <Sparkles className="w-5 h-5 text-indigo-400 shrink-0 mt-0.5" />
+      <div className="bg-indigo-950/40 border border-blue-600/30 rounded-xl p-4 flex items-start gap-3">
+        <Sparkles className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
         <div>
-          <div className="text-sm font-semibold text-indigo-200">
+          <div className="text-sm font-semibold text-blue-700">
             Phase 20 Natural-Language Intelligence & Semantic Interpretation
           </div>
-          <div className="text-xs text-indigo-300/80 mt-0.5 leading-relaxed">
+          <div className="text-xs text-blue-600/80 mt-0.5 leading-relaxed">
             The LLM interprets complex language, extracts candidate commitments, and synthesizes grounded explanations.
             <strong> Critical Safety Invariant:</strong> The LLM has zero direct tool authority. It cannot autonomously
             complete obligations, confirm evidence, or mutate authoritative state.
@@ -203,9 +203,9 @@ export function LLMIntelligencePanel() {
       {/* Dual Workbench Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left Card: Natural Language Analysis Workbench */}
-        <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-5 space-y-4">
+        <div className="bg-stone-100/60 border border-stone-200 rounded-xl p-5 space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-base font-semibold text-slate-100 flex items-center gap-2">
+            <h3 className="text-base font-semibold text-stone-900 flex items-center gap-2">
               <Brain className="w-4 h-4 text-cyan-400" />
               Hybrid Obligation Extraction
             </h3>
@@ -215,14 +215,14 @@ export function LLMIntelligencePanel() {
           </div>
 
           <div>
-            <label className="text-xs font-medium text-slate-400 block mb-1.5">
+            <label className="text-xs font-medium text-stone-600 block mb-1.5">
               Unstructured Input Text / Chat Message
             </label>
             <textarea
               rows={3}
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-xs text-slate-100 focus:outline-none focus:border-cyan-500 transition-colors font-mono"
+              className="w-full bg-stone-50 border border-stone-300 rounded-lg p-3 text-xs text-stone-900 focus:outline-none focus:border-cyan-500 transition-colors font-mono"
               placeholder="Paste natural language commitment..."
             />
           </div>
@@ -232,21 +232,21 @@ export function LLMIntelligencePanel() {
             <button
               type="button"
               onClick={() => setInputText("Rahul will send the database benchmark numbers by Friday.")}
-              className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700"
+              className="px-2 py-1 rounded bg-stone-200 hover:bg-stone-300 text-stone-700 border border-stone-300"
             >
               Scenario A: Explicit
             </button>
             <button
               type="button"
               onClick={() => setInputText("We need to get the benchmark numbers over before the review.")}
-              className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700"
+              className="px-2 py-1 rounded bg-stone-200 hover:bg-stone-300 text-stone-700 border border-stone-300"
             >
               Scenario B: Ambiguous Owner
             </button>
             <button
               type="button"
               onClick={() => setInputText("If the staging deployment passes, Ravi will publish the API report.")}
-              className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700"
+              className="px-2 py-1 rounded bg-stone-200 hover:bg-stone-300 text-stone-700 border border-stone-300"
             >
               Scenario C: Conditional
             </button>
@@ -262,7 +262,7 @@ export function LLMIntelligencePanel() {
           <button
             onClick={handleAnalyze}
             disabled={analyzing || !inputText.trim()}
-            className="w-full py-2 bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition-colors shadow-sm"
+            className="w-full py-2 bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 text-stone-950 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition-colors shadow-sm"
           >
             {analyzing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5" />}
             Analyze with Hybrid Pipeline
@@ -270,17 +270,17 @@ export function LLMIntelligencePanel() {
 
           {/* Analysis Results Display */}
           {analysisResult && (
-            <div className="pt-3 border-t border-slate-800 space-y-3">
+            <div className="pt-3 border-t border-stone-200 space-y-3">
               {/* Reconciliation Status Banner */}
-              <div className="flex items-center justify-between p-2.5 rounded-lg bg-slate-950 border border-slate-800 text-xs">
+              <div className="flex items-center justify-between p-2.5 rounded-lg bg-stone-50 border border-stone-200 text-xs">
                 <div>
-                  <span className="text-slate-400">Reconciliation Strategy: </span>
+                  <span className="text-stone-600">Reconciliation Strategy: </span>
                   <span className="font-semibold text-cyan-300">
                     {analysisResult.reconciliation?.reconciliation_strategy}
                   </span>
                 </div>
                 <div className="flex items-center gap-2 font-mono">
-                  <span className="text-slate-400">Confidence:</span>
+                  <span className="text-stone-600">Confidence:</span>
                   <span className="text-emerald-400 font-bold">
                     {Math.round((analysisResult.reconciliation?.confidence || 0) * 100)}%
                   </span>
@@ -289,23 +289,23 @@ export function LLMIntelligencePanel() {
 
               {/* Extracted Fields */}
               <div className="grid grid-cols-2 gap-2 text-xs">
-                <div className="p-2.5 rounded bg-slate-950 border border-slate-800">
-                  <span className="text-[10px] uppercase text-slate-500 block">Duty Bearer (Owner)</span>
-                  <span className="font-semibold text-slate-200">
+                <div className="p-2.5 rounded bg-stone-50 border border-stone-200">
+                  <span className="text-[10px] uppercase text-stone-500 block">Duty Bearer (Owner)</span>
+                  <span className="font-semibold text-stone-800">
                     {analysisResult.reconciliation?.final_owner || "Ambiguous / Unassigned"}
                   </span>
                 </div>
-                <div className="p-2.5 rounded bg-slate-950 border border-slate-800">
-                  <span className="text-[10px] uppercase text-slate-500 block">Deadline Constraint</span>
-                  <span className="font-semibold text-slate-200">
+                <div className="p-2.5 rounded bg-stone-50 border border-stone-200">
+                  <span className="text-[10px] uppercase text-stone-500 block">Deadline Constraint</span>
+                  <span className="font-semibold text-stone-800">
                     {analysisResult.reconciliation?.final_deadline || "Unspecified"}
                   </span>
                 </div>
               </div>
 
-              <div className="p-2.5 rounded bg-slate-950 border border-slate-800 text-xs">
-                <span className="text-[10px] uppercase text-slate-500 block">Action Summary</span>
-                <span className="font-medium text-slate-200">{analysisResult.reconciliation?.final_action}</span>
+              <div className="p-2.5 rounded bg-stone-50 border border-stone-200 text-xs">
+                <span className="text-[10px] uppercase text-stone-500 block">Action Summary</span>
+                <span className="font-medium text-stone-800">{analysisResult.reconciliation?.final_action}</span>
               </div>
 
               {/* Human Gating / Triage Buttons */}
@@ -321,13 +321,13 @@ export function LLMIntelligencePanel() {
                   <div className="flex gap-2 pt-1">
                     <button
                       onClick={() => handleTriage("accept")}
-                      className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-[11px] font-semibold flex items-center gap-1.5"
+                      className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-stone-950 rounded text-[11px] font-semibold flex items-center gap-1.5"
                     >
                       <Check className="w-3 h-3" /> Accept Interpretation
                     </button>
                     <button
                       onClick={() => handleTriage("reject")}
-                      className="px-3 py-1.5 bg-rose-600 hover:bg-rose-500 text-white rounded text-[11px] font-semibold flex items-center gap-1.5"
+                      className="px-3 py-1.5 bg-rose-600 hover:bg-rose-500 text-stone-950 rounded text-[11px] font-semibold flex items-center gap-1.5"
                     >
                       <X className="w-3 h-3" /> Reject Proposal
                     </button>
@@ -346,26 +346,26 @@ export function LLMIntelligencePanel() {
         </div>
 
         {/* Right Card: Grounded Explanation Explorer */}
-        <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-5 space-y-4">
+        <div className="bg-stone-100/60 border border-stone-200 rounded-xl p-5 space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-base font-semibold text-slate-100 flex items-center gap-2">
-              <FileCheck className="w-4 h-4 text-indigo-400" />
+            <h3 className="text-base font-semibold text-stone-900 flex items-center gap-2">
+              <FileCheck className="w-4 h-4 text-blue-500" />
               Grounded Explanation Generator
             </h3>
-            <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+            <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-blue-600/10 text-blue-500 border border-blue-600/20">
               Verified Facts Only
             </span>
           </div>
 
           <div>
-            <label className="text-xs font-medium text-slate-400 block mb-1.5">
+            <label className="text-xs font-medium text-stone-600 block mb-1.5">
               Focus Entity / Obligation ID
             </label>
             <input
               type="text"
               value={targetEntityId}
               onChange={(e) => setTargetEntityId(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-100 focus:outline-none focus:border-indigo-500 font-mono"
+              className="w-full bg-stone-50 border border-stone-300 rounded-lg p-2.5 text-xs text-stone-900 focus:outline-none focus:border-blue-600 font-mono"
             />
           </div>
 
@@ -373,14 +373,14 @@ export function LLMIntelligencePanel() {
             <button
               type="button"
               onClick={() => setTargetEntityId("ob-root-db")}
-              className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] border border-slate-700"
+              className="px-2 py-1 rounded bg-stone-200 hover:bg-stone-300 text-stone-700 text-[10px] border border-stone-300"
             >
               ob-root-db (Root Cause)
             </button>
             <button
               type="button"
               onClick={() => setTargetEntityId("ob-api-ravi")}
-              className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] border border-slate-700"
+              className="px-2 py-1 rounded bg-stone-200 hover:bg-stone-300 text-stone-700 text-[10px] border border-stone-300"
             >
               ob-api-ravi (Blocked)
             </button>
@@ -389,16 +389,16 @@ export function LLMIntelligencePanel() {
           <button
             onClick={handleExplain}
             disabled={explaining || !targetEntityId.trim()}
-            className="w-full py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition-colors shadow-sm"
+            className="w-full py-2 bg-blue-700 hover:bg-blue-600 disabled:opacity-50 text-stone-950 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition-colors shadow-sm"
           >
             {explaining ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
             Generate Grounded Explanation
           </button>
 
           {explanationResult && (
-            <div className="pt-3 border-t border-slate-800 space-y-3">
-              <div className="flex items-center justify-between p-2 rounded bg-slate-950 border border-slate-800 text-xs">
-                <span className="text-slate-400">Grounding Status:</span>
+            <div className="pt-3 border-t border-stone-200 space-y-3">
+              <div className="flex items-center justify-between p-2 rounded bg-stone-50 border border-stone-200 text-xs">
+                <span className="text-stone-600">Grounding Status:</span>
                 <span
                   className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
                     explanationResult.grounding_status === "GROUNDED"
@@ -410,12 +410,12 @@ export function LLMIntelligencePanel() {
                 </span>
               </div>
 
-              <div className="p-3 rounded-lg bg-slate-950 border border-slate-800 text-xs leading-relaxed text-slate-200">
+              <div className="p-3 rounded-lg bg-stone-50 border border-stone-200 text-xs leading-relaxed text-stone-800">
                 {explanationResult.explanation}
               </div>
 
-              <div className="text-[11px] text-slate-400">
-                <span className="font-semibold text-slate-300">Grounded Facts Used: </span>
+              <div className="text-[11px] text-stone-600">
+                <span className="font-semibold text-stone-700">Grounded Facts Used: </span>
                 {explanationResult.grounded_facts_used.join(", ") || "None"}
               </div>
             </div>
@@ -424,28 +424,28 @@ export function LLMIntelligencePanel() {
       </div>
 
       {/* Analysis Audit Trail */}
-      <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-5 space-y-3">
+      <div className="bg-stone-100/60 border border-stone-200 rounded-xl p-5 space-y-3">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-slate-100 flex items-center gap-2">
-            <Clock className="w-4 h-4 text-slate-400" />
+          <h3 className="text-sm font-semibold text-stone-900 flex items-center gap-2">
+            <Clock className="w-4 h-4 text-stone-600" />
             Immutable LLM Analysis Audit Trail
           </h3>
           <button
             onClick={fetchHistory}
-            className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
+            className="text-xs text-blue-500 hover:text-blue-600 flex items-center gap-1"
           >
             <RotateCcw className="w-3 h-3" /> Refresh
           </button>
         </div>
 
         {historyLoading ? (
-          <div className="py-6 text-center text-xs text-slate-500">Loading audit trail...</div>
+          <div className="py-6 text-center text-xs text-stone-500">Loading audit trail...</div>
         ) : history.length === 0 ? (
-          <div className="py-6 text-center text-xs text-slate-500">No analysis records yet.</div>
+          <div className="py-6 text-center text-xs text-stone-500">No analysis records yet.</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="border-b border-slate-800 text-slate-400 font-semibold">
+              <thead className="border-b border-stone-200 text-stone-600 font-semibold">
                 <tr>
                   <th className="pb-2">ID</th>
                   <th className="pb-2">Analysis Type</th>
@@ -457,17 +457,17 @@ export function LLMIntelligencePanel() {
                   <th className="pb-2">Created</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60">
+              <tbody className="divide-y divide-stone-200/60">
                 {history.map((h) => (
-                  <tr key={h.id} className="hover:bg-slate-800/30 transition-colors">
+                  <tr key={h.id} className="hover:bg-stone-200/30 transition-colors">
                     <td className="py-2.5 font-mono text-[11px] text-cyan-400">{h.id.slice(0, 14)}...</td>
-                    <td className="py-2.5 font-medium text-slate-200">{h.analysis_type}</td>
-                    <td className="py-2.5 text-slate-400 font-mono text-[11px]">
+                    <td className="py-2.5 font-medium text-stone-800">{h.analysis_type}</td>
+                    <td className="py-2.5 text-stone-600 font-mono text-[11px]">
                       {h.provider}:{h.prompt_version}
                     </td>
                     <td className="py-2.5 font-bold text-emerald-400">{Math.round(h.confidence * 100)}%</td>
                     <td className="py-2.5">
-                      <span className="px-1.5 py-0.5 rounded text-[10px] bg-slate-800 text-slate-300">
+                      <span className="px-1.5 py-0.5 rounded text-[10px] bg-stone-200 text-stone-700">
                         {h.validation_status}
                       </span>
                     </td>
@@ -480,8 +480,8 @@ export function LLMIntelligencePanel() {
                         {h.grounding_status}
                       </span>
                     </td>
-                    <td className="py-2.5 text-slate-400 font-mono">{h.latency_ms}ms</td>
-                    <td className="py-2.5 text-slate-500 text-[11px]">
+                    <td className="py-2.5 text-stone-600 font-mono">{h.latency_ms}ms</td>
+                    <td className="py-2.5 text-stone-500 text-[11px]">
                       {new Date(h.created_at).toLocaleTimeString()}
                     </td>
                   </tr>

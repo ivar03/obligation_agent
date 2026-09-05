@@ -120,10 +120,10 @@ export default function DashboardPage() {
       {/* Header Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-stone-950">
             Obligation Control Center
           </h1>
-          <p className="text-sm text-zinc-400 mt-1">
+          <p className="text-sm text-stone-600 mt-1">
             Proactive commitment tracking, graph cascade monitoring, and deadline rescue.
           </p>
         </div>
@@ -135,14 +135,14 @@ export default function DashboardPage() {
               loadData();
             }}
             disabled={loading}
-            className="p-2 rounded-lg border border-zinc-800 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-300 transition-colors"
+            className="p-2 rounded-lg border border-stone-200 bg-stone-100/80 hover:bg-stone-200 text-stone-700 transition-colors"
             title="Refresh Ledger"
           >
-            <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin text-blue-400" : ""}`} />
+            <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin text-blue-500" : ""}`} />
           </button>
           <Link
             href="/capture"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold transition-all shadow-lg shadow-blue-600/20 active:scale-95"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-stone-950 text-sm font-semibold transition-all shadow-lg shadow-blue-600/20 active:scale-95"
           >
             <Sparkles className="w-4 h-4" />
             <span>Capture New Obligation</span>
@@ -151,22 +151,22 @@ export default function DashboardPage() {
       </div>
 
       {/* Connected Sources Status Indicator (Phase 8) */}
-      <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 rounded-xl bg-zinc-900/70 border border-zinc-800 text-xs">
+      <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 rounded-xl bg-stone-100/70 border border-stone-200 text-xs">
         <div className="flex flex-wrap items-center gap-3">
-          <span className="text-zinc-400 font-semibold flex items-center gap-1.5">
+          <span className="text-stone-600 font-semibold flex items-center gap-1.5">
             <Radio className="w-3.5 h-3.5 text-purple-400" />
             Connected Sources:
           </span>
           <div className="flex items-center gap-2">
             <Link
               href="/integrations"
-              className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-zinc-800 hover:bg-zinc-750 text-zinc-300 font-medium transition"
+              className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-stone-200 hover:bg-stone-300 text-stone-700 font-medium transition"
             >
               <span
                 className={`h-2 w-2 rounded-full ${
                   connections.some((c) => c.provider === "slack" && c.status === "CONNECTED")
                     ? "bg-emerald-400 animate-pulse"
-                    : "bg-zinc-500"
+                    : "bg-stone-500"
                 }`}
               ></span>
               Slack{" "}
@@ -176,13 +176,13 @@ export default function DashboardPage() {
             </Link>
             <Link
               href="/integrations"
-              className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-zinc-800 hover:bg-zinc-750 text-zinc-300 font-medium transition"
+              className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-stone-200 hover:bg-stone-300 text-stone-700 font-medium transition"
             >
               <span
                 className={`h-2 w-2 rounded-full ${
                   connections.some((c) => c.provider === "gmail" && c.status === "CONNECTED")
                     ? "bg-emerald-400 animate-pulse"
-                    : "bg-zinc-500"
+                    : "bg-stone-500"
                 }`}
               ></span>
               Gmail{" "}
@@ -192,13 +192,13 @@ export default function DashboardPage() {
             </Link>
             <Link
               href="/integrations"
-              className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-zinc-800 hover:bg-zinc-750 text-zinc-300 font-medium transition"
+              className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-stone-200 hover:bg-stone-300 text-stone-700 font-medium transition"
             >
               <span
                 className={`h-2 w-2 rounded-full ${
                   connections.some((c) => (c.provider === "google_calendar" || c.provider === "calendar") && c.status === "CONNECTED")
                     ? "bg-emerald-400 animate-pulse"
-                    : "bg-zinc-500"
+                    : "bg-stone-500"
                 }`}
               ></span>
               Calendar{" "}
@@ -206,7 +206,7 @@ export default function DashboardPage() {
                 ? "● Connected"
                 : "○ Not Connected"}
             </Link>
-            <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-zinc-800 text-zinc-300 font-medium">
+            <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-stone-200 text-stone-700 font-medium">
               <span className="h-2 w-2 rounded-full bg-emerald-400"></span>
               Mock Provider (Dev)
             </span>
@@ -214,9 +214,9 @@ export default function DashboardPage() {
         </div>
 
         {recentEvents.length > 0 && (
-          <div className="flex items-center gap-2 text-zinc-400 text-xs">
-            <span className="text-zinc-500">Recent Event:</span>
-            <span className="text-zinc-200 font-medium max-w-sm truncate">
+          <div className="flex items-center gap-2 text-stone-600 text-xs">
+            <span className="text-stone-500">Recent Event:</span>
+            <span className="text-stone-800 font-medium max-w-sm truncate">
               &ldquo;{recentEvents[0].content}&rdquo;
             </span>
             {recentEvents[0].semantic_role === "COMPLETION_SIGNAL" && (
@@ -226,7 +226,7 @@ export default function DashboardPage() {
             )}
             <Link
               href="/events"
-              className="text-blue-400 hover:text-blue-300 font-semibold ml-1 shrink-0"
+              className="text-blue-500 hover:text-blue-600 font-semibold ml-1 shrink-0"
             >
               View &rarr;
             </Link>
@@ -242,21 +242,21 @@ export default function DashboardPage() {
           className={`cursor-pointer p-5 rounded-2xl border transition-all ${
             activeTab === "you_owe"
               ? "bg-blue-950/40 border-blue-500 ring-1 ring-blue-500"
-              : "bg-zinc-900/60 hover:bg-zinc-900 border-zinc-800"
+              : "bg-stone-100/60 hover:bg-stone-100 border-stone-200"
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+            <span className="text-xs font-semibold text-stone-600 uppercase tracking-wider">
               You Owe
             </span>
-            <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+            <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-500">
               <ArrowUpRight className="w-4 h-4" />
             </div>
           </div>
-          <div className="mt-3 text-3xl font-extrabold text-white">
+          <div className="mt-3 text-3xl font-extrabold text-stone-950">
             {summary ? summary.you_owe_count : "—"}
           </div>
-          <div className="mt-1 text-xs text-zinc-400">Active commitments to others</div>
+          <div className="mt-1 text-xs text-stone-600">Active commitments to others</div>
         </div>
 
         {/* Others Owe You */}
@@ -265,21 +265,21 @@ export default function DashboardPage() {
           className={`cursor-pointer p-5 rounded-2xl border transition-all ${
             activeTab === "others_owe"
               ? "bg-emerald-950/40 border-emerald-500 ring-1 ring-emerald-500"
-              : "bg-zinc-900/60 hover:bg-zinc-900 border-zinc-800"
+              : "bg-stone-100/60 hover:bg-stone-100 border-stone-200"
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+            <span className="text-xs font-semibold text-stone-600 uppercase tracking-wider">
               Others Owe You
             </span>
             <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
               <ArrowDownLeft className="w-4 h-4" />
             </div>
           </div>
-          <div className="mt-3 text-3xl font-extrabold text-white">
+          <div className="mt-3 text-3xl font-extrabold text-stone-950">
             {summary ? summary.others_owe_count : "—"}
           </div>
-          <div className="mt-1 text-xs text-zinc-400">Incoming promises & deliverables</div>
+          <div className="mt-1 text-xs text-stone-600">Incoming promises & deliverables</div>
         </div>
 
         {/* At Risk */}
@@ -288,7 +288,7 @@ export default function DashboardPage() {
           className={`cursor-pointer p-5 rounded-2xl border transition-all ${
             activeTab === "at_risk"
               ? "bg-rose-950/40 border-rose-500 ring-1 ring-rose-500"
-              : "bg-zinc-900/60 hover:bg-zinc-900 border-zinc-800"
+              : "bg-stone-100/60 hover:bg-stone-100 border-stone-200"
           }`}
         >
           <div className="flex items-center justify-between">
@@ -302,39 +302,39 @@ export default function DashboardPage() {
           <div className="mt-3 text-3xl font-extrabold text-rose-300">
             {riskData ? riskData.critical_count + riskData.high_count : summary?.at_risk_count ?? "—"}
           </div>
-          <div className="mt-1 text-xs text-zinc-400">
+          <div className="mt-1 text-xs text-stone-600">
             {riskData?.critical_count ? `${riskData.critical_count} critical, ` : ""}
             {riskData?.high_count ? `${riskData.high_count} high risk` : "Approaching failure"}
           </div>
         </div>
 
         {/* Completed */}
-        <div className="p-5 rounded-2xl bg-zinc-900/60 border border-zinc-800">
+        <div className="p-5 rounded-2xl bg-stone-100/60 border border-stone-200">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+            <span className="text-xs font-semibold text-stone-600 uppercase tracking-wider">
               Resolved
             </span>
-            <div className="w-8 h-8 rounded-lg bg-zinc-800 border border-zinc-700 flex items-center justify-center text-zinc-400">
+            <div className="w-8 h-8 rounded-lg bg-stone-200 border border-stone-300 flex items-center justify-center text-stone-600">
               <CheckCircle2 className="w-4 h-4" />
             </div>
           </div>
-          <div className="mt-3 text-3xl font-extrabold text-zinc-300">
+          <div className="mt-3 text-3xl font-extrabold text-stone-700">
             {summary ? summary.completed_count : "—"}
           </div>
-          <div className="mt-1 text-xs text-zinc-400">Fulfilled obligations</div>
+          <div className="mt-1 text-xs text-stone-600">Fulfilled obligations</div>
         </div>
       </div>
 
       {/* PHASE 17: CONTINUOUS MONITORING HEALTH & ESCALATION WIDGET */}
       {monitoringSummary && (
-        <section className="bg-gradient-to-r from-violet-950/30 via-slate-900/80 to-indigo-950/30 border border-violet-500/30 rounded-2xl p-5 shadow-lg space-y-3">
+        <section className="bg-gradient-to-r from-violet-950/30 via-stone-100/80 to-indigo-950/30 border border-violet-500/30 rounded-2xl p-5 shadow-lg space-y-3">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-lg bg-violet-500/20 border border-violet-500/40 flex items-center justify-center text-violet-400">
                 <Activity className="w-4 h-4" />
               </div>
               <div>
-                <h2 className="text-sm font-bold text-white tracking-tight flex items-center gap-2">
+                <h2 className="text-sm font-bold text-stone-950 tracking-tight flex items-center gap-2">
                   <span>Continuous Monitoring &amp; Reliability Health</span>
                   {monitoringSummary.open_escalations_count > 0 && (
                     <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40">
@@ -342,7 +342,7 @@ export default function DashboardPage() {
                     </span>
                   )}
                 </h2>
-                <p className="text-xs text-zinc-400">
+                <p className="text-xs text-stone-600">
                   Continuous state-diff engine monitoring {monitoringSummary.active_watches_count} active watches across deadlines, risk shifts, and execution queues.
                 </p>
               </div>
@@ -350,7 +350,7 @@ export default function DashboardPage() {
 
             <Link
               href="/intelligence/monitoring"
-              className="px-3.5 py-1.5 bg-violet-600 hover:bg-violet-500 text-white text-xs font-semibold rounded-lg transition flex items-center gap-1 shadow"
+              className="px-3.5 py-1.5 bg-violet-600 hover:bg-violet-500 text-stone-950 text-xs font-semibold rounded-lg transition flex items-center gap-1 shadow"
             >
               <span>Open Monitoring Center</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -358,21 +358,21 @@ export default function DashboardPage() {
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-xs">
-            <div className="bg-slate-950/70 p-2.5 rounded-lg border border-slate-800">
-              <span className="text-slate-500 block text-[10px] uppercase font-bold">Active Watches</span>
+            <div className="bg-stone-50/70 p-2.5 rounded-lg border border-stone-200">
+              <span className="text-stone-500 block text-[10px] uppercase font-bold">Active Watches</span>
               <strong className="text-violet-300 font-mono text-sm">{monitoringSummary.active_watches_count}</strong>
             </div>
-            <div className="bg-slate-950/70 p-2.5 rounded-lg border border-slate-800">
-              <span className="text-slate-500 block text-[10px] uppercase font-bold">Critical Alerts</span>
+            <div className="bg-stone-50/70 p-2.5 rounded-lg border border-stone-200">
+              <span className="text-stone-500 block text-[10px] uppercase font-bold">Critical Alerts</span>
               <strong className="text-rose-400 font-mono text-sm">{monitoringSummary.critical_events_count}</strong>
             </div>
-            <div className="bg-slate-950/70 p-2.5 rounded-lg border border-slate-800">
-              <span className="text-slate-500 block text-[10px] uppercase font-bold">Deadline Breaches</span>
-              <strong className="text-slate-200 font-mono text-sm">{monitoringSummary.deadline_breaches_count}</strong>
+            <div className="bg-stone-50/70 p-2.5 rounded-lg border border-stone-200">
+              <span className="text-stone-500 block text-[10px] uppercase font-bold">Deadline Breaches</span>
+              <strong className="text-stone-800 font-mono text-sm">{monitoringSummary.deadline_breaches_count}</strong>
             </div>
-            <div className="bg-slate-950/70 p-2.5 rounded-lg border border-slate-800">
-              <span className="text-slate-500 block text-[10px] uppercase font-bold">Execution Failures</span>
-              <strong className="text-slate-200 font-mono text-sm">{monitoringSummary.execution_failures_count}</strong>
+            <div className="bg-stone-50/70 p-2.5 rounded-lg border border-stone-200">
+              <span className="text-stone-500 block text-[10px] uppercase font-bold">Execution Failures</span>
+              <strong className="text-stone-800 font-mono text-sm">{monitoringSummary.execution_failures_count}</strong>
             </div>
           </div>
         </section>
@@ -380,20 +380,20 @@ export default function DashboardPage() {
 
       {/* PHASE 6: HUMAN-CONTROLLED INTERVENTION ACTION QUEUE */}
       {queueData && queueData.items.length > 0 && (
-        <section className="space-y-4 rounded-2xl border border-amber-500/40 bg-gradient-to-b from-amber-950/20 via-zinc-900/80 to-zinc-950 p-5 shadow-xl">
+        <section className="space-y-4 rounded-2xl border border-amber-500/40 bg-gradient-to-b from-amber-950/20 via-stone-100/80 to-stone-50 p-5 shadow-xl">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400">
                 <Sparkles className="w-4 h-4" />
               </div>
               <div>
-                <h2 className="text-sm font-bold text-white tracking-tight flex items-center gap-2">
+                <h2 className="text-sm font-bold text-stone-950 tracking-tight flex items-center gap-2">
                   <span>Human-Controlled Intervention Queue</span>
                   <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">
                     {queueData.total_action_required} Action Required
                   </span>
                 </h2>
-                <p className="text-xs text-zinc-400">
+                <p className="text-xs text-stone-600">
                   Prepared follow-up drafts and coordination tasks requiring explicit human review and execution.
                 </p>
               </div>
@@ -452,20 +452,20 @@ export default function DashboardPage() {
 
       {/* PHASE 11: CROSS-PROVIDER RECONCILIATION & CONTRADICTION INTELLIGENCE */}
       {reconciliations.length > 0 && (
-        <section className="space-y-4 rounded-2xl border border-indigo-500/30 bg-gradient-to-b from-indigo-950/20 via-zinc-900/60 to-zinc-950 p-5 shadow-xl">
+        <section className="space-y-4 rounded-2xl border border-blue-600/30 bg-gradient-to-b from-indigo-950/20 via-stone-100/60 to-stone-50 p-5 shadow-xl">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-indigo-400">
+              <div className="w-8 h-8 rounded-lg bg-blue-600/20 border border-blue-600/40 flex items-center justify-center text-blue-500">
                 <Scale className="w-4 h-4" />
               </div>
               <div>
-                <h2 className="text-sm font-bold text-white tracking-tight flex items-center gap-2">
+                <h2 className="text-sm font-bold text-stone-950 tracking-tight flex items-center gap-2">
                   <span>Cross-Provider Contradiction & Evidence Intelligence</span>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-600/20 text-blue-600 border border-blue-600/40">
                     Phase 11
                   </span>
                 </h2>
-                <p className="text-xs text-zinc-400">
+                <p className="text-xs text-stone-600">
                   Cross-referencing Slack, Gmail, and Calendar signals for multi-source consensus and contradiction detection.
                 </p>
               </div>
@@ -473,7 +473,7 @@ export default function DashboardPage() {
 
             <Link
               href="/reconciliation"
-              className="text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
+              className="text-xs font-semibold text-blue-500 hover:text-blue-600 flex items-center gap-1"
             >
               <span>View All ({reconciliations.length})</span>
               <span>&rarr;</span>
@@ -489,7 +489,7 @@ export default function DashboardPage() {
                   className={`p-4 rounded-xl border transition-all ${
                     isConflicting
                       ? "bg-rose-950/20 border-rose-500/30"
-                      : "bg-zinc-900/80 border-zinc-800"
+                      : "bg-stone-100/80 border-stone-200"
                   }`}
                 >
                   <div className="flex items-center justify-between mb-2">
@@ -502,22 +502,22 @@ export default function DashboardPage() {
                     >
                       {rec.status.replace("_", " ")}
                     </span>
-                    <span className="text-[11px] text-zinc-400">
+                    <span className="text-[11px] text-stone-600">
                       Consistency: {(rec.consistency_score * 100).toFixed(0)}%
                     </span>
                   </div>
 
-                  <p className="text-xs font-semibold text-zinc-200 line-clamp-1 mb-1">
+                  <p className="text-xs font-semibold text-stone-800 line-clamp-1 mb-1">
                     {rec.obligation_action || "Target Obligation"}
                   </p>
 
-                  <p className="text-[11px] text-zinc-400 line-clamp-2 mb-3">
+                  <p className="text-[11px] text-stone-600 line-clamp-2 mb-3">
                     {rec.explanation && rec.explanation.length > 0 ? rec.explanation[0] : "Evidence reconciled."}
                   </p>
 
                   <Link
                     href={`/reconciliation/${rec.id}`}
-                    className="text-xs font-medium text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
+                    className="text-xs font-medium text-blue-500 hover:text-blue-600 flex items-center gap-1"
                   >
                     <span>Inspect Timeline & Adjudicate</span>
                     <span>&rarr;</span>
@@ -531,20 +531,20 @@ export default function DashboardPage() {
 
       {/* PHASE 12: PREDICTIVE OBLIGATION INTELLIGENCE */}
       {intelligence && intelligence.predictions.length > 0 && (
-        <section className="space-y-4 rounded-2xl border border-indigo-500/30 bg-gradient-to-b from-indigo-950/20 via-zinc-900/70 to-zinc-950 p-5 shadow-xl">
+        <section className="space-y-4 rounded-2xl border border-blue-600/30 bg-gradient-to-b from-indigo-950/20 via-stone-100/70 to-stone-50 p-5 shadow-xl">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-indigo-400">
+              <div className="w-8 h-8 rounded-lg bg-blue-600/20 border border-blue-600/40 flex items-center justify-center text-blue-500">
                 <Brain className="w-4 h-4" />
               </div>
               <div>
-                <h2 className="text-sm font-bold text-white tracking-tight flex items-center gap-2">
+                <h2 className="text-sm font-bold text-stone-950 tracking-tight flex items-center gap-2">
                   <span>Predictive Obligation Intelligence</span>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-600/20 text-blue-600 border border-blue-600/40">
                     Phase 12
                   </span>
                 </h2>
-                <p className="text-xs text-zinc-400">
+                <p className="text-xs text-stone-600">
                   {intelligence.high_predicted_failure_count} obligations likely to require intervention • {intelligence.likely_to_miss_deadline_count} projected late • {intelligence.high_blockage_risk_count} at blockage risk
                 </p>
               </div>
@@ -552,7 +552,7 @@ export default function DashboardPage() {
 
             <Link
               href="/intelligence"
-              className="text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
+              className="text-xs font-semibold text-blue-500 hover:text-blue-600 flex items-center gap-1"
             >
               <span>View All Predictions ({intelligence.predictions.length})</span>
               <span>&rarr;</span>
@@ -566,7 +566,7 @@ export default function DashboardPage() {
               return (
                 <div
                   key={pred.obligation_id}
-                  className="p-4 rounded-xl bg-zinc-900/80 border border-zinc-800 hover:border-slate-700 transition-all flex flex-col justify-between"
+                  className="p-4 rounded-xl bg-stone-100/80 border border-stone-200 hover:border-stone-300 transition-all flex flex-col justify-between"
                 >
                   <div>
                     <div className="flex items-center justify-between mb-2">
@@ -579,33 +579,33 @@ export default function DashboardPage() {
                       >
                         {isHigh ? "High Failure Risk" : "Moderate Risk"} ({failPct}%)
                       </span>
-                      <span className="text-[11px] text-zinc-400 font-mono">
+                      <span className="text-[11px] text-stone-600 font-mono">
                         {pred.expected_delay_hours > 0 ? `+${pred.expected_delay_hours}h delay` : "On Time"}
                       </span>
                     </div>
 
-                    <p className="text-xs font-semibold text-zinc-200 line-clamp-1 mb-1">
+                    <p className="text-xs font-semibold text-stone-800 line-clamp-1 mb-1">
                       {pred.action || `Obligation ${pred.obligation_id.slice(0, 8)}`}
                     </p>
-                    <p className="text-[11px] text-zinc-400 mb-2">
-                      Owner: <span className="text-zinc-300 font-medium">{pred.owner || "Unassigned"}</span>
+                    <p className="text-[11px] text-stone-600 mb-2">
+                      Owner: <span className="text-stone-700 font-medium">{pred.owner || "Unassigned"}</span>
                     </p>
 
                     {pred.reasons && pred.reasons.length > 0 && (
-                      <div className="p-2 rounded bg-zinc-950/40 border border-zinc-800/80 text-[11px] text-zinc-400 line-clamp-2 mb-3">
-                        <span className="text-indigo-400 font-semibold">Why: </span>
+                      <div className="p-2 rounded bg-stone-50/40 border border-stone-200/80 text-[11px] text-stone-600 line-clamp-2 mb-3">
+                        <span className="text-blue-500 font-semibold">Why: </span>
                         {pred.reasons[0].explanation}
                       </div>
                     )}
                   </div>
 
-                  <div className="pt-2 border-t border-zinc-800 flex items-center justify-between text-xs">
-                    <span className="text-zinc-400 truncate text-[11px]">
+                  <div className="pt-2 border-t border-stone-200 flex items-center justify-between text-xs">
+                    <span className="text-stone-600 truncate text-[11px]">
                       {pred.preventative_recommendation || "Monitor progress"}
                     </span>
                     <Link
                       href={`/obligations/${pred.obligation_id}`}
-                      className="text-indigo-400 hover:text-indigo-300 font-medium shrink-0 ml-2"
+                      className="text-blue-500 hover:text-blue-600 font-medium shrink-0 ml-2"
                     >
                       Details &rarr;
                     </Link>
@@ -619,20 +619,20 @@ export default function DashboardPage() {
 
       {/* PHASE 5: PROACTIVE RISK & DEADLINE RESCUE SECTION */}
       {highAndCriticalRisks.length > 0 && (
-        <section className="space-y-4 rounded-2xl border border-red-500/30 bg-gradient-to-b from-red-950/20 via-zinc-900/60 to-zinc-950 p-5 shadow-xl">
+        <section className="space-y-4 rounded-2xl border border-red-500/30 bg-gradient-to-b from-red-950/20 via-stone-100/60 to-stone-50 p-5 shadow-xl">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-lg bg-red-500/20 border border-red-500/40 flex items-center justify-center text-red-400">
                 <Flame className="w-4 h-4" />
               </div>
               <div>
-                <h2 className="text-sm font-bold text-white tracking-tight flex items-center gap-2">
+                <h2 className="text-sm font-bold text-stone-950 tracking-tight flex items-center gap-2">
                   <span>Proactive Risk & Deadline Rescue</span>
                   <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-500/20 text-red-300 border border-red-500/40">
                     {highAndCriticalRisks.length} Requires Intervention
                   </span>
                 </h2>
-                <p className="text-xs text-zinc-400">
+                <p className="text-xs text-stone-600">
                   Prioritized by failure probability, deadline urgency, and graph cascade impact.
                 </p>
               </div>
@@ -668,10 +668,10 @@ export default function DashboardPage() {
               <Activity className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-white">
+              <h3 className="text-sm font-bold text-stone-950">
                 Evidence Needs Review ({summary.pending_evidence_count} Detected Signal{summary.pending_evidence_count > 1 ? "s" : ""})
               </h3>
-              <p className="text-xs text-zinc-400">
+              <p className="text-xs text-stone-600">
                 Possible fulfillment observations require human confirmation to mark tasks completed.
               </p>
             </div>
@@ -679,7 +679,7 @@ export default function DashboardPage() {
 
           <Link
             href="/capture"
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition-all shadow-md shadow-emerald-600/20"
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-stone-950 text-xs font-semibold transition-all shadow-md shadow-emerald-600/20"
           >
             <span>Simulate & Review Events</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -689,20 +689,20 @@ export default function DashboardPage() {
 
       {/* PHASE 7: CONTINUOUS EVENT INGESTION RECENT ACTIVITY */}
       {recentEvents && recentEvents.length > 0 && (
-        <section className="space-y-3 rounded-2xl border border-cyan-900/50 bg-gradient-to-r from-slate-900/90 via-slate-900/60 to-cyan-950/20 p-5 shadow-xl">
+        <section className="space-y-3 rounded-2xl border border-cyan-900/50 bg-gradient-to-r from-stone-100/90 via-stone-100/60 to-cyan-950/20 p-5 shadow-xl">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-lg bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400">
                 <Activity className="w-4 h-4" />
               </div>
               <div>
-                <h2 className="text-sm font-bold text-white tracking-tight flex items-center gap-2">
+                <h2 className="text-sm font-bold text-stone-950 tracking-tight flex items-center gap-2">
                   <span>Continuous Event Ingestion Stream</span>
                   <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-cyan-950 text-cyan-400 border border-cyan-800/60">
                     Live Stream
                   </span>
                 </h2>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-stone-600">
                   Continuous multi-provider normalized event feeds and automated semantic correlation.
                 </p>
               </div>
@@ -722,20 +722,20 @@ export default function DashboardPage() {
               <Link
                 key={evt.id}
                 href={`/events/${evt.id}`}
-                className="p-3.5 rounded-xl bg-slate-950/70 hover:bg-slate-900/90 border border-slate-800/80 transition flex flex-col justify-between gap-2 group"
+                className="p-3.5 rounded-xl bg-stone-50/70 hover:bg-stone-100/90 border border-stone-200/80 transition flex flex-col justify-between gap-2 group"
               >
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between text-[11px]">
                     <span className="font-bold text-cyan-400 uppercase">{evt.provider}</span>
-                    <span className="text-slate-400">{new Date(evt.received_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                    <span className="text-stone-600">{new Date(evt.received_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                   </div>
-                  <p className="text-xs text-slate-200 line-clamp-2 italic font-medium group-hover:text-cyan-200 transition">
+                  <p className="text-xs text-stone-800 line-clamp-2 italic font-medium group-hover:text-cyan-200 transition">
                     &ldquo;{evt.content}&rdquo;
                   </p>
                 </div>
 
-                <div className="flex items-center justify-between text-[10px] text-slate-400 pt-1 border-t border-slate-800/60">
-                  <span>From: <strong className="text-slate-300">{evt.sender || "Unknown"}</strong></span>
+                <div className="flex items-center justify-between text-[10px] text-stone-600 pt-1 border-t border-stone-200/60">
+                  <span>From: <strong className="text-stone-700">{evt.sender || "Unknown"}</strong></span>
                   <span className="text-cyan-400 font-semibold group-hover:underline">Audit &rarr;</span>
                 </div>
               </Link>
@@ -747,13 +747,13 @@ export default function DashboardPage() {
       {/* Search & Tab Filter Bar */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
         {/* Tabs */}
-        <div className="flex items-center p-1 bg-zinc-900 border border-zinc-800 rounded-xl overflow-x-auto">
+        <div className="flex items-center p-1 bg-stone-100 border border-stone-200 rounded-xl overflow-x-auto">
           <button
             onClick={() => setActiveTab("all")}
             className={`px-4 py-2 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap ${
               activeTab === "all"
-                ? "bg-zinc-800 text-white shadow-sm"
-                : "text-zinc-400 hover:text-zinc-200"
+                ? "bg-stone-200 text-stone-950 shadow-sm"
+                : "text-stone-600 hover:text-stone-800"
             }`}
           >
             All Feeds
@@ -762,13 +762,13 @@ export default function DashboardPage() {
             onClick={() => setActiveTab("you_owe")}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap ${
               activeTab === "you_owe"
-                ? "bg-blue-600/20 text-blue-300 border border-blue-500/30"
-                : "text-zinc-400 hover:text-zinc-200"
+                ? "bg-blue-600/20 text-blue-600 border border-blue-500/30"
+                : "text-stone-600 hover:text-stone-800"
             }`}
           >
             <span>You Owe</span>
             {summary && summary.you_owe_count > 0 && (
-              <span className="px-1.5 py-0.2 rounded-full bg-blue-500/30 text-[10px] text-blue-200 font-bold">
+              <span className="px-1.5 py-0.2 rounded-full bg-blue-500/30 text-[10px] text-blue-700 font-bold">
                 {summary.you_owe_count}
               </span>
             )}
@@ -778,7 +778,7 @@ export default function DashboardPage() {
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap ${
               activeTab === "others_owe"
                 ? "bg-emerald-600/20 text-emerald-300 border border-emerald-500/30"
-                : "text-zinc-400 hover:text-zinc-200"
+                : "text-stone-600 hover:text-stone-800"
             }`}
           >
             <span>Others Owe You</span>
@@ -793,7 +793,7 @@ export default function DashboardPage() {
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap ${
               activeTab === "at_risk"
                 ? "bg-rose-600/20 text-rose-300 border border-rose-500/30"
-                : "text-zinc-400 hover:text-zinc-200"
+                : "text-stone-600 hover:text-stone-800"
             }`}
           >
             <span>At Risk</span>
@@ -807,13 +807,13 @@ export default function DashboardPage() {
 
         {/* Search input */}
         <div className="relative w-full sm:w-72">
-          <Search className="w-4 h-4 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-stone-500 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             placeholder="Search action, owner, next step..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 rounded-xl bg-zinc-900/80 border border-zinc-800 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition-colors"
+            className="w-full pl-9 pr-4 py-2 rounded-xl bg-stone-100/80 border border-stone-200 text-xs text-stone-900 placeholder-stone-500 focus:outline-none focus:border-blue-500 transition-colors"
           />
         </div>
       </div>
@@ -821,18 +821,18 @@ export default function DashboardPage() {
       {/* Main Feed Content */}
       {loading ? (
         <div className="space-y-4">
-          <div className="h-28 bg-zinc-900/60 rounded-2xl animate-pulse" />
-          <div className="h-28 bg-zinc-900/60 rounded-2xl animate-pulse" />
-          <div className="h-28 bg-zinc-900/60 rounded-2xl animate-pulse" />
+          <div className="h-28 bg-stone-100/60 rounded-2xl animate-pulse" />
+          <div className="h-28 bg-stone-100/60 rounded-2xl animate-pulse" />
+          <div className="h-28 bg-stone-100/60 rounded-2xl animate-pulse" />
         </div>
       ) : error ? (
-        <div className="p-8 rounded-2xl bg-zinc-900/60 border border-zinc-800 text-center space-y-3">
+        <div className="p-8 rounded-2xl bg-stone-100/60 border border-stone-200 text-center space-y-3">
           <AlertTriangle className="w-8 h-8 text-amber-400 mx-auto" />
-          <h3 className="text-sm font-bold text-white">Unable to Load Obligations</h3>
-          <p className="text-xs text-zinc-400 max-w-md mx-auto">{error}</p>
+          <h3 className="text-sm font-bold text-stone-950">Unable to Load Obligations</h3>
+          <p className="text-xs text-stone-600 max-w-md mx-auto">{error}</p>
           <button
             onClick={loadData}
-            className="px-4 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-semibold"
+            className="px-4 py-2 rounded-lg bg-stone-200 hover:bg-stone-300 text-stone-800 text-xs font-semibold"
           >
             Retry Connection
           </button>
@@ -845,19 +845,19 @@ export default function DashboardPage() {
               {/* You Owe Section */}
               <section className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-blue-400 text-xs font-bold uppercase tracking-wider">
+                  <div className="flex items-center gap-2 text-blue-500 text-xs font-bold uppercase tracking-wider">
                     <ArrowUpRight className="w-4 h-4" />
                     <span>Your Commitments to Others ({youOweFiltered.length})</span>
                   </div>
                   <Link
                     href="/obligations?obligation_type=OWED_BY_ME"
-                    className="text-xs text-zinc-400 hover:text-zinc-200"
+                    className="text-xs text-stone-600 hover:text-stone-800"
                   >
                     View All &rarr;
                   </Link>
                 </div>
                 {youOweFiltered.length === 0 ? (
-                  <div className="p-8 rounded-2xl bg-zinc-900/40 border border-zinc-800/60 text-center text-xs text-zinc-400">
+                  <div className="p-8 rounded-2xl bg-stone-100/40 border border-stone-200/60 text-center text-xs text-stone-600">
                     No active outgoing obligations. You are completely caught up!
                   </div>
                 ) : (
@@ -878,13 +878,13 @@ export default function DashboardPage() {
                   </div>
                   <Link
                     href="/obligations?obligation_type=OWED_TO_ME"
-                    className="text-xs text-zinc-400 hover:text-zinc-200"
+                    className="text-xs text-stone-600 hover:text-stone-800"
                   >
                     View All &rarr;
                   </Link>
                 </div>
                 {othersOweFiltered.length === 0 ? (
-                  <div className="p-8 rounded-2xl bg-zinc-900/40 border border-zinc-800/60 text-center text-xs text-zinc-400">
+                  <div className="p-8 rounded-2xl bg-stone-100/40 border border-stone-200/60 text-center text-xs text-stone-600">
                     No pending deliverables tracked from others.
                   </div>
                 ) : (
@@ -901,14 +901,14 @@ export default function DashboardPage() {
           {/* View: YOU OWE */}
           {activeTab === "you_owe" && (
             <div className="space-y-4">
-              <h2 className="text-sm font-bold text-white flex items-center gap-2">
-                <ArrowUpRight className="w-4 h-4 text-blue-400" />
+              <h2 className="text-sm font-bold text-stone-950 flex items-center gap-2">
+                <ArrowUpRight className="w-4 h-4 text-blue-500" />
                 <span>Your Outgoing Commitments ({youOweFiltered.length})</span>
               </h2>
               {youOweFiltered.length === 0 ? (
-                <div className="p-12 rounded-2xl bg-zinc-900/40 border border-zinc-800 text-center space-y-2">
-                  <Inbox className="w-8 h-8 text-zinc-600 mx-auto" />
-                  <p className="text-xs text-zinc-400">No outgoing commitments match your filter.</p>
+                <div className="p-12 rounded-2xl bg-stone-100/40 border border-stone-200 text-center space-y-2">
+                  <Inbox className="w-8 h-8 text-stone-400 mx-auto" />
+                  <p className="text-xs text-stone-600">No outgoing commitments match your filter.</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -923,14 +923,14 @@ export default function DashboardPage() {
           {/* View: OTHERS OWE */}
           {activeTab === "others_owe" && (
             <div className="space-y-4">
-              <h2 className="text-sm font-bold text-white flex items-center gap-2">
+              <h2 className="text-sm font-bold text-stone-950 flex items-center gap-2">
                 <ArrowDownLeft className="w-4 h-4 text-emerald-400" />
                 <span>Incoming Deliverables Owed to You ({othersOweFiltered.length})</span>
               </h2>
               {othersOweFiltered.length === 0 ? (
-                <div className="p-12 rounded-2xl bg-zinc-900/40 border border-zinc-800 text-center space-y-2">
-                  <Inbox className="w-8 h-8 text-zinc-600 mx-auto" />
-                  <p className="text-xs text-zinc-400">No incoming obligations match your filter.</p>
+                <div className="p-12 rounded-2xl bg-stone-100/40 border border-stone-200 text-center space-y-2">
+                  <Inbox className="w-8 h-8 text-stone-400 mx-auto" />
+                  <p className="text-xs text-stone-600">No incoming obligations match your filter.</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -945,7 +945,7 @@ export default function DashboardPage() {
           {/* View: AT RISK */}
           {activeTab === "at_risk" && (
             <div className="space-y-4">
-              <h2 className="text-sm font-bold text-white flex items-center gap-2">
+              <h2 className="text-sm font-bold text-stone-950 flex items-center gap-2">
                 <ShieldAlert className="w-4 h-4 text-rose-400" />
                 <span>At Risk Commitments ({riskData?.items.length ?? atRiskFiltered.length})</span>
               </h2>
@@ -956,9 +956,9 @@ export default function DashboardPage() {
                   ))}
                 </div>
               ) : atRiskFiltered.length === 0 ? (
-                <div className="p-12 rounded-2xl bg-zinc-900/40 border border-zinc-800 text-center space-y-2">
+                <div className="p-12 rounded-2xl bg-stone-100/40 border border-stone-200 text-center space-y-2">
                   <CheckCircle2 className="w-8 h-8 text-emerald-500 mx-auto" />
-                  <p className="text-xs text-zinc-400">
+                  <p className="text-xs text-stone-600">
                     No obligations are currently at risk or overdue.
                   </p>
                 </div>

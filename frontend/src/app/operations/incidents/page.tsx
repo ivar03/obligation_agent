@@ -80,21 +80,21 @@ export default function OperationalIncidentsPage() {
   return (
     <div className="space-y-6 pb-12">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-stone-200 pb-5">
         <div>
           <div className="flex items-center gap-2">
             <Link
               href="/operations"
-              className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors mr-1"
+              className="p-1.5 rounded-lg bg-stone-200 hover:bg-stone-300 text-stone-700 border border-stone-300 transition-colors mr-1"
             >
               <ArrowLeft className="w-4 h-4" />
             </Link>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-100 flex items-center gap-2">
+            <h1 className="text-2xl font-bold tracking-tight text-stone-900 flex items-center gap-2">
               <AlertTriangle className="w-6 h-6 text-amber-400" />
               Operational Alerts & Incident Triage
             </h1>
           </div>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-stone-600 mt-1">
             Deterministic alert evaluation engine for DLQ backlogs, queue latency, circuit breakers, and worker staleness.
           </p>
         </div>
@@ -103,7 +103,7 @@ export default function OperationalIncidentsPage() {
           <button
             onClick={evaluateAlerts}
             disabled={evaluating}
-            className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors"
+            className="px-3 py-1.5 rounded-lg bg-blue-700 hover:bg-blue-600 text-stone-950 text-xs font-semibold flex items-center gap-1.5 transition-colors"
           >
             <Sliders className={`w-3.5 h-3.5 ${evaluating ? "animate-spin" : ""}`} />
             Evaluate Alert Rules
@@ -111,7 +111,7 @@ export default function OperationalIncidentsPage() {
           <button
             onClick={fetchAlerts}
             disabled={loading}
-            className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors"
+            className="p-2 rounded-lg bg-stone-200 hover:bg-stone-300 text-stone-700 border border-stone-300 transition-colors"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
           </button>
@@ -121,14 +121,14 @@ export default function OperationalIncidentsPage() {
       {/* Alert List */}
       <div className="space-y-4">
         {loading ? (
-          <div className="py-12 text-center text-xs text-slate-500 bg-slate-900/40 rounded-xl border border-slate-800">
+          <div className="py-12 text-center text-xs text-stone-500 bg-stone-100/40 rounded-xl border border-stone-200">
             Loading operational alerts...
           </div>
         ) : alerts.length === 0 ? (
-          <div className="py-12 text-center text-xs text-slate-400 bg-slate-900/40 rounded-xl border border-slate-800 space-y-2">
+          <div className="py-12 text-center text-xs text-stone-600 bg-stone-100/40 rounded-xl border border-stone-200 space-y-2">
             <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto" />
-            <div className="font-semibold text-slate-200">Zero Active Incidents</div>
-            <p className="text-slate-500">All subsystems are operating normally within threshold bounds.</p>
+            <div className="font-semibold text-stone-800">Zero Active Incidents</div>
+            <p className="text-stone-500">All subsystems are operating normally within threshold bounds.</p>
           </div>
         ) : (
           alerts.map((a) => (
@@ -136,13 +136,13 @@ export default function OperationalIncidentsPage() {
               key={a.id}
               className={`p-5 rounded-xl border transition-colors ${
                 a.status === "OPEN"
-                  ? "bg-slate-900/90 border-amber-500/40 shadow-lg shadow-amber-950/10"
+                  ? "bg-stone-100/90 border-amber-500/40 shadow-lg shadow-amber-950/10"
                   : a.status === "ACKNOWLEDGED"
-                  ? "bg-slate-900/60 border-indigo-500/30"
-                  : "bg-slate-900/30 border-slate-800 opacity-70"
+                  ? "bg-stone-100/60 border-blue-600/30"
+                  : "bg-stone-100/30 border-stone-200 opacity-70"
               }`}
             >
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-800/80 pb-3">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-stone-200/80 pb-3">
                 <div className="flex items-center gap-2">
                   <span
                     className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase font-mono ${
@@ -155,8 +155,8 @@ export default function OperationalIncidentsPage() {
                   >
                     {a.severity}
                   </span>
-                  <span className="text-sm font-semibold text-slate-100">{a.alert_name}</span>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">
+                  <span className="text-sm font-semibold text-stone-900">{a.alert_name}</span>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-stone-200 text-stone-600 border border-stone-300">
                     {a.alert_type}
                   </span>
                 </div>
@@ -167,7 +167,7 @@ export default function OperationalIncidentsPage() {
                       a.status === "OPEN"
                         ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
                         : a.status === "ACKNOWLEDGED"
-                        ? "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20"
+                        ? "bg-blue-600/10 text-blue-500 border border-blue-600/20"
                         : "bg-emerald-500/10 text-emerald-400"
                     }`}
                   >
@@ -176,15 +176,15 @@ export default function OperationalIncidentsPage() {
                 </div>
               </div>
 
-              <div className="py-3 text-xs text-slate-300 font-sans">{a.summary}</div>
+              <div className="py-3 text-xs text-stone-700 font-sans">{a.summary}</div>
 
               {a.details && Object.keys(a.details).length > 0 && (
-                <pre className="p-2.5 rounded bg-slate-950 border border-slate-800 text-[11px] font-mono text-slate-400 overflow-x-auto max-h-32 mb-3">
+                <pre className="p-2.5 rounded bg-stone-50 border border-stone-200 text-[11px] font-mono text-stone-600 overflow-x-auto max-h-32 mb-3">
                   {JSON.stringify(a.details, null, 2)}
                 </pre>
               )}
 
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-3 border-t border-slate-800/60 text-[11px] font-mono text-slate-500">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-3 border-t border-stone-200/60 text-[11px] font-mono text-stone-500">
                 <div className="flex items-center gap-3">
                   <span>Fingerprint: {a.fingerprint.slice(0, 10)}...</span>
                   <span>Created: {new Date(a.created_at).toLocaleTimeString()}</span>
@@ -204,7 +204,7 @@ export default function OperationalIncidentsPage() {
                     <button
                       onClick={() => handleAction(a.id, "acknowledge")}
                       disabled={actionLoading === a.id}
-                      className="px-2.5 py-1 rounded bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 text-xs font-semibold transition-colors"
+                      className="px-2.5 py-1 rounded bg-blue-700/20 hover:bg-blue-700/30 text-blue-600 border border-blue-600/30 text-xs font-semibold transition-colors"
                     >
                       Acknowledge
                     </button>
@@ -222,7 +222,7 @@ export default function OperationalIncidentsPage() {
                     <button
                       onClick={() => handleAction(a.id, "suppress")}
                       disabled={actionLoading === a.id}
-                      className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-400 text-xs transition-colors"
+                      className="px-2.5 py-1 rounded bg-stone-200 hover:bg-stone-300 text-stone-600 text-xs transition-colors"
                     >
                       Suppress
                     </button>

@@ -110,25 +110,25 @@ function SearchContent() {
     <div className="space-y-6 max-w-5xl mx-auto animate-in fade-in duration-200">
       {/* Search Input Box */}
       <form onSubmit={handleSearchSubmit} className="relative">
-        <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" />
+        <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-stone-500" />
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search obligations, assignees, telemetry events, decision plans, evidence..."
-          className="w-full bg-zinc-900 border border-zinc-800 rounded-2xl pl-12 pr-28 py-3.5 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-blue-500 shadow-lg"
+          className="w-full bg-stone-100 border border-stone-200 rounded-2xl pl-12 pr-28 py-3.5 text-sm text-stone-900 placeholder-stone-500 focus:outline-none focus:border-blue-500 shadow-lg"
         />
         <button
           type="submit"
           disabled={loading}
-          className="absolute right-3 top-1/2 -translate-y-1/2 px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-xl transition-all shadow"
+          className="absolute right-3 top-1/2 -translate-y-1/2 px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-stone-950 text-xs font-semibold rounded-xl transition-all shadow"
         >
           {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Search"}
         </button>
       </form>
 
       {/* Category Filter Pills */}
-      <div className="flex items-center gap-2 overflow-x-auto border-b border-zinc-800 pb-3 text-xs">
+      <div className="flex items-center gap-2 overflow-x-auto border-b border-stone-200 pb-3 text-xs">
         {categories.map((c) => {
           const isSelected = activeCategory === c.id;
           return (
@@ -137,12 +137,12 @@ function SearchContent() {
               onClick={() => setActiveCategory(c.id)}
               className={`flex items-center gap-2 px-3 py-1.5 rounded-xl font-medium transition-colors shrink-0 ${
                 isSelected
-                  ? "bg-zinc-800 text-zinc-100 border border-zinc-700 shadow-sm"
-                  : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900"
+                  ? "bg-stone-200 text-stone-900 border border-stone-300 shadow-sm"
+                  : "text-stone-600 hover:text-stone-800 hover:bg-stone-100"
               }`}
             >
               <span>{c.label}</span>
-              <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-zinc-700 text-zinc-300">
+              <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-stone-300 text-stone-700">
                 {c.count}
               </span>
             </button>
@@ -153,34 +153,34 @@ function SearchContent() {
       {/* Results Container */}
       <div className="space-y-6">
         {loading ? (
-          <div className="py-16 flex flex-col items-center justify-center gap-2 text-zinc-500 text-xs">
+          <div className="py-16 flex flex-col items-center justify-center gap-2 text-stone-500 text-xs">
             <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
             <span>Searching workspace entities...</span>
           </div>
         ) : totalMatches === 0 ? (
-          <div className="py-16 text-center text-zinc-500 text-xs">
+          <div className="py-16 text-center text-stone-500 text-xs">
             {query.trim() ? "No matching records found across your workspace." : "Enter a search query to inspect workspace entities."}
           </div>
         ) : (
           <div className="space-y-6">
             {/* OBLIGATIONS */}
             {(activeCategory === "all" || activeCategory === "obligations") && results.obligations.length > 0 && (
-              <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-sm">
-                <div className="px-5 py-3 border-b border-zinc-800 bg-zinc-950/60 flex items-center justify-between text-xs font-bold text-zinc-200">
+              <div className="bg-stone-100 border border-stone-200 rounded-2xl overflow-hidden shadow-sm">
+                <div className="px-5 py-3 border-b border-stone-200 bg-stone-50/60 flex items-center justify-between text-xs font-bold text-stone-800">
                   <span className="flex items-center gap-2">
-                    <Layers className="w-4 h-4 text-blue-400" /> Obligations ({results.obligations.length})
+                    <Layers className="w-4 h-4 text-blue-500" /> Obligations ({results.obligations.length})
                   </span>
                 </div>
-                <div className="divide-y divide-zinc-800/60 text-xs">
+                <div className="divide-y divide-stone-200/60 text-xs">
                   {results.obligations.map((o) => (
-                    <div key={o.id} className="p-3.5 flex items-center justify-between hover:bg-zinc-800/30">
+                    <div key={o.id} className="p-3.5 flex items-center justify-between hover:bg-stone-200/30">
                       <div>
-                        <div className="font-semibold text-zinc-100">{o.action}</div>
-                        <div className="text-zinc-400 text-[11px]">
+                        <div className="font-semibold text-stone-900">{o.action}</div>
+                        <div className="text-stone-600 text-[11px]">
                           Owner: {o.owner} • Status: {o.status} • Due: {o.deadline ? new Date(o.deadline).toLocaleDateString() : "None"}
                         </div>
                       </div>
-                      <Link href={o.url} className="text-blue-400 hover:text-blue-300 font-medium flex items-center gap-1">
+                      <Link href={o.url} className="text-blue-500 hover:text-blue-600 font-medium flex items-center gap-1">
                         <span>View</span>
                         <ArrowUpRight className="w-3 h-3" />
                       </Link>
@@ -192,20 +192,20 @@ function SearchContent() {
 
             {/* PEOPLE */}
             {(activeCategory === "all" || activeCategory === "people") && results.people.length > 0 && (
-              <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-sm">
-                <div className="px-5 py-3 border-b border-zinc-800 bg-zinc-950/60 flex items-center justify-between text-xs font-bold text-zinc-200">
+              <div className="bg-stone-100 border border-stone-200 rounded-2xl overflow-hidden shadow-sm">
+                <div className="px-5 py-3 border-b border-stone-200 bg-stone-50/60 flex items-center justify-between text-xs font-bold text-stone-800">
                   <span className="flex items-center gap-2">
                     <Users className="w-4 h-4 text-purple-400" /> People ({results.people.length})
                   </span>
                 </div>
-                <div className="divide-y divide-zinc-800/60 text-xs">
+                <div className="divide-y divide-stone-200/60 text-xs">
                   {results.people.map((p) => (
-                    <div key={p.id} className="p-3.5 flex items-center justify-between hover:bg-zinc-800/30">
+                    <div key={p.id} className="p-3.5 flex items-center justify-between hover:bg-stone-200/30">
                       <div>
-                        <div className="font-semibold text-zinc-100">{p.display_name}</div>
-                        <div className="text-zinc-400 text-[11px]">{p.email}</div>
+                        <div className="font-semibold text-stone-900">{p.display_name}</div>
+                        <div className="text-stone-600 text-[11px]">{p.email}</div>
                       </div>
-                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-zinc-800 text-zinc-300">
+                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-stone-200 text-stone-700">
                         {p.role}
                       </span>
                     </div>
@@ -216,18 +216,18 @@ function SearchContent() {
 
             {/* DECISIONS */}
             {(activeCategory === "all" || activeCategory === "decisions") && results.decisions.length > 0 && (
-              <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-sm">
-                <div className="px-5 py-3 border-b border-zinc-800 bg-zinc-950/60 flex items-center justify-between text-xs font-bold text-zinc-200">
+              <div className="bg-stone-100 border border-stone-200 rounded-2xl overflow-hidden shadow-sm">
+                <div className="px-5 py-3 border-b border-stone-200 bg-stone-50/60 flex items-center justify-between text-xs font-bold text-stone-800">
                   <span className="flex items-center gap-2">
                     <Brain className="w-4 h-4 text-purple-400" /> Decision Plans ({results.decisions.length})
                   </span>
                 </div>
-                <div className="divide-y divide-zinc-800/60 text-xs">
+                <div className="divide-y divide-stone-200/60 text-xs">
                   {results.decisions.map((d) => (
-                    <div key={d.id} className="p-3.5 flex items-center justify-between hover:bg-zinc-800/30">
+                    <div key={d.id} className="p-3.5 flex items-center justify-between hover:bg-stone-200/30">
                       <div>
-                        <div className="font-semibold text-zinc-100">{d.primary_objective}</div>
-                        <div className="text-zinc-400 text-[11px]">
+                        <div className="font-semibold text-stone-900">{d.primary_objective}</div>
+                        <div className="text-stone-600 text-[11px]">
                           Status: {d.status} • Urgency: {d.urgency} • Risk: {Math.round((d.overall_risk || 0) * 100)}%
                         </div>
                       </div>
@@ -243,21 +243,21 @@ function SearchContent() {
 
             {/* EVENTS */}
             {(activeCategory === "all" || activeCategory === "events") && results.events.length > 0 && (
-              <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-sm">
-                <div className="px-5 py-3 border-b border-zinc-800 bg-zinc-950/60 flex items-center justify-between text-xs font-bold text-zinc-200">
+              <div className="bg-stone-100 border border-stone-200 rounded-2xl overflow-hidden shadow-sm">
+                <div className="px-5 py-3 border-b border-stone-200 bg-stone-50/60 flex items-center justify-between text-xs font-bold text-stone-800">
                   <span className="flex items-center gap-2">
                     <Activity className="w-4 h-4 text-cyan-400" /> Activity Events ({results.events.length})
                   </span>
                 </div>
-                <div className="divide-y divide-zinc-800/60 text-xs">
+                <div className="divide-y divide-stone-200/60 text-xs">
                   {results.events.map((ev) => (
-                    <div key={ev.id} className="p-3.5 hover:bg-zinc-800/30">
+                    <div key={ev.id} className="p-3.5 hover:bg-stone-200/30">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="font-semibold text-zinc-200">[{ev.provider.toUpperCase()}]</span>
-                        <span className="text-zinc-400">{ev.sender}</span>
-                        <span className="text-zinc-500 text-[10px]">• {new Date(ev.received_at).toLocaleTimeString()}</span>
+                        <span className="font-semibold text-stone-800">[{ev.provider.toUpperCase()}]</span>
+                        <span className="text-stone-600">{ev.sender}</span>
+                        <span className="text-stone-500 text-[10px]">• {new Date(ev.received_at).toLocaleTimeString()}</span>
                       </div>
-                      <p className="text-zinc-300 text-xs">{ev.content_snippet}</p>
+                      <p className="text-stone-700 text-xs">{ev.content_snippet}</p>
                     </div>
                   ))}
                 </div>
@@ -272,7 +272,7 @@ function SearchContent() {
 
 export default function SearchPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-xs text-zinc-500">Loading search...</div>}>
+    <Suspense fallback={<div className="p-8 text-xs text-stone-500">Loading search...</div>}>
       <SearchContent />
     </Suspense>
   );

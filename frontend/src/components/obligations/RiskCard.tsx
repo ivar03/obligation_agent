@@ -31,7 +31,7 @@ export const RiskCard: React.FC<RiskCardProps> = ({ assessment, compact = false 
         return {
           border: "border-red-500/40 hover:border-red-500/80 shadow-red-950/20",
           badge: "bg-red-500/10 text-red-400 border-red-500/30",
-          bar: "bg-gradient-to-r from-orange-500 to-red-500",
+          bar: "bg-gradient-to-r from-blue-500 to-red-500",
           text: "text-red-400",
           glow: "from-red-900/10 to-transparent",
         };
@@ -46,9 +46,9 @@ export const RiskCard: React.FC<RiskCardProps> = ({ assessment, compact = false 
       case "MEDIUM":
         return {
           border: "border-blue-500/40 hover:border-blue-500/80 shadow-blue-950/20",
-          badge: "bg-blue-500/10 text-blue-400 border-blue-500/30",
+          badge: "bg-blue-500/10 text-blue-500 border-blue-500/30",
           bar: "bg-blue-500",
-          text: "text-blue-400",
+          text: "text-blue-500",
           glow: "from-blue-900/10 to-transparent",
         };
       case "LOW":
@@ -86,7 +86,7 @@ export const RiskCard: React.FC<RiskCardProps> = ({ assessment, compact = false 
       case "RESOLVE_DEPENDENCY":
         return "bg-purple-950/60 text-purple-300 border-purple-800/50";
       case "FOLLOW_UP_OWNER":
-        return "bg-indigo-950/60 text-indigo-300 border-indigo-800/50";
+        return "bg-indigo-950/60 text-blue-600 border-indigo-800/50";
       case "START_WORK":
         return "bg-amber-950/60 text-amber-300 border-amber-800/50";
       case "REVIEW_EVIDENCE":
@@ -96,13 +96,13 @@ export const RiskCard: React.FC<RiskCardProps> = ({ assessment, compact = false 
       case "MONITOR_CONDITION":
         return "bg-teal-950/60 text-teal-300 border-teal-800/50";
       default:
-        return "bg-zinc-800 text-zinc-300 border-zinc-700";
+        return "bg-stone-200 text-stone-700 border-stone-300";
     }
   };
 
   return (
     <div
-      className={`relative rounded-xl border bg-zinc-900/90 backdrop-blur-md p-4 transition-all duration-200 hover:shadow-lg ${style.border}`}
+      className={`relative rounded-xl border bg-stone-100/90 backdrop-blur-md p-4 transition-all duration-200 hover:shadow-lg ${style.border}`}
     >
       {/* Background radial gradient accent */}
       <div
@@ -127,7 +127,7 @@ export const RiskCard: React.FC<RiskCardProps> = ({ assessment, compact = false 
             )}
           </div>
 
-          <span className="text-xs font-mono text-zinc-400">
+          <span className="text-xs font-mono text-stone-600">
             {formatDeadline(deadline)}
           </span>
         </div>
@@ -136,28 +136,28 @@ export const RiskCard: React.FC<RiskCardProps> = ({ assessment, compact = false 
         <div>
           <Link
             href={`/obligations/${obligation_id}`}
-            className="group block text-sm font-semibold text-zinc-100 hover:text-white transition-colors line-clamp-2"
+            className="group block text-sm font-semibold text-stone-900 hover:text-stone-950 transition-colors line-clamp-2"
           >
             <span className="group-hover:underline">{action}</span>
           </Link>
-          <div className="mt-1 flex items-center gap-2 text-xs text-zinc-400">
+          <div className="mt-1 flex items-center gap-2 text-xs text-stone-600">
             <span>
-              <strong className="text-zinc-300 font-medium">{owner}</strong> owes{" "}
-              <strong className="text-zinc-300 font-medium">{beneficiary}</strong>
+              <strong className="text-stone-700 font-medium">{owner}</strong> owes{" "}
+              <strong className="text-stone-700 font-medium">{beneficiary}</strong>
             </span>
           </div>
         </div>
 
         {/* Primary Reasons / Signals */}
         {!compact && reasons && reasons.length > 0 && (
-          <div className="space-y-1.5 rounded-lg bg-zinc-950/60 p-2.5 border border-zinc-800/80 text-xs">
-            <div className="text-[11px] uppercase tracking-wider font-semibold text-zinc-500">
+          <div className="space-y-1.5 rounded-lg bg-stone-50/60 p-2.5 border border-stone-200/80 text-xs">
+            <div className="text-[11px] uppercase tracking-wider font-semibold text-stone-500">
               Risk Signals & Root Causes:
             </div>
-            <ul className="space-y-1 text-zinc-300">
+            <ul className="space-y-1 text-stone-700">
               {reasons.slice(0, 3).map((r, i) => (
                 <li key={i} className="flex items-start gap-1.5">
-                  <span className="text-zinc-500 mt-0.5">▪</span>
+                  <span className="text-stone-500 mt-0.5">▪</span>
                   <span>{r}</span>
                 </li>
               ))}
@@ -166,7 +166,7 @@ export const RiskCard: React.FC<RiskCardProps> = ({ assessment, compact = false 
         )}
 
         {/* Recommended Action Footer */}
-        <div className="pt-2 border-t border-zinc-800 flex items-center justify-between gap-3">
+        <div className="pt-2 border-t border-stone-200 flex items-center justify-between gap-3">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1.5">
               <span
@@ -176,7 +176,7 @@ export const RiskCard: React.FC<RiskCardProps> = ({ assessment, compact = false 
               >
                 {action_type.replace(/_/g, " ")}
               </span>
-              <span className="text-xs text-zinc-300 truncate font-medium">
+              <span className="text-xs text-stone-700 truncate font-medium">
                 {recommended_action}
               </span>
             </div>
@@ -184,7 +184,7 @@ export const RiskCard: React.FC<RiskCardProps> = ({ assessment, compact = false 
 
           <Link
             href={`/obligations/${obligation_id}`}
-            className="shrink-0 px-3 py-1 text-xs font-medium rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 hover:text-white transition-colors border border-zinc-700/60"
+            className="shrink-0 px-3 py-1 text-xs font-medium rounded-lg bg-stone-200 hover:bg-stone-300 text-stone-800 hover:text-stone-950 transition-colors border border-stone-300/60"
           >
             Inspect →
           </Link>

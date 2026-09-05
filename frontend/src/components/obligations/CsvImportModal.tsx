@@ -142,21 +142,21 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({ isOpen, onClose,
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-      <div className="w-full max-w-3xl max-h-[90vh] bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+      <div className="w-full max-w-3xl max-h-[90vh] bg-stone-100 border border-stone-200 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-zinc-800 flex items-center justify-between bg-zinc-950/60">
+        <div className="px-6 py-4 border-b border-stone-200 flex items-center justify-between bg-stone-50/60">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-blue-600/20 text-blue-400 border border-blue-500/30 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-blue-600/20 text-blue-500 border border-blue-500/30 flex items-center justify-center">
               <FileSpreadsheet className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-sm font-semibold text-zinc-100">Bulk CSV Ingestion</h2>
-              <p className="text-xs text-zinc-400">Import team commitments with validation & duplicate detection</p>
+              <h2 className="text-sm font-semibold text-stone-900">Bulk CSV Ingestion</h2>
+              <p className="text-xs text-stone-600">Import team commitments with validation & duplicate detection</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-colors"
+            className="p-1.5 rounded-lg text-stone-600 hover:text-stone-900 hover:bg-stone-200 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -165,16 +165,16 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({ isOpen, onClose,
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-6 space-y-5">
           {/* Template & Helper Bar */}
-          <div className="bg-slate-800/60 border border-slate-700/60 rounded-xl p-3.5 flex flex-wrap items-center justify-between gap-3 text-xs">
-            <div className="flex items-center gap-2 text-slate-300">
-              <Info className="w-4 h-4 text-blue-400 shrink-0" />
-              <span>Format: <code className="bg-slate-900 px-1.5 py-0.5 rounded text-indigo-300">action, owner, beneficiary, deadline, priority...</code></span>
+          <div className="bg-stone-200/60 border border-stone-300/60 rounded-xl p-3.5 flex flex-wrap items-center justify-between gap-3 text-xs">
+            <div className="flex items-center gap-2 text-stone-700">
+              <Info className="w-4 h-4 text-blue-500 shrink-0" />
+              <span>Format: <code className="bg-stone-100 px-1.5 py-0.5 rounded text-blue-600">action, owner, beneficiary, deadline, priority...</code></span>
             </div>
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => setShowFormatGuide(!showFormatGuide)}
-                className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg text-slate-200 font-medium flex items-center gap-1.5 transition-colors"
+                className="px-2.5 py-1.5 bg-stone-200 hover:bg-stone-300 border border-stone-400 rounded-lg text-stone-800 font-medium flex items-center gap-1.5 transition-colors"
               >
                 <span>Format Guide</span>
                 {showFormatGuide ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
@@ -182,7 +182,7 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({ isOpen, onClose,
               <button
                 type="button"
                 onClick={handleLoadSample}
-                className="px-2.5 py-1.5 bg-indigo-950/60 hover:bg-indigo-900/80 border border-indigo-500/30 rounded-lg text-indigo-300 font-medium flex items-center gap-1.5 transition-colors"
+                className="px-2.5 py-1.5 bg-indigo-950/60 hover:bg-indigo-900/80 border border-blue-600/30 rounded-lg text-blue-600 font-medium flex items-center gap-1.5 transition-colors"
               >
                 <FileCode className="w-3.5 h-3.5" />
                 <span>Load Sample</span>
@@ -190,7 +190,7 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({ isOpen, onClose,
               <button
                 type="button"
                 onClick={handleDownloadTemplate}
-                className="px-2.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-medium flex items-center gap-1.5 transition-colors"
+                className="px-2.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-stone-950 rounded-lg font-medium flex items-center gap-1.5 transition-colors"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>Download Template</span>
@@ -200,32 +200,32 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({ isOpen, onClose,
 
           {/* Expandable Format Guide */}
           {showFormatGuide && (
-            <div className="bg-slate-950/80 border border-slate-800 rounded-xl p-4 text-xs space-y-2.5">
-              <h4 className="font-semibold text-slate-200">Required & Optional CSV Columns</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-slate-300">
-                <div className="p-2 bg-slate-900 rounded border border-slate-800">
+            <div className="bg-stone-50/80 border border-stone-200 rounded-xl p-4 text-xs space-y-2.5">
+              <h4 className="font-semibold text-stone-800">Required & Optional CSV Columns</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-stone-700">
+                <div className="p-2 bg-stone-100 rounded border border-stone-200">
                   <span className="font-mono text-emerald-400 font-semibold">action</span> <span className="text-rose-400 font-bold">*Required</span>
-                  <p className="text-[11px] text-slate-400">Actionable obligation commitment description.</p>
+                  <p className="text-[11px] text-stone-600">Actionable obligation commitment description.</p>
                 </div>
-                <div className="p-2 bg-slate-900 rounded border border-slate-800">
+                <div className="p-2 bg-stone-100 rounded border border-stone-200">
                   <span className="font-mono text-emerald-400 font-semibold">owner</span> <span className="text-rose-400 font-bold">*Required</span>
-                  <p className="text-[11px] text-slate-400">Owner email address or assignee identifier.</p>
+                  <p className="text-[11px] text-stone-600">Owner email address or assignee identifier.</p>
                 </div>
-                <div className="p-2 bg-slate-900 rounded border border-slate-800">
-                  <span className="font-mono text-indigo-300 font-semibold">beneficiary</span> <span className="text-slate-500">Optional (default: Company)</span>
-                  <p className="text-[11px] text-slate-400">Recipient or stakeholder name.</p>
+                <div className="p-2 bg-stone-100 rounded border border-stone-200">
+                  <span className="font-mono text-blue-600 font-semibold">beneficiary</span> <span className="text-stone-500">Optional (default: Company)</span>
+                  <p className="text-[11px] text-stone-600">Recipient or stakeholder name.</p>
                 </div>
-                <div className="p-2 bg-slate-900 rounded border border-slate-800">
-                  <span className="font-mono text-indigo-300 font-semibold">deadline</span> <span className="text-slate-500">Optional</span>
-                  <p className="text-[11px] text-slate-400">Format: <code className="text-slate-300">YYYY-MM-DD</code></p>
+                <div className="p-2 bg-stone-100 rounded border border-stone-200">
+                  <span className="font-mono text-blue-600 font-semibold">deadline</span> <span className="text-stone-500">Optional</span>
+                  <p className="text-[11px] text-stone-600">Format: <code className="text-stone-700">YYYY-MM-DD</code></p>
                 </div>
-                <div className="p-2 bg-slate-900 rounded border border-slate-800">
-                  <span className="font-mono text-indigo-300 font-semibold">priority</span> <span className="text-slate-500">Optional (default: MEDIUM)</span>
-                  <p className="text-[11px] text-slate-400">Allowed: <code className="text-slate-300">LOW, MEDIUM, HIGH, CRITICAL</code></p>
+                <div className="p-2 bg-stone-100 rounded border border-stone-200">
+                  <span className="font-mono text-blue-600 font-semibold">priority</span> <span className="text-stone-500">Optional (default: MEDIUM)</span>
+                  <p className="text-[11px] text-stone-600">Allowed: <code className="text-stone-700">LOW, MEDIUM, HIGH, CRITICAL</code></p>
                 </div>
-                <div className="p-2 bg-slate-900 rounded border border-slate-800">
-                  <span className="font-mono text-indigo-300 font-semibold">dependencies</span> <span className="text-slate-500">Optional</span>
-                  <p className="text-[11px] text-slate-400">Comma-separated matching actions for prerequisites.</p>
+                <div className="p-2 bg-stone-100 rounded border border-stone-200">
+                  <span className="font-mono text-blue-600 font-semibold">dependencies</span> <span className="text-stone-500">Optional</span>
+                  <p className="text-[11px] text-stone-600">Comma-separated matching actions for prerequisites.</p>
                 </div>
               </div>
             </div>
@@ -240,14 +240,14 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({ isOpen, onClose,
 
           {/* Upload and Text Area */}
           <div className="grid grid-cols-1 gap-4">
-            <label className="border-2 border-dashed border-zinc-700 hover:border-blue-500/50 bg-zinc-950/40 hover:bg-zinc-950/80 rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer transition-colors text-center">
-              <Upload className="w-5 h-5 text-zinc-400 mb-1.5" />
-              <span className="font-medium text-xs text-zinc-200">Click or drag .csv file to upload</span>
+            <label className="border-2 border-dashed border-stone-300 hover:border-blue-500/50 bg-stone-50/40 hover:bg-stone-50/80 rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer transition-colors text-center">
+              <Upload className="w-5 h-5 text-stone-600 mb-1.5" />
+              <span className="font-medium text-xs text-stone-800">Click or drag .csv file to upload</span>
               <input type="file" accept=".csv,text/csv" onChange={handleFileUpload} className="hidden" />
             </label>
 
             <div>
-              <label className="block text-xs font-semibold text-zinc-300 mb-1.5">Or Paste Raw CSV Data</label>
+              <label className="block text-xs font-semibold text-stone-700 mb-1.5">Or Paste Raw CSV Data</label>
               <textarea
                 value={csvText}
                 onChange={(e) => {
@@ -256,15 +256,15 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({ isOpen, onClose,
                 }}
                 placeholder="action,owner,beneficiary,deadline,priority,obligation_type..."
                 rows={5}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs font-mono text-slate-200 focus:outline-none focus:border-blue-500"
+                className="w-full bg-stone-50 border border-stone-200 rounded-xl p-3 text-xs font-mono text-stone-800 focus:outline-none focus:border-blue-500"
               />
             </div>
           </div>
 
           {/* Loading Indicator */}
           {loading && (
-            <div className="flex items-center justify-center py-4 text-xs text-zinc-400 gap-2">
-              <Loader2 className="w-4 h-4 animate-spin text-blue-400" />
+            <div className="flex items-center justify-center py-4 text-xs text-stone-600 gap-2">
+              <Loader2 className="w-4 h-4 animate-spin text-blue-500" />
               <span>Validating CSV rows...</span>
             </div>
           )}
@@ -272,7 +272,7 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({ isOpen, onClose,
           {/* Preview Results */}
           {preview && !loading && (
             <div className="space-y-4">
-              <div className="flex items-center justify-between bg-zinc-950 border border-zinc-800 rounded-xl p-3.5 text-xs">
+              <div className="flex items-center justify-between bg-stone-50 border border-stone-200 rounded-xl p-3.5 text-xs">
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-1.5 text-emerald-400 font-medium">
                     <CheckCircle2 className="w-4 h-4" />
@@ -291,34 +291,34 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({ isOpen, onClose,
                     </div>
                   )}
                 </div>
-                <label className="flex items-center gap-2 cursor-pointer text-zinc-300">
+                <label className="flex items-center gap-2 cursor-pointer text-stone-700">
                   <input
                     type="checkbox"
                     checked={skipDuplicates}
                     onChange={(e) => setSkipDuplicates(e.target.checked)}
-                    className="rounded border-zinc-700 bg-zinc-800 text-blue-600 focus:ring-0"
+                    className="rounded border-stone-300 bg-stone-200 text-blue-600 focus:ring-0"
                   />
                   <span>Skip Duplicate Commitments</span>
                 </label>
               </div>
 
               {/* Rows Table */}
-              <div className="border border-zinc-800 rounded-xl overflow-hidden max-h-60 overflow-y-auto">
+              <div className="border border-stone-200 rounded-xl overflow-hidden max-h-60 overflow-y-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-zinc-950/80 border-b border-zinc-800 sticky top-0">
+                  <thead className="bg-stone-50/80 border-b border-stone-200 sticky top-0">
                     <tr>
-                      <th className="py-2.5 px-3 font-semibold text-zinc-400 w-12">Row</th>
-                      <th className="py-2.5 px-3 font-semibold text-zinc-400">Action</th>
-                      <th className="py-2.5 px-3 font-semibold text-zinc-400">Owner</th>
-                      <th className="py-2.5 px-3 font-semibold text-zinc-400">Deadline</th>
-                      <th className="py-2.5 px-3 font-semibold text-zinc-400">Status</th>
+                      <th className="py-2.5 px-3 font-semibold text-stone-600 w-12">Row</th>
+                      <th className="py-2.5 px-3 font-semibold text-stone-600">Action</th>
+                      <th className="py-2.5 px-3 font-semibold text-stone-600">Owner</th>
+                      <th className="py-2.5 px-3 font-semibold text-stone-600">Deadline</th>
+                      <th className="py-2.5 px-3 font-semibold text-stone-600">Status</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-zinc-800/50 bg-zinc-900/40">
+                  <tbody className="divide-y divide-stone-200/50 bg-stone-100/40">
                     {preview.validation_results.map((res) => (
                       <tr key={res.row_index} className={res.is_valid ? "" : "bg-rose-950/20"}>
-                        <td className="py-2 px-3 font-mono text-zinc-500">{res.row_index}</td>
-                        <td className="py-2 px-3 text-zinc-200">
+                        <td className="py-2 px-3 font-mono text-stone-500">{res.row_index}</td>
+                        <td className="py-2 px-3 text-stone-800">
                           {res.parsed_data?.action || <span className="text-rose-400 italic">Empty Action</span>}
                           {res.errors.length > 0 && (
                             <div className="text-[11px] text-rose-400 mt-0.5 font-sans">
@@ -326,10 +326,10 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({ isOpen, onClose,
                             </div>
                           )}
                         </td>
-                        <td className="py-2 px-3 text-zinc-300 font-mono text-[11px]">
+                        <td className="py-2 px-3 text-stone-700 font-mono text-[11px]">
                           {res.parsed_data?.owner || "-"}
                         </td>
-                        <td className="py-2 px-3 text-zinc-400">
+                        <td className="py-2 px-3 text-stone-600">
                           {res.parsed_data?.deadline || "-"}
                         </td>
                         <td className="py-2 px-3">
@@ -353,11 +353,11 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({ isOpen, onClose,
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-zinc-800 flex items-center justify-between bg-zinc-950/60">
+        <div className="px-6 py-4 border-t border-stone-200 flex items-center justify-between bg-stone-50/60">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-xs font-semibold text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800 rounded-lg transition-colors"
+            className="px-4 py-2 text-xs font-semibold text-stone-700 hover:text-stone-900 hover:bg-stone-200 rounded-lg transition-colors"
           >
             Cancel
           </button>
@@ -365,7 +365,7 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({ isOpen, onClose,
             type="button"
             onClick={handleCommit}
             disabled={!preview?.can_commit || committing || preview.valid_rows_count === 0}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-semibold rounded-lg shadow-sm transition-colors flex items-center gap-2"
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-stone-950 text-xs font-semibold rounded-lg shadow-sm transition-colors flex items-center gap-2"
           >
             {committing ? (
               <>

@@ -105,19 +105,19 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
   };
 
   return (
-    <div className="bg-zinc-900 border-2 border-blue-500/30 rounded-2xl p-6 shadow-2xl space-y-6 animate-in fade-in slide-in-from-top-2">
+    <div className="bg-stone-100 border-2 border-blue-500/30 rounded-2xl p-6 shadow-2xl space-y-6 animate-in fade-in slide-in-from-top-2">
       {/* Review Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-zinc-800">
+      <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-stone-200">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+          <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-500">
             <Sparkles className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-base font-bold text-white">AI Extraction & Reasoning Review</h3>
+              <h3 className="text-base font-bold text-stone-950">AI Extraction & Reasoning Review</h3>
               <ConfidenceBadge confidence={conf} field="overall" />
             </div>
-            <p className="text-xs text-zinc-400">
+            <p className="text-xs text-stone-600">
               Phase 2 Reasoning: Review ownership, deadline resolution, and ambiguities before saving.
             </p>
           </div>
@@ -128,7 +128,7 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
             type="button"
             onClick={onReject}
             disabled={submitting}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-zinc-700 bg-zinc-800/80 hover:bg-zinc-800 text-zinc-300 text-xs font-medium transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-stone-300 bg-stone-200/80 hover:bg-stone-200 text-stone-700 text-xs font-medium transition-colors"
           >
             <X className="w-3.5 h-3.5" />
             <span>Discard</span>
@@ -161,18 +161,18 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
       )}
 
       {/* Raw Source Text Reference */}
-      <div className="bg-zinc-950/80 border border-zinc-800 rounded-xl p-3 text-xs">
-        <div className="text-zinc-400 font-semibold uppercase tracking-wider mb-1 flex items-center gap-1.5">
+      <div className="bg-stone-50/80 border border-stone-200 rounded-xl p-3 text-xs">
+        <div className="text-stone-600 font-semibold uppercase tracking-wider mb-1 flex items-center gap-1.5">
           <span>Source Input Message</span>
         </div>
-        <div className="text-zinc-300 italic">&ldquo;{rawText}&rdquo;</div>
+        <div className="text-stone-700 italic">&ldquo;{rawText}&rdquo;</div>
       </div>
 
       {/* Editable Form */}
       <form onSubmit={handleConfirm} className="space-y-5">
         {/* Direction Selector */}
         <div>
-          <label className="block text-xs font-semibold text-zinc-300 mb-1.5">
+          <label className="block text-xs font-semibold text-stone-700 mb-1.5">
             Obligation Relationship Type
           </label>
           <div className="grid grid-cols-2 gap-3">
@@ -181,11 +181,11 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
               onClick={() => setObligationType("OWED_BY_ME")}
               className={`p-3 rounded-xl border text-left text-xs font-medium transition-all ${
                 obligationType === "OWED_BY_ME"
-                  ? "bg-blue-600/15 border-blue-500 text-white ring-1 ring-blue-500"
-                  : "bg-zinc-950/60 border-zinc-800 text-zinc-400 hover:border-zinc-700"
+                  ? "bg-blue-600/15 border-blue-500 text-stone-950 ring-1 ring-blue-500"
+                  : "bg-stone-50/60 border-stone-200 text-stone-600 hover:border-stone-300"
               }`}
             >
-              <div className="font-semibold text-sm text-blue-400">You Owe (Outgoing)</div>
+              <div className="font-semibold text-sm text-blue-500">You Owe (Outgoing)</div>
               <div className="text-[11px] opacity-80 mt-0.5">You are responsible for delivering this to someone</div>
             </button>
 
@@ -194,8 +194,8 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
               onClick={() => setObligationType("OWED_TO_ME")}
               className={`p-3 rounded-xl border text-left text-xs font-medium transition-all ${
                 obligationType === "OWED_TO_ME"
-                  ? "bg-emerald-600/15 border-emerald-500 text-white ring-1 ring-emerald-500"
-                  : "bg-zinc-950/60 border-zinc-800 text-zinc-400 hover:border-zinc-700"
+                  ? "bg-emerald-600/15 border-emerald-500 text-stone-950 ring-1 ring-emerald-500"
+                  : "bg-stone-50/60 border-stone-200 text-stone-600 hover:border-stone-300"
               }`}
             >
               <div className="font-semibold text-sm text-emerald-400">Others Owe You (Incoming)</div>
@@ -207,10 +207,10 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
         {/* Parties: Owner & Beneficiary */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Owner Field */}
-          <div className={`p-3.5 rounded-xl border ${isOwnerAmbiguous ? "bg-amber-950/20 border-amber-500/40" : "bg-zinc-950/40 border-zinc-800"}`}>
+          <div className={`p-3.5 rounded-xl border ${isOwnerAmbiguous ? "bg-amber-950/20 border-amber-500/40" : "bg-stone-50/40 border-stone-200"}`}>
             <div className="flex items-center justify-between mb-1.5">
-              <label className="text-xs font-semibold text-zinc-200 flex items-center gap-1.5">
-                <User className="w-3.5 h-3.5 text-blue-400" />
+              <label className="text-xs font-semibold text-stone-800 flex items-center gap-1.5">
+                <User className="w-3.5 h-3.5 text-blue-500" />
                 <span>Duty Bearer (Owner)</span>
               </label>
               <ConfidenceBadge confidence={conf} field="owner" showIcon={false} />
@@ -220,21 +220,21 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
               type="text"
               value={owner}
               onChange={(e) => setOwner(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 focus:border-blue-500 focus:outline-none text-sm text-zinc-100 mb-2"
+              className="w-full px-3 py-2 rounded-lg bg-stone-50 border border-stone-200 focus:border-blue-500 focus:outline-none text-sm text-stone-900 mb-2"
               placeholder="e.g. You, Rahul, Alex..."
               required
             />
 
             {/* Quick Assignment Shortcuts */}
             <div className="flex flex-wrap items-center gap-1.5 pt-1">
-              <span className="text-[10px] text-zinc-400 font-medium">Quick assign:</span>
+              <span className="text-[10px] text-stone-600 font-medium">Quick assign:</span>
               <button
                 type="button"
                 onClick={() => {
                   setOwner("You");
                   setObligationType("OWED_BY_ME");
                 }}
-                className="px-2 py-0.5 rounded text-[11px] bg-zinc-800 hover:bg-zinc-700 text-zinc-200"
+                className="px-2 py-0.5 rounded text-[11px] bg-stone-200 hover:bg-stone-300 text-stone-800"
               >
                 Assign to Me
               </button>
@@ -243,7 +243,7 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
                   key={idx}
                   type="button"
                   onClick={() => setOwner(suggested)}
-                  className="px-2 py-0.5 rounded text-[11px] bg-zinc-800 hover:bg-zinc-700 text-blue-300"
+                  className="px-2 py-0.5 rounded text-[11px] bg-stone-200 hover:bg-stone-300 text-blue-600"
                 >
                   {suggested}
                 </button>
@@ -251,16 +251,16 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
             </div>
 
             {resolution?.ownership?.reasoning && (
-              <div className="mt-2 text-[11px] text-zinc-400 italic">
-                <span className="font-semibold text-zinc-300">Reasoning:</span> {resolution.ownership.reasoning}
+              <div className="mt-2 text-[11px] text-stone-600 italic">
+                <span className="font-semibold text-stone-700">Reasoning:</span> {resolution.ownership.reasoning}
               </div>
             )}
           </div>
 
           {/* Beneficiary Field */}
-          <div className="p-3.5 rounded-xl bg-zinc-950/40 border border-zinc-800">
+          <div className="p-3.5 rounded-xl bg-stone-50/40 border border-stone-200">
             <div className="flex items-center justify-between mb-1.5">
-              <label className="text-xs font-semibold text-zinc-200 flex items-center gap-1.5">
+              <label className="text-xs font-semibold text-stone-800 flex items-center gap-1.5">
                 <User className="w-3.5 h-3.5 text-emerald-400" />
                 <span>Obligee (Beneficiary)</span>
               </label>
@@ -271,11 +271,11 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
               type="text"
               value={beneficiary}
               onChange={(e) => setBeneficiary(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 focus:border-blue-500 focus:outline-none text-sm text-zinc-100"
+              className="w-full px-3 py-2 rounded-lg bg-stone-50 border border-stone-200 focus:border-blue-500 focus:outline-none text-sm text-stone-900"
               placeholder="e.g. Rahul, Client, Team..."
               required
             />
-            <p className="text-[11px] text-zinc-400 mt-2">
+            <p className="text-[11px] text-stone-600 mt-2">
               The person or party to whom the commitment is owed.
             </p>
           </div>
@@ -284,7 +284,7 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
         {/* Action Duty */}
         <div>
           <div className="flex items-center justify-between mb-1">
-            <label className="text-xs font-semibold text-zinc-300">
+            <label className="text-xs font-semibold text-stone-700">
               Owed Action / Commitment
             </label>
             <ConfidenceBadge confidence={conf} field="action" showIcon={false} />
@@ -293,7 +293,7 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
             rows={2}
             value={action}
             onChange={(e) => setAction(e.target.value)}
-            className="w-full px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 focus:border-blue-500 focus:outline-none text-sm text-zinc-100 resize-none"
+            className="w-full px-3 py-2 rounded-lg bg-stone-50 border border-stone-200 focus:border-blue-500 focus:outline-none text-sm text-stone-900 resize-none"
             placeholder="Describe the exact deliverable or duty..."
             required
           />
@@ -302,9 +302,9 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
         {/* Deadline & Conditions Block */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Deadline Field */}
-          <div className={`p-3.5 rounded-xl border ${isDeadlineAmbiguous ? "bg-amber-950/20 border-amber-500/40" : "bg-zinc-950/40 border-zinc-800"}`}>
+          <div className={`p-3.5 rounded-xl border ${isDeadlineAmbiguous ? "bg-amber-950/20 border-amber-500/40" : "bg-stone-50/40 border-stone-200"}`}>
             <div className="flex items-center justify-between mb-1.5">
-              <label className="text-xs font-semibold text-zinc-200 flex items-center gap-1.5">
+              <label className="text-xs font-semibold text-stone-800 flex items-center gap-1.5">
                 <Clock className="w-3.5 h-3.5 text-amber-400" />
                 <span>Target Calendar Deadline</span>
               </label>
@@ -315,30 +315,30 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
               type="datetime-local"
               value={deadline}
               onChange={(e) => setDeadline(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 focus:border-blue-500 focus:outline-none text-sm text-zinc-100"
+              className="w-full px-3 py-2 rounded-lg bg-stone-50 border border-stone-200 focus:border-blue-500 focus:outline-none text-sm text-stone-900"
             />
 
             {candidate.deadline_type && (
               <div className="mt-2 flex items-center gap-1.5 text-[11px]">
-                <span className="text-zinc-400 font-medium">Type:</span>
-                <span className="px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 font-mono text-[10px]">
+                <span className="text-stone-600 font-medium">Type:</span>
+                <span className="px-2 py-0.5 rounded bg-stone-200 text-stone-700 font-mono text-[10px]">
                   {candidate.deadline_type}
                 </span>
               </div>
             )}
 
             {resolution?.deadline?.reasoning && (
-              <div className="mt-1.5 text-[11px] text-zinc-400 italic">
-                <span className="font-semibold text-zinc-300">Reasoning:</span> {resolution.deadline.reasoning}
+              <div className="mt-1.5 text-[11px] text-stone-600 italic">
+                <span className="font-semibold text-stone-700">Reasoning:</span> {resolution.deadline.reasoning}
               </div>
             )}
           </div>
 
           {/* Conditions Field */}
-          <div className={`p-3.5 rounded-xl border ${isConditionalDeadline ? "bg-blue-950/20 border-blue-500/40" : "bg-zinc-950/40 border-zinc-800"}`}>
+          <div className={`p-3.5 rounded-xl border ${isConditionalDeadline ? "bg-blue-950/20 border-blue-500/40" : "bg-stone-50/40 border-stone-200"}`}>
             <div className="flex items-center justify-between mb-1.5">
-              <label className="text-xs font-semibold text-zinc-200 flex items-center gap-1.5">
-                <GitBranch className="w-3.5 h-3.5 text-blue-400" />
+              <label className="text-xs font-semibold text-stone-800 flex items-center gap-1.5">
+                <GitBranch className="w-3.5 h-3.5 text-blue-500" />
                 <span>Conditions / Trigger Dependency</span>
               </label>
               <ConfidenceBadge confidence={conf} field="conditions" showIcon={false} />
@@ -348,12 +348,12 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
               type="text"
               value={conditions}
               onChange={(e) => setConditions(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 focus:border-blue-500 focus:outline-none text-sm text-zinc-100"
+              className="w-full px-3 py-2 rounded-lg bg-stone-50 border border-stone-200 focus:border-blue-500 focus:outline-none text-sm text-stone-900"
               placeholder="e.g. Once Rahul sends the database numbers..."
             />
 
             {isConditionalDeadline && (
-              <div className="mt-2 p-2 rounded-lg bg-blue-900/30 border border-blue-500/30 text-[11px] text-blue-200">
+              <div className="mt-2 p-2 rounded-lg bg-blue-900/30 border border-blue-500/30 text-[11px] text-blue-700">
                 <span className="font-semibold">Condition:</span> Waiting for dependency to fire before obligation becomes actionable.
               </div>
             )}
@@ -362,32 +362,32 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
 
         {/* Suggested Next Action */}
         <div>
-          <label className="block text-xs font-semibold text-zinc-300 mb-1">
+          <label className="block text-xs font-semibold text-stone-700 mb-1">
             Suggested Next Immediate Step
           </label>
           <input
             type="text"
             value={nextAction}
             onChange={(e) => setNextAction(e.target.value)}
-            className="w-full px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-800 focus:border-blue-500 focus:outline-none text-sm text-zinc-100"
+            className="w-full px-3 py-2 rounded-lg bg-stone-50 border border-stone-200 focus:border-blue-500 focus:outline-none text-sm text-stone-900"
             placeholder="e.g. Email Rahul the draft PDF..."
           />
         </div>
 
         {/* Submit Actions */}
-        <div className="flex items-center justify-end gap-3 pt-4 border-t border-zinc-800">
+        <div className="flex items-center justify-end gap-3 pt-4 border-t border-stone-200">
           <button
             type="button"
             onClick={onReject}
             disabled={submitting}
-            className="px-4 py-2 rounded-lg text-sm text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/60 transition-colors"
+            className="px-4 py-2 rounded-lg text-sm text-stone-600 hover:text-stone-800 hover:bg-stone-200/60 transition-colors"
           >
             Discard
           </button>
           <button
             type="submit"
             disabled={submitting}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold transition-all shadow-lg shadow-blue-600/20 active:scale-95 disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-stone-950 text-sm font-semibold transition-all shadow-lg shadow-blue-600/20 active:scale-95 disabled:opacity-50"
           >
             <Check className="w-4 h-4" />
             <span>{submitting ? "Persisting..." : "Confirm & Save Obligation"}</span>

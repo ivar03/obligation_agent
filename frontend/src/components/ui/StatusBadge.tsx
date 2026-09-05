@@ -10,9 +10,9 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, size = "md" })
   const styles: Record<ObligationStatus, { bg: string; text: string; border: string; dot: string; label: string }> = {
     CONFIRMED: {
       bg: "bg-blue-500/10",
-      text: "text-blue-400",
+      text: "text-blue-500",
       border: "border-blue-500/20",
-      dot: "bg-blue-400",
+      dot: "bg-blue-500",
       label: "Confirmed",
     },
     IN_PROGRESS: {
@@ -51,10 +51,10 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, size = "md" })
       label: "Detected",
     },
     CANCELLED: {
-      bg: "bg-zinc-500/10",
-      text: "text-zinc-400",
-      border: "border-zinc-500/20",
-      dot: "bg-zinc-500",
+      bg: "bg-stone-500/10",
+      text: "text-stone-600",
+      border: "border-stone-500/20",
+      dot: "bg-stone-500",
       label: "Cancelled",
     },
   };

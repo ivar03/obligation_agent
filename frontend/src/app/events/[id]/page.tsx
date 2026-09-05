@@ -85,8 +85,8 @@ export default function EventDetailPage() {
         );
       case EventSemanticRole.PROGRESS_UPDATE:
         return (
-          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-blue-950/70 text-blue-300 border border-blue-800">
-            <Clock className="w-3.5 h-3.5 text-blue-400" /> Progress Update
+          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-blue-950/70 text-blue-600 border border-blue-800">
+            <Clock className="w-3.5 h-3.5 text-blue-500" /> Progress Update
           </span>
         );
       case EventSemanticRole.NON_COMPLETION_SIGNAL:
@@ -109,7 +109,7 @@ export default function EventDetailPage() {
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-slate-800 text-slate-400 border border-slate-700">
+          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-stone-200 text-stone-600 border border-stone-300">
             Chatter / Irrelevant
           </span>
         );
@@ -132,7 +132,7 @@ export default function EventDetailPage() {
         );
       case "NO_MATCH":
         return (
-          <span className="px-2.5 py-1 text-xs font-bold rounded-lg bg-slate-800 text-slate-400 border border-slate-700">
+          <span className="px-2.5 py-1 text-xs font-bold rounded-lg bg-stone-200 text-stone-600 border border-stone-300">
             NO OBLIGATION MATCH
           </span>
         );
@@ -144,7 +144,7 @@ export default function EventDetailPage() {
         );
       default:
         return (
-          <span className="px-2.5 py-1 text-xs font-bold rounded-lg bg-slate-800 text-slate-300">
+          <span className="px-2.5 py-1 text-xs font-bold rounded-lg bg-stone-200 text-stone-700">
             {status}
           </span>
         );
@@ -153,10 +153,10 @@ export default function EventDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center">
+      <div className="min-h-screen bg-stone-50 text-stone-900 flex items-center justify-center">
         <div className="text-center space-y-3">
           <RefreshCw className="w-8 h-8 animate-spin mx-auto text-cyan-400" />
-          <p className="text-slate-400 text-sm">Loading event audit records...</p>
+          <p className="text-stone-600 text-sm">Loading event audit records...</p>
         </div>
       </div>
     );
@@ -164,14 +164,14 @@ export default function EventDetailPage() {
 
   if (error || !event) {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 p-8">
+      <div className="min-h-screen bg-stone-50 text-stone-900 p-8">
         <div className="max-w-3xl mx-auto space-y-6 text-center">
           <div className="p-4 rounded-xl bg-red-950/40 border border-red-800 text-red-300 text-sm">
             {error || "Event audit record not found."}
           </div>
           <button
             onClick={() => router.push("/events")}
-            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-slate-800 hover:bg-slate-700 text-white"
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-stone-200 hover:bg-stone-300 text-stone-950"
           >
             <ArrowLeft className="w-4 h-4" /> Back to Event Feed
           </button>
@@ -181,23 +181,23 @@ export default function EventDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 p-6 lg:p-8">
+    <div className="min-h-screen bg-stone-50 text-stone-900 p-6 lg:p-8">
       <div className="max-w-5xl mx-auto space-y-6">
         {/* Navigation Breadcrumb */}
         <div className="flex items-center justify-between">
           <Link
             href="/events"
-            className="inline-flex items-center gap-2 text-sm font-medium text-slate-400 hover:text-cyan-400 transition"
+            className="inline-flex items-center gap-2 text-sm font-medium text-stone-600 hover:text-cyan-400 transition"
           >
             <ArrowLeft className="w-4 h-4" /> Back to Event Activity Center
           </Link>
-          <div className="flex items-center gap-2 text-xs text-slate-500 font-mono">
+          <div className="flex items-center gap-2 text-xs text-stone-500 font-mono">
             ID: {event.id}
           </div>
         </div>
 
         {/* Hero Header Card */}
-        <div className="p-6 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-900 to-slate-950 border border-slate-800 shadow-xl space-y-4">
+        <div className="p-6 rounded-2xl bg-gradient-to-r from-stone-100 via-stone-100 to-stone-50 border border-stone-200 shadow-xl space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className="p-3 rounded-xl bg-cyan-950 border border-cyan-800 text-cyan-400">
@@ -205,19 +205,19 @@ export default function EventDetailPage() {
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="px-2.5 py-0.5 text-xs font-bold rounded bg-slate-800 text-slate-200 border border-slate-700">
+                  <span className="px-2.5 py-0.5 text-xs font-bold rounded bg-stone-200 text-stone-800 border border-stone-300">
                     PROVIDER: {event.provider.toUpperCase()}
                   </span>
                   {getStatusBadge(event.processing_status)}
                   {getRoleBadge(event.semantic_role)}
                 </div>
-                <h1 className="text-xl font-bold text-white">Event Audit Inspection</h1>
+                <h1 className="text-xl font-bold text-stone-950">Event Audit Inspection</h1>
               </div>
             </div>
 
-            <div className="text-right text-xs text-slate-400 space-y-1">
+            <div className="text-right text-xs text-stone-600 space-y-1">
               <div>
-                Received At: <strong className="text-slate-200">{new Date(event.received_at).toLocaleString()}</strong>
+                Received At: <strong className="text-stone-800">{new Date(event.received_at).toLocaleString()}</strong>
               </div>
               <div>
                 Source Reference: <span className="font-mono text-cyan-300">{event.source_ref || "None"}</span>
@@ -230,9 +230,9 @@ export default function EventDetailPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Main Event Content */}
           <div className="md:col-span-2 space-y-6">
-            <div className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-lg space-y-4">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                <h2 className="text-sm font-semibold text-white flex items-center gap-2">
+            <div className="p-6 rounded-2xl bg-stone-100/80 border border-stone-200 shadow-lg space-y-4">
+              <div className="flex items-center justify-between border-b border-stone-200 pb-3">
+                <h2 className="text-sm font-semibold text-stone-950 flex items-center gap-2">
                   <FileText className="w-4 h-4 text-cyan-400" />
                   Verbatim Message Content
                 </h2>
@@ -246,29 +246,29 @@ export default function EventDetailPage() {
               </div>
 
               {rawTab ? (
-                <pre className="p-4 rounded-xl bg-slate-950 border border-slate-800 font-mono text-xs text-slate-300 overflow-x-auto">
+                <pre className="p-4 rounded-xl bg-stone-50 border border-stone-200 font-mono text-xs text-stone-700 overflow-x-auto">
                   {JSON.stringify(event.raw_payload || event, null, 2)}
                 </pre>
               ) : (
-                <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800/80 text-slate-100 text-base leading-relaxed italic">
+                <div className="p-4 rounded-xl bg-stone-50/80 border border-stone-200/80 text-stone-900 text-base leading-relaxed italic">
                   &ldquo;{event.content}&rdquo;
                 </div>
               )}
 
               <div className="grid grid-cols-2 gap-4 pt-2 text-xs">
-                <div className="flex items-center gap-2 p-3 rounded-lg bg-slate-950/50 border border-slate-800/50">
-                  <User className="w-4 h-4 text-slate-400" />
+                <div className="flex items-center gap-2 p-3 rounded-lg bg-stone-50/50 border border-stone-200/50">
+                  <User className="w-4 h-4 text-stone-600" />
                   <div>
-                    <div className="text-slate-500">Sender / Author</div>
-                    <div className="font-semibold text-slate-200">{event.sender || "Unknown"}</div>
+                    <div className="text-stone-500">Sender / Author</div>
+                    <div className="font-semibold text-stone-800">{event.sender || "Unknown"}</div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 p-3 rounded-lg bg-slate-950/50 border border-slate-800/50">
-                  <Users className="w-4 h-4 text-slate-400" />
+                <div className="flex items-center gap-2 p-3 rounded-lg bg-stone-50/50 border border-stone-200/50">
+                  <Users className="w-4 h-4 text-stone-600" />
                   <div>
-                    <div className="text-slate-500">Recipients</div>
-                    <div className="font-semibold text-slate-200">
+                    <div className="text-stone-500">Recipients</div>
+                    <div className="font-semibold text-stone-800">
                       {event.recipients && event.recipients.length > 0 ? event.recipients.join(", ") : "None specified"}
                     </div>
                   </div>
@@ -277,29 +277,29 @@ export default function EventDetailPage() {
             </div>
 
             {/* Semantic Reasoning & Explanation */}
-            <div className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-lg space-y-4">
-              <h2 className="text-sm font-semibold text-white flex items-center gap-2 border-b border-slate-800 pb-3">
+            <div className="p-6 rounded-2xl bg-stone-100/80 border border-stone-200 shadow-lg space-y-4">
+              <h2 className="text-sm font-semibold text-stone-950 flex items-center gap-2 border-b border-stone-200 pb-3">
                 <Sparkles className="w-4 h-4 text-amber-400" />
                 Semantic Classification & Reasoning
               </h2>
 
               <div className="space-y-3">
                 <div>
-                  <div className="text-xs text-slate-400 mb-1">Classifier Explanation</div>
-                  <div className="text-sm text-slate-200 bg-slate-950/60 p-3 rounded-xl border border-slate-800">
+                  <div className="text-xs text-stone-600 mb-1">Classifier Explanation</div>
+                  <div className="text-sm text-stone-800 bg-stone-50/60 p-3 rounded-xl border border-stone-200">
                     {event.match_explanation || "No explanation provided."}
                   </div>
                 </div>
 
                 {event.correlation_confidence !== null && event.correlation_confidence !== undefined && (
                   <div>
-                    <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
+                    <div className="flex items-center justify-between text-xs text-stone-600 mb-1">
                       <span>Correlation Confidence</span>
                       <strong className="text-cyan-300 font-bold">
                         {Math.round(event.correlation_confidence * 100)}%
                       </strong>
                     </div>
-                    <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
+                    <div className="w-full h-2 rounded-full bg-stone-200 overflow-hidden">
                       <div
                         className="h-full bg-gradient-to-r from-cyan-500 to-emerald-500 transition-all duration-500"
                         style={{ width: `${Math.round(event.correlation_confidence * 100)}%` }}
@@ -313,23 +313,23 @@ export default function EventDetailPage() {
 
           {/* Impact & Correlation Card */}
           <div className="space-y-6">
-            <div className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-lg space-y-4">
-              <h2 className="text-sm font-semibold text-white flex items-center gap-2 border-b border-slate-800 pb-3">
+            <div className="p-6 rounded-2xl bg-stone-100/80 border border-stone-200 shadow-lg space-y-4">
+              <h2 className="text-sm font-semibold text-stone-950 flex items-center gap-2 border-b border-stone-200 pb-3">
                 <Target className="w-4 h-4 text-cyan-400" />
                 Correlated System Entities
               </h2>
 
               {/* Correlated Obligation */}
               <div className="space-y-2">
-                <div className="text-xs font-medium text-slate-400">Matched Obligation</div>
+                <div className="text-xs font-medium text-stone-600">Matched Obligation</div>
                 {obligation ? (
-                  <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
-                    <div className="text-xs font-semibold text-white line-clamp-2">
+                  <div className="p-3 rounded-xl bg-stone-50 border border-stone-200 space-y-2">
+                    <div className="text-xs font-semibold text-stone-950 line-clamp-2">
                       {obligation.action}
                     </div>
-                    <div className="flex items-center justify-between text-[11px] text-slate-400">
+                    <div className="flex items-center justify-between text-[11px] text-stone-600">
                       <span>Owner: {obligation.owner}</span>
-                      <span className="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 font-bold">
+                      <span className="px-1.5 py-0.5 rounded bg-stone-200 text-stone-700 font-bold">
                         {obligation.status}
                       </span>
                     </div>
@@ -341,42 +341,42 @@ export default function EventDetailPage() {
                     </Link>
                   </div>
                 ) : (
-                  <div className="text-xs text-slate-500 italic p-3 rounded-xl bg-slate-950/40 border border-slate-800/40">
+                  <div className="text-xs text-stone-500 italic p-3 rounded-xl bg-stone-50/40 border border-stone-200/40">
                     No active obligation matched.
                   </div>
                 )}
               </div>
 
               {/* Created Evidence Record */}
-              <div className="space-y-2 pt-2 border-t border-slate-800/80">
-                <div className="text-xs font-medium text-slate-400">Evidence Record</div>
+              <div className="space-y-2 pt-2 border-t border-stone-200/80">
+                <div className="text-xs font-medium text-stone-600">Evidence Record</div>
                 {evidence ? (
-                  <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1.5 text-xs">
+                  <div className="p-3 rounded-xl bg-stone-50 border border-stone-200 space-y-1.5 text-xs">
                     <div className="flex items-center justify-between">
-                      <span className="text-slate-400">Status:</span>
+                      <span className="text-stone-600">Status:</span>
                       <span className="px-2 py-0.5 font-bold rounded bg-amber-950 text-amber-300 border border-amber-800">
                         {evidence.correlation_status}
                       </span>
                     </div>
-                    <div className="flex items-center justify-between text-slate-400">
+                    <div className="flex items-center justify-between text-stone-600">
                       <span>Type:</span>
-                      <span className="text-slate-200">{evidence.evidence_type}</span>
+                      <span className="text-stone-800">{evidence.evidence_type}</span>
                     </div>
                     <div className="text-[11px] text-emerald-400 flex items-center gap-1 pt-1">
                       <ShieldCheck className="w-3.5 h-3.5" /> Preserved for Human Review
                     </div>
                   </div>
                 ) : (
-                  <div className="text-xs text-slate-500 italic p-3 rounded-xl bg-slate-950/40 border border-slate-800/40">
+                  <div className="text-xs text-stone-500 italic p-3 rounded-xl bg-stone-50/40 border border-stone-200/40">
                     No evidence record generated.
                   </div>
                 )}
               </div>
 
               {/* Action Taken */}
-              <div className="pt-2 border-t border-slate-800/80 space-y-1">
-                <div className="text-xs font-medium text-slate-400">Action Taken</div>
-                <div className="px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-xs font-mono text-cyan-300">
+              <div className="pt-2 border-t border-stone-200/80 space-y-1">
+                <div className="text-xs font-medium text-stone-600">Action Taken</div>
+                <div className="px-3 py-2 rounded-lg bg-stone-50 border border-stone-200 text-xs font-mono text-cyan-300">
                   {event.action_taken || "NONE"}
                 </div>
               </div>

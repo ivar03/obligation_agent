@@ -52,12 +52,12 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                   ? "bg-emerald-950/90 border-emerald-500/30 text-emerald-100"
                   : isError
                   ? "bg-rose-950/90 border-rose-500/30 text-rose-100"
-                  : "bg-zinc-900/90 border-zinc-700/50 text-zinc-100"
+                  : "bg-stone-100/90 border-stone-300/50 text-stone-900"
               }`}
             >
               {isSuccess && <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />}
               {isError && <AlertCircle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />}
-              {!isSuccess && !isError && <Info className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />}
+              {!isSuccess && !isError && <Info className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />}
 
               <div className="flex-1 min-w-0">
                 <div className="text-sm font-semibold">{t.title}</div>
@@ -66,7 +66,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
               <button
                 onClick={() => removeToast(t.id)}
-                className="text-zinc-400 hover:text-white p-1 transition-colors"
+                className="text-stone-600 hover:text-stone-950 p-1 transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>

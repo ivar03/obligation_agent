@@ -40,9 +40,9 @@ export const HistoricalContextCard: React.FC<Props> = ({ obligationId }) => {
 
   if (loading) {
     return (
-      <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-5 animate-pulse text-slate-400 text-sm">
+      <div className="bg-stone-100/80 border border-stone-200 rounded-xl p-5 animate-pulse text-stone-600 text-sm">
         <div className="flex items-center gap-3">
-          <div className="w-4 h-4 rounded-full border-2 border-indigo-500 border-t-transparent animate-spin" />
+          <div className="w-4 h-4 rounded-full border-2 border-blue-600 border-t-transparent animate-spin" />
           <span>Retrieving organizational memory & historical patterns...</span>
         </div>
       </div>
@@ -51,8 +51,8 @@ export const HistoricalContextCard: React.FC<Props> = ({ obligationId }) => {
 
   if (error || !data) {
     return (
-      <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 text-xs text-slate-400">
-        <span className="font-semibold text-slate-300">Organizational Memory:</span>{" "}
+      <div className="bg-stone-100/60 border border-stone-200 rounded-xl p-4 text-xs text-stone-600">
+        <span className="font-semibold text-stone-700">Organizational Memory:</span>{" "}
         {error || "No memory context available for this obligation."}
       </div>
     );
@@ -64,40 +64,40 @@ export const HistoricalContextCard: React.FC<Props> = ({ obligationId }) => {
   const sem = data.semantic_representation;
 
   return (
-    <div className="bg-gradient-to-b from-slate-900/90 to-slate-950/90 border border-indigo-500/20 rounded-xl shadow-xl backdrop-blur-md overflow-hidden">
+    <div className="bg-gradient-to-b from-stone-100/90 to-stone-50/90 border border-blue-600/20 rounded-xl shadow-xl backdrop-blur-md overflow-hidden">
       {/* Header */}
-      <div className="p-4 sm:p-5 border-b border-slate-800/80 flex flex-wrap items-center justify-between gap-3 bg-indigo-950/20">
+      <div className="p-4 sm:p-5 border-b border-stone-200/80 flex flex-wrap items-center justify-between gap-3 bg-indigo-950/20">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400 font-bold text-sm">
+          <div className="w-8 h-8 rounded-lg bg-blue-600/10 border border-blue-600/30 flex items-center justify-center text-blue-500 font-bold text-sm">
             🧠
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="font-semibold text-slate-100 text-base tracking-tight">
+              <h3 className="font-semibold text-stone-900 text-base tracking-tight">
                 Organizational Memory & Context
               </h3>
               <span
                 className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full border ${
                   data.context_status === "AVAILABLE"
                     ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
-                    : "bg-slate-700/30 text-slate-400 border-slate-700/50"
+                    : "bg-stone-300/30 text-stone-600 border-stone-300/50"
                 }`}
               >
                 {data.context_status === "AVAILABLE" ? "Context Available" : "No Comparable History"}
               </span>
             </div>
-            <p className="text-xs text-slate-400 mt-0.5">{data.explanation}</p>
+            <p className="text-xs text-stone-600 mt-0.5">{data.explanation}</p>
           </div>
         </div>
 
         {/* Sub-tabs */}
-        <div className="flex items-center gap-1 bg-slate-950/60 p-1 rounded-lg border border-slate-800">
+        <div className="flex items-center gap-1 bg-stone-50/60 p-1 rounded-lg border border-stone-200">
           <button
             onClick={() => setActiveSubTab("similar")}
             className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${
               activeSubTab === "similar"
-                ? "bg-indigo-600 text-white shadow"
-                : "text-slate-400 hover:text-slate-200"
+                ? "bg-blue-700 text-stone-950 shadow"
+                : "text-stone-600 hover:text-stone-800"
             }`}
           >
             Similar Commitments ({data.similar_obligations.length})
@@ -106,8 +106,8 @@ export const HistoricalContextCard: React.FC<Props> = ({ obligationId }) => {
             onClick={() => setActiveSubTab("patterns")}
             className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${
               activeSubTab === "patterns"
-                ? "bg-indigo-600 text-white shadow"
-                : "text-slate-400 hover:text-slate-200"
+                ? "bg-blue-700 text-stone-950 shadow"
+                : "text-stone-600 hover:text-stone-800"
             }`}
           >
             Patterns ({data.historical_patterns.length})
@@ -117,8 +117,8 @@ export const HistoricalContextCard: React.FC<Props> = ({ obligationId }) => {
               onClick={() => setActiveSubTab("owner")}
               className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${
                 activeSubTab === "owner"
-                  ? "bg-indigo-600 text-white shadow"
-                  : "text-slate-400 hover:text-slate-200"
+                  ? "bg-blue-700 text-stone-950 shadow"
+                  : "text-stone-600 hover:text-stone-800"
               }`}
             >
               Owner History
@@ -128,8 +128,8 @@ export const HistoricalContextCard: React.FC<Props> = ({ obligationId }) => {
             onClick={() => setActiveSubTab("semantic")}
             className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${
               activeSubTab === "semantic"
-                ? "bg-indigo-600 text-white shadow"
-                : "text-slate-400 hover:text-slate-200"
+                ? "bg-blue-700 text-stone-950 shadow"
+                : "text-stone-600 hover:text-stone-800"
             }`}
           >
             Semantic Labels
@@ -143,7 +143,7 @@ export const HistoricalContextCard: React.FC<Props> = ({ obligationId }) => {
         {activeSubTab === "similar" && (
           <div>
             {!hasSimilar ? (
-              <div className="p-6 text-center text-xs text-slate-500 border border-dashed border-slate-800 rounded-lg">
+              <div className="p-6 text-center text-xs text-stone-500 border border-dashed border-stone-200 rounded-lg">
                 No historically similar commitments found above the relevance threshold.
               </div>
             ) : (
@@ -151,12 +151,12 @@ export const HistoricalContextCard: React.FC<Props> = ({ obligationId }) => {
                 {data.similar_obligations.map((item: MemoryRetrievalItem) => (
                   <div
                     key={item.memory.id}
-                    className="p-3.5 bg-slate-900/60 border border-slate-800/80 rounded-lg hover:border-slate-700 transition-colors"
+                    className="p-3.5 bg-stone-100/60 border border-stone-200/80 rounded-lg hover:border-stone-300 transition-colors"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="font-semibold text-slate-200 text-xs">
+                          <span className="font-semibold text-stone-800 text-xs">
                             {item.memory.semantic_summary}
                           </span>
                           <span
@@ -165,22 +165,22 @@ export const HistoricalContextCard: React.FC<Props> = ({ obligationId }) => {
                                 ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
                                 : item.memory.outcome === "COMPLETED_LATE"
                                 ? "bg-amber-500/10 text-amber-400 border-amber-500/30"
-                                : "bg-slate-700/20 text-slate-400 border-slate-700/40"
+                                : "bg-stone-300/20 text-stone-600 border-stone-300/40"
                             }`}
                           >
                             {item.memory.outcome || "COMPLETED"}
                           </span>
                         </div>
-                        <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                        <p className="text-xs text-stone-600 mt-1 leading-relaxed">
                           {item.memory.content}
                         </p>
                       </div>
 
                       <div className="text-right shrink-0">
-                        <div className="text-xs font-bold text-indigo-400">
+                        <div className="text-xs font-bold text-blue-500">
                           {Math.round(item.relevance_score * 100)}% match
                         </div>
-                        <div className="text-[10px] text-slate-500">
+                        <div className="text-[10px] text-stone-500">
                           {new Date(item.memory.observed_at).toLocaleDateString()}
                         </div>
                       </div>
@@ -188,14 +188,14 @@ export const HistoricalContextCard: React.FC<Props> = ({ obligationId }) => {
 
                     {/* Match Reasons */}
                     {item.match_reasons.length > 0 && (
-                      <div className="mt-2.5 pt-2 border-t border-slate-800/60 flex flex-wrap items-center gap-1.5">
-                        <span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">
+                      <div className="mt-2.5 pt-2 border-t border-stone-200/60 flex flex-wrap items-center gap-1.5">
+                        <span className="text-[10px] text-stone-500 uppercase tracking-wider font-semibold">
                           Match Factors:
                         </span>
                         {item.match_reasons.map((reason, idx) => (
                           <span
                             key={idx}
-                            className="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700/50"
+                            className="text-[10px] bg-stone-200 text-stone-700 px-2 py-0.5 rounded border border-stone-300/50"
                           >
                             {reason}
                           </span>
@@ -213,7 +213,7 @@ export const HistoricalContextCard: React.FC<Props> = ({ obligationId }) => {
         {activeSubTab === "patterns" && (
           <div>
             {!hasPatterns ? (
-              <div className="p-6 text-center text-xs text-slate-500 border border-dashed border-slate-800 rounded-lg">
+              <div className="p-6 text-center text-xs text-stone-500 border border-dashed border-stone-200 rounded-lg">
                 No recurring delay or blocker patterns identified for this commitment.
               </div>
             ) : (
@@ -221,11 +221,11 @@ export const HistoricalContextCard: React.FC<Props> = ({ obligationId }) => {
                 {data.historical_patterns.map((pat: HistoricalPatternItem, idx: number) => (
                   <div
                     key={idx}
-                    className="p-3.5 bg-slate-900/60 border border-slate-800/80 rounded-lg flex items-start justify-between gap-3"
+                    className="p-3.5 bg-stone-100/60 border border-stone-200/80 rounded-lg flex items-start justify-between gap-3"
                   >
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-semibold text-slate-200">
+                        <span className="text-xs font-semibold text-stone-800">
                           {pat.description}
                         </span>
                         <span
@@ -234,13 +234,13 @@ export const HistoricalContextCard: React.FC<Props> = ({ obligationId }) => {
                               ? "bg-purple-500/10 text-purple-400 border-purple-500/30"
                               : pat.maturity === "EMERGING_PATTERN"
                               ? "bg-amber-500/10 text-amber-400 border-amber-500/30"
-                              : "bg-slate-700/20 text-slate-400 border-slate-700/40"
+                              : "bg-stone-300/20 text-stone-600 border-stone-300/40"
                           }`}
                         >
                           {pat.maturity.replace("_", " ")}
                         </span>
                       </div>
-                      <div className="text-[11px] text-slate-400 flex items-center gap-3">
+                      <div className="text-[11px] text-stone-600 flex items-center gap-3">
                         <span>Observations: {pat.observation_count}</span>
                         <span>Confidence: {Math.round(pat.confidence * 100)}%</span>
                       </div>
@@ -252,19 +252,19 @@ export const HistoricalContextCard: React.FC<Props> = ({ obligationId }) => {
 
             {/* Recurring Cadence Notice if present */}
             {data.recurring_commitment && (
-              <div className="mt-4 p-3 bg-indigo-950/30 border border-indigo-500/20 rounded-lg flex items-center justify-between">
+              <div className="mt-4 p-3 bg-indigo-950/30 border border-blue-600/20 rounded-lg flex items-center justify-between">
                 <div>
-                  <div className="text-xs font-semibold text-indigo-300">
+                  <div className="text-xs font-semibold text-blue-600">
                     Recurring Commitment Cadence: {data.recurring_commitment.recurrence_type}
                   </div>
-                  <div className="text-[11px] text-slate-400">
+                  <div className="text-[11px] text-stone-600">
                     {data.recurring_commitment.description}
                   </div>
                 </div>
                 {data.recurring_commitment.next_predicted_date && (
-                  <div className="text-right text-[11px] text-slate-400">
+                  <div className="text-right text-[11px] text-stone-600">
                     Next cycle projected:{" "}
-                    <span className="font-semibold text-indigo-400">
+                    <span className="font-semibold text-blue-500">
                       {new Date(data.recurring_commitment.next_predicted_date).toLocaleDateString()}
                     </span>
                   </div>
@@ -278,32 +278,32 @@ export const HistoricalContextCard: React.FC<Props> = ({ obligationId }) => {
         {activeSubTab === "owner" && ownerStats && (
           <div className="space-y-4">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div className="p-3 bg-slate-900/60 border border-slate-800 rounded-lg">
-                <div className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">
+              <div className="p-3 bg-stone-100/60 border border-stone-200 rounded-lg">
+                <div className="text-[10px] uppercase tracking-wider text-stone-500 font-semibold">
                   Observed Commitments
                 </div>
-                <div className="text-lg font-bold text-slate-100 mt-0.5">
+                <div className="text-lg font-bold text-stone-900 mt-0.5">
                   {ownerStats.total_commitments_observed}
                 </div>
               </div>
-              <div className="p-3 bg-slate-900/60 border border-slate-800 rounded-lg">
-                <div className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">
+              <div className="p-3 bg-stone-100/60 border border-stone-200 rounded-lg">
+                <div className="text-[10px] uppercase tracking-wider text-stone-500 font-semibold">
                   Completion Rate
                 </div>
                 <div className="text-lg font-bold text-emerald-400 mt-0.5">
                   {Math.round(ownerStats.completion_rate * 100)}%
                 </div>
               </div>
-              <div className="p-3 bg-slate-900/60 border border-slate-800 rounded-lg">
-                <div className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">
+              <div className="p-3 bg-stone-100/60 border border-stone-200 rounded-lg">
+                <div className="text-[10px] uppercase tracking-wider text-stone-500 font-semibold">
                   On-Time Rate
                 </div>
-                <div className="text-lg font-bold text-indigo-400 mt-0.5">
+                <div className="text-lg font-bold text-blue-500 mt-0.5">
                   {Math.round(ownerStats.on_time_completion_rate * 100)}%
                 </div>
               </div>
-              <div className="p-3 bg-slate-900/60 border border-slate-800 rounded-lg">
-                <div className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">
+              <div className="p-3 bg-stone-100/60 border border-stone-200 rounded-lg">
+                <div className="text-[10px] uppercase tracking-wider text-stone-500 font-semibold">
                   Median Delay
                 </div>
                 <div className="text-lg font-bold text-amber-400 mt-0.5">
@@ -314,8 +314,8 @@ export const HistoricalContextCard: React.FC<Props> = ({ obligationId }) => {
               </div>
             </div>
 
-            <div className="p-3 bg-slate-900/80 border border-slate-800 rounded-lg text-xs text-slate-300 leading-relaxed">
-              <div className="font-semibold text-slate-200 mb-1">Factual Observational Summary:</div>
+            <div className="p-3 bg-stone-100/80 border border-stone-200 rounded-lg text-xs text-stone-700 leading-relaxed">
+              <div className="font-semibold text-stone-800 mb-1">Factual Observational Summary:</div>
               {ownerStats.neutral_summary}
             </div>
 
@@ -331,25 +331,25 @@ export const HistoricalContextCard: React.FC<Props> = ({ obligationId }) => {
         {activeSubTab === "semantic" && sem && (
           <div className="space-y-3 text-xs">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="p-3 bg-slate-900/60 border border-slate-800 rounded-lg">
-                <div className="text-[10px] text-slate-500 uppercase font-semibold">Extracted Action</div>
-                <div className="text-slate-200 font-medium mt-1">{sem.action || "None"}</div>
+              <div className="p-3 bg-stone-100/60 border border-stone-200 rounded-lg">
+                <div className="text-[10px] text-stone-500 uppercase font-semibold">Extracted Action</div>
+                <div className="text-stone-800 font-medium mt-1">{sem.action || "None"}</div>
               </div>
-              <div className="p-3 bg-slate-900/60 border border-slate-800 rounded-lg">
-                <div className="text-[10px] text-slate-500 uppercase font-semibold">Deliverable</div>
-                <div className="text-slate-200 font-medium mt-1">{sem.deliverable || "None"}</div>
+              <div className="p-3 bg-stone-100/60 border border-stone-200 rounded-lg">
+                <div className="text-[10px] text-stone-500 uppercase font-semibold">Deliverable</div>
+                <div className="text-stone-800 font-medium mt-1">{sem.deliverable || "None"}</div>
               </div>
             </div>
 
-            <div className="p-3 bg-slate-900/60 border border-slate-800 rounded-lg">
-              <div className="text-[10px] text-slate-500 uppercase font-semibold mb-1.5">
+            <div className="p-3 bg-stone-100/60 border border-stone-200 rounded-lg">
+              <div className="text-[10px] text-stone-500 uppercase font-semibold mb-1.5">
                 Entities & Topics
               </div>
               <div className="flex flex-wrap gap-1.5">
                 {sem.entities.map((e, idx) => (
                   <span
                     key={`e-${idx}`}
-                    className="text-[11px] bg-indigo-950/60 text-indigo-300 border border-indigo-800/40 px-2 py-0.5 rounded"
+                    className="text-[11px] bg-indigo-950/60 text-blue-600 border border-indigo-800/40 px-2 py-0.5 rounded"
                   >
                     entity:{e}
                   </span>
@@ -363,7 +363,7 @@ export const HistoricalContextCard: React.FC<Props> = ({ obligationId }) => {
                   </span>
                 ))}
                 {sem.entities.length === 0 && sem.topics.length === 0 && (
-                  <span className="text-slate-500">None detected</span>
+                  <span className="text-stone-500">None detected</span>
                 )}
               </div>
             </div>
@@ -372,7 +372,7 @@ export const HistoricalContextCard: React.FC<Props> = ({ obligationId }) => {
       </div>
 
       {/* Safety Notice Footer */}
-      <div className="px-5 py-2.5 bg-slate-950 border-t border-slate-800/60 text-[10px] text-slate-500 flex items-center justify-between">
+      <div className="px-5 py-2.5 bg-stone-50 border-t border-stone-200/60 text-[10px] text-stone-500 flex items-center justify-between">
         <span>🛡️ Strict Invariant: Contextual evidence only. No autonomous decisions or judgments.</span>
         <span>Append-Only Historical Ledger</span>
       </div>

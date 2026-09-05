@@ -32,7 +32,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   return (
     <AuthProvider>
       <ToastProvider>
-        <div className="flex min-h-screen bg-zinc-950 text-zinc-100 antialiased selection:bg-blue-500 selection:text-white font-sans">
+        <div className="flex min-h-screen bg-stone-50 text-stone-900 antialiased selection:bg-blue-200 selection:text-blue-950 font-sans">
           <Sidebar counts={counts} />
           <div className="flex-1 flex flex-col min-w-0">
             <Header />
