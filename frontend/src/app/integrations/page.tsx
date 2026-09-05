@@ -46,6 +46,8 @@ export default function IntegrationsPage() {
   const [copiedJiraWebhook, setCopiedJiraWebhook] = useState(false);
   const [connectModalProvider, setConnectModalProvider] = useState<"slack" | "gmail" | "google_calendar" | "jira" | null>(null);
   const [connecting, setConnecting] = useState(false);
+  const [syncingProvider, setSyncingProvider] = useState<string | null>(null);
+  const [syncMessage, setSyncMessage] = useState<string | null>(null);
 
   // Jira-specific state
   const [jiraSiteUrl, setJiraSiteUrl] = useState("");
@@ -202,6 +204,24 @@ export default function IntegrationsPage() {
     }
   };
 
+  const handleGoogleSync = async (provider: "gmail" | "google_calendar") => {
+    try {
+      setSyncingProvider(provider);
+      setSyncMessage(null);
+      if (provider === "gmail") {
+        await integrationsApi.startGmailWatch();
+        await integrationsApi.syncGmail();
+      } else {
+        await integrationsApi.syncGoogleCalendar();
+      }
+      setSyncMessage(`${provider === "gmail" ? "Gmail" : "Google Calendar"} sync completed.`);
+    } catch (err) {
+      setSyncMessage(`Sync failed: ${err instanceof Error ? err.message : "Unknown error"}`);
+    } finally {
+      setSyncingProvider(null);
+    }
+  };
+
   const copySlackWebhookUrl = () => {
     const url = `${window.location.origin.replace(":3000", ":8000")}/api/webhooks/slack`;
     navigator.clipboard.writeText(url);
@@ -305,6 +325,12 @@ export default function IntegrationsPage() {
             <span className="text-[11px] opacity-70">
               Tested at {new Date(testResult.tested_at).toLocaleTimeString()}
             </span>
+          </div>
+        )}
+
+        {syncMessage && (
+          <div className="p-3 rounded-xl border border-blue-200 bg-blue-50 text-blue-800 text-xs font-medium">
+            {syncMessage}
           </div>
         )}
 
@@ -516,12 +542,22 @@ export default function IntegrationsPage() {
                 </button>
 
                 {isGmailConnected ? (
-                  <button
-                    onClick={() => handleDisconnect("gmail")}
-                    className="px-3 py-1 text-xs font-semibold rounded-lg bg-rose-950/60 hover:bg-rose-900 text-rose-300 border border-rose-800/60 transition"
-                  >
-                    Disconnect
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handleGoogleSync("gmail")}
+                      disabled={syncingProvider === "gmail"}
+                      className="px-3 py-1 text-xs font-semibold rounded-lg bg-blue-600 hover:bg-blue-500 text-stone-950 border border-blue-600 transition flex items-center gap-1"
+                    >
+                      <RefreshCw className={`w-3 h-3 ${syncingProvider === "gmail" ? "animate-spin" : ""}`} />
+                      {syncingProvider === "gmail" ? "Syncing" : "Sync now"}
+                    </button>
+                    <button
+                      onClick={() => handleDisconnect("gmail")}
+                      className="px-3 py-1 text-xs font-semibold rounded-lg bg-rose-950/60 hover:bg-rose-900 text-rose-300 border border-rose-800/60 transition"
+                    >
+                      Disconnect
+                    </button>
+                  </div>
                 ) : (
                   <button
                     onClick={() => setConnectModalProvider("gmail")}
@@ -622,12 +658,22 @@ export default function IntegrationsPage() {
                 </button>
 
                 {isCalConnected ? (
-                  <button
-                    onClick={() => handleDisconnect("google_calendar")}
-                    className="px-3 py-1 text-xs font-semibold rounded-lg bg-rose-950/60 hover:bg-rose-900 text-rose-300 border border-rose-800/60 transition"
-                  >
-                    Disconnect
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handleGoogleSync("google_calendar")}
+                      disabled={syncingProvider === "google_calendar"}
+                      className="px-3 py-1 text-xs font-semibold rounded-lg bg-blue-600 hover:bg-blue-500 text-stone-950 border border-blue-600 transition flex items-center gap-1"
+                    >
+                      <RefreshCw className={`w-3 h-3 ${syncingProvider === "google_calendar" ? "animate-spin" : ""}`} />
+                      {syncingProvider === "google_calendar" ? "Syncing" : "Sync now"}
+                    </button>
+                    <button
+                      onClick={() => handleDisconnect("google_calendar")}
+                      className="px-3 py-1 text-xs font-semibold rounded-lg bg-rose-950/60 hover:bg-rose-900 text-rose-300 border border-rose-800/60 transition"
+                    >
+                      Disconnect
+                    </button>
+                  </div>
                 ) : (
                   <button
                     onClick={() => setConnectModalProvider("google_calendar")}

@@ -1,5 +1,7 @@
 import secrets
 import httpx
+import json
+import time
 from datetime import datetime, timezone
 from typing import Optional, List, Dict, Any, Set
 from sqlalchemy import select, and_, desc
@@ -9,6 +11,7 @@ from fastapi import HTTPException, status
 from app.core.config import settings
 from app.core.logging import logger
 from app.models.integration import IntegrationConnection
+from app.core.crypto import CryptoService
 from app.schemas.integration import (
     IntegrationConnectionResponse,
     IntegrationListResponse,
@@ -24,6 +27,7 @@ def utc_now() -> datetime:
 
 # In-memory OAuth state registry with expiration (for CSRF protection)
 _OAUTH_STATES: Set[str] = set()
+_OAUTH_WORKSPACES: Dict[str, str] = {}
 
 
 class IntegrationService:
@@ -461,6 +465,7 @@ class IntegrationService:
         cls,
         provider_name: str,
         redirect_uri: Optional[str] = None,
+        workspace_id: str = "ws-default",
     ) -> OAuthConnectResponse:
         """
         Generates an OAuth authorization URL with CSRF state protection.
@@ -474,6 +479,7 @@ class IntegrationService:
 
         state = secrets.token_urlsafe(32)
         _OAUTH_STATES.add(state)
+        _OAUTH_WORKSPACES[state] = workspace_id
 
         if name == "slack":
             client_id = settings.SLACK_CLIENT_ID or "mock_slack_client_id"
@@ -563,6 +569,8 @@ class IntegrationService:
                 detail="Invalid or expired OAuth state parameter. Request may have been tampered with or expired.",
             )
         _OAUTH_STATES.remove(state)
+        callback_workspace_id = _OAUTH_WORKSPACES.pop(state, workspace_id)
+        workspace_id = callback_workspace_id
 
         # ----------------------------------------------------
         # SLACK OAUTH HANDLING
@@ -599,6 +607,8 @@ class IntegrationService:
                         scopes_list = [s.strip() for s in scopes_str.split(",") if s.strip()]
 
                         # Store connection securely (credentials isolated)
+                        token_credentials = dict(data)
+                        token_credentials["expires_at"] = time.time() + int(data.get("expires_in", 3600))
                         return await cls.create_or_update_connection(
                             session=session,
                             provider="slack",
@@ -606,7 +616,7 @@ class IntegrationService:
                             external_account_name=team_name,
                             status="CONNECTED",
                             scopes=scopes_list,
-                            encrypted_credentials="CREDENTIALS_SECURELY_STORED",
+                            encrypted_credentials=CryptoService.encrypt(json.dumps(token_credentials)),
                             connection_metadata={
                                 "bot_user_id": bot_user_id,
                                 "authed_user_id": authed_user.get("id"),
@@ -692,6 +702,8 @@ class IntegrationService:
                             except Exception:
                                 pass
 
+                        token_credentials = dict(data)
+                        token_credentials["expires_at"] = time.time() + int(data.get("expires_in", 3600))
                         return await cls.create_or_update_connection(
                             session=session,
                             provider="gmail",
@@ -699,7 +711,7 @@ class IntegrationService:
                             external_account_name=f"Google Workspace ({userinfo_email})",
                             status="CONNECTED",
                             scopes=scopes_list,
-                            encrypted_credentials="CREDENTIALS_SECURELY_STORED",
+                            encrypted_credentials=CryptoService.encrypt(json.dumps(token_credentials)),
                             connection_metadata={
                                 "email": userinfo_email,
                                 "service": "google_workspace",
@@ -787,6 +799,8 @@ class IntegrationService:
                             except Exception:
                                 pass
 
+                        token_credentials = dict(data)
+                        token_credentials["expires_at"] = time.time() + int(data.get("expires_in", 3600))
                         return await cls.create_or_update_connection(
                             session=session,
                             provider="google_calendar",
@@ -794,7 +808,7 @@ class IntegrationService:
                             external_account_name=f"Google Calendar ({userinfo_email})",
                             status="CONNECTED",
                             scopes=scopes_list,
-                            encrypted_credentials="CREDENTIALS_SECURELY_STORED",
+                            encrypted_credentials=CryptoService.encrypt(json.dumps(token_credentials)),
                             connection_metadata={
                                 "email": userinfo_email,
                                 "service": "google_calendar",

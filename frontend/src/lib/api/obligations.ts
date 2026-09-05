@@ -613,6 +613,18 @@ export const integrationsApi = {
       method: "POST",
     });
   },
+
+  startGmailWatch: async <T = Record<string, unknown>>(): Promise<T> => {
+    return apiClient("/api/integrations/gmail/watch", { method: "POST" });
+  },
+
+  syncGmail: async <T = Record<string, unknown>>(): Promise<T> => {
+    return apiClient("/api/integrations/gmail/sync", { method: "POST" });
+  },
+
+  syncGoogleCalendar: async <T = Record<string, unknown>>(): Promise<T> => {
+    return apiClient("/api/integrations/google_calendar/sync", { method: "POST" });
+  },
 };
 
 // ==========================================

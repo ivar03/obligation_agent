@@ -71,7 +71,7 @@ async def initiate_oauth_connect(
     """
     Generates an OAuth authorization URL with CSRF protection state. Requires ADMIN or higher.
     """
-    return IntegrationService.generate_oauth_url(provider, redirect_uri)
+    return IntegrationService.generate_oauth_url(provider, redirect_uri, workspace_id=workspace.id)
 
 
 @router.get("/{provider}/callback")
@@ -80,7 +80,6 @@ async def handle_oauth_callback(
     code: str = Query(..., description="Authorization code from provider"),
     state: str = Query(..., description="OAuth CSRF state token"),
     db: AsyncSession = DatabaseSession,
-    workspace: Workspace = Depends(get_current_workspace),
 ):
     """
     OAuth redirect callback endpoint.
@@ -91,7 +90,6 @@ async def handle_oauth_callback(
         provider_name=provider,
         code=code,
         state=state,
-        workspace_id=workspace.id,
     )
     # Redirect to frontend integrations page with success parameter
     frontend_redirect = f"{settings.FRONTEND_URL}/integrations?connected={provider}&status=success"
@@ -224,6 +222,43 @@ async def trigger_jira_sync(
         workspace_id=workspace.id,
         project_keys=project_keys,
     )
+
+
+@router.post("/gmail/watch")
+async def start_gmail_watch(
+    db: AsyncSession = DatabaseSession,
+    workspace: Workspace = Depends(get_current_workspace),
+    membership: WorkspaceMembership = Depends(require_role(WorkspaceRole.ADMIN)),
+    user: User = Depends(get_current_user),
+):
+    """Registers or renews the Gmail mailbox watch for the connected account."""
+    from app.services.google_workspace_service import GoogleWorkspaceService
+    return await GoogleWorkspaceService.start_gmail_watch(db, workspace.id)
+
+
+@router.post("/gmail/sync")
+async def sync_gmail(
+    db: AsyncSession = DatabaseSession,
+    workspace: Workspace = Depends(get_current_workspace),
+    membership: WorkspaceMembership = Depends(require_role(WorkspaceRole.ADMIN)),
+    user: User = Depends(get_current_user),
+):
+    """Pulls recent Gmail messages; useful before a public webhook is available."""
+    from app.services.google_workspace_service import GoogleWorkspaceService
+    return await GoogleWorkspaceService.sync_gmail(db, workspace.id)
+
+
+@router.post("/google_calendar/sync")
+@router.post("/google-calendar/sync")
+async def sync_google_calendar(
+    db: AsyncSession = DatabaseSession,
+    workspace: Workspace = Depends(get_current_workspace),
+    membership: WorkspaceMembership = Depends(require_role(WorkspaceRole.ADMIN)),
+    user: User = Depends(get_current_user),
+):
+    """Pulls upcoming Calendar events; useful before a public webhook is available."""
+    from app.services.google_workspace_service import GoogleWorkspaceService
+    return await GoogleWorkspaceService.sync_calendar(db, workspace.id)
 
 
 @router.get("/jira/sync/status")
