@@ -111,9 +111,9 @@ export default function OnboardingPage() {
                 onClick={() => advanceStep(idx)}
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors shrink-0 ${
                   isCurrent
-                    ? "bg-blue-600 text-stone-950 shadow-md shadow-blue-600/20"
+                    ? "bg-orange-600 text-white shadow-md shadow-orange-600/20"
                     : isDone
-                    ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                    ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
                     : "text-stone-500 hover:text-stone-700"
                 }`}
               >
@@ -126,11 +126,11 @@ export default function OnboardingPage() {
       </div>
 
       {/* Wizard Content Cards */}
-      <div className="bg-stone-100 border border-stone-200 rounded-2xl p-8 shadow-xl">
+      <div className="bg-white border border-stone-200 rounded-2xl p-8 shadow-sm">
         {/* STEP 0: Welcome */}
         {currentStepIndex === 0 && (
           <div className="space-y-6 text-center py-4">
-            <div className="w-16 h-16 rounded-2xl bg-blue-600/20 text-blue-500 border border-blue-500/30 flex items-center justify-center mx-auto shadow-lg shadow-blue-600/10">
+            <div className="w-16 h-16 rounded-2xl bg-orange-50 text-orange-600 border border-orange-200 flex items-center justify-center mx-auto shadow-sm">
               <Sparkles className="w-8 h-8" />
             </div>
             <div>
@@ -140,22 +140,22 @@ export default function OnboardingPage() {
               </p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 text-left">
-              <div className="p-4 rounded-xl bg-stone-50/50 border border-stone-200/80">
+              <div className="p-4 rounded-xl bg-stone-50 border border-stone-200">
                 <div className="font-semibold text-stone-800 text-xs mb-1">Atomic Obligations</div>
                 <div className="text-stone-600 text-[11px]">Unambiguous tracking where reciprocal commitment is the core unit.</div>
               </div>
-              <div className="p-4 rounded-xl bg-stone-50/50 border border-stone-200/80">
+              <div className="p-4 rounded-xl bg-stone-50 border border-stone-200">
                 <div className="font-semibold text-stone-800 text-xs mb-1">Human-in-the-Loop</div>
                 <div className="text-stone-600 text-[11px]">Mandatory human approval for all interventions and resolutions.</div>
               </div>
-              <div className="p-4 rounded-xl bg-stone-50/50 border border-stone-200/80">
+              <div className="p-4 rounded-xl bg-stone-50 border border-stone-200">
                 <div className="font-semibold text-stone-800 text-xs mb-1">Graph Intelligence</div>
                 <div className="text-stone-600 text-[11px]">Proactive root-cause analysis and critical path risk prediction.</div>
               </div>
             </div>
             <button
               onClick={() => advanceStep(1)}
-              className="inline-flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-stone-950 rounded-xl text-xs font-semibold shadow-lg shadow-blue-600/20 transition-all active:scale-95"
+              className="inline-flex items-center gap-2 px-6 py-2.5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-semibold shadow transition-all active:scale-95"
             >
               <span>Get Started</span>
               <ArrowRight className="w-4 h-4" />
@@ -167,7 +167,7 @@ export default function OnboardingPage() {
         {currentStepIndex === 1 && (
           <div className="space-y-6">
             <div className="flex items-center gap-3 border-b border-stone-200 pb-4">
-              <Building2 className="w-6 h-6 text-blue-500" />
+              <Building2 className="w-6 h-6 text-orange-600" />
               <div>
                 <h2 className="text-lg font-bold text-stone-900">Set Up Your Workspace</h2>
                 <p className="text-xs text-stone-600">Configure your organization tenant boundary and timezone.</p>
@@ -180,7 +180,7 @@ export default function OnboardingPage() {
                   type="text"
                   value={workspaceName}
                   onChange={(e) => setWorkspaceName(e.target.value)}
-                  className="w-full bg-stone-50 border border-stone-200 rounded-xl px-3.5 py-2.5 text-stone-800 focus:outline-none focus:border-blue-500"
+                  className="w-full bg-stone-50 border border-stone-200 rounded-xl px-3.5 py-2.5 text-stone-800 focus:outline-none focus:border-orange-500"
                 />
               </div>
               <div>
@@ -188,7 +188,7 @@ export default function OnboardingPage() {
                 <select
                   value={timezone}
                   onChange={(e) => setTimezone(e.target.value)}
-                  className="w-full bg-stone-50 border border-stone-200 rounded-xl px-3.5 py-2.5 text-stone-800 focus:outline-none focus:border-blue-500"
+                  className="w-full bg-stone-50 border border-stone-200 rounded-xl px-3.5 py-2.5 text-stone-800 focus:outline-none focus:border-orange-500"
                 >
                   <option value="UTC">UTC (Coordinated Universal Time)</option>
                   <option value="America/New_York">America/New_York (EST/EDT)</option>
@@ -207,7 +207,7 @@ export default function OnboardingPage() {
               </button>
               <button
                 onClick={() => advanceStep(2)}
-                className="inline-flex items-center gap-1.5 px-6 py-2 bg-blue-600 hover:bg-blue-500 text-stone-950 rounded-xl text-xs font-semibold"
+                className="inline-flex items-center gap-1.5 px-6 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-semibold shadow"
               >
                 Continue <ArrowRight className="w-3.5 h-3.5" />
               </button>
@@ -219,7 +219,7 @@ export default function OnboardingPage() {
         {currentStepIndex === 2 && (
           <div className="space-y-6">
             <div className="flex items-center gap-3 border-b border-stone-200 pb-4">
-              <Users className="w-6 h-6 text-purple-400" />
+              <Users className="w-6 h-6 text-orange-600" />
               <div>
                 <h2 className="text-lg font-bold text-stone-900">Invite Your Team</h2>
                 <p className="text-xs text-stone-600">Issue single-use secure invite tokens with granular roles.</p>
@@ -232,12 +232,12 @@ export default function OnboardingPage() {
                 placeholder="colleague@company.com"
                 value={inviteEmail}
                 onChange={(e) => setInviteEmail(e.target.value)}
-                className="flex-1 bg-stone-50 border border-stone-200 rounded-xl px-3.5 py-2 text-stone-800 focus:outline-none focus:border-purple-500"
+                className="flex-1 bg-stone-50 border border-stone-200 rounded-xl px-3.5 py-2 text-stone-800 focus:outline-none focus:border-orange-500"
               />
               <select
                 value={inviteRole}
                 onChange={(e) => setInviteRole(e.target.value)}
-                className="bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-stone-800"
+                className="bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-stone-800 focus:outline-none focus:border-orange-500"
               >
                 <option value="MEMBER">Member</option>
                 <option value="OPERATOR">Operator</option>
@@ -246,7 +246,7 @@ export default function OnboardingPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="px-4 py-2 bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-stone-950 rounded-xl font-medium"
+                className="px-4 py-2 bg-orange-600 hover:bg-orange-700 disabled:opacity-50 text-white rounded-xl font-medium shadow"
               >
                 {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Send Invite"}
               </button>
@@ -258,8 +258,8 @@ export default function OnboardingPage() {
                   {invitationsSent.map((em) => (
                     <div key={em} className="p-2.5 flex items-center justify-between">
                       <span className="text-stone-800">{em}</span>
-                      <span className="text-emerald-400 flex items-center gap-1 text-[11px]">
-                        <CheckCircle2 className="w-3 h-3" /> Token Created
+                      <span className="text-emerald-700 flex items-center gap-1 text-[11px] font-medium">
+                        <CheckCircle2 className="w-3 h-3 text-emerald-600" /> Token Created
                       </span>
                     </div>
                   ))}
@@ -275,7 +275,7 @@ export default function OnboardingPage() {
               </button>
               <button
                 onClick={() => advanceStep(3)}
-                className="inline-flex items-center gap-1.5 px-6 py-2 bg-blue-600 hover:bg-blue-500 text-stone-950 rounded-xl text-xs font-semibold"
+                className="inline-flex items-center gap-1.5 px-6 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-semibold shadow"
               >
                 Continue <ArrowRight className="w-3.5 h-3.5" />
               </button>
@@ -287,20 +287,20 @@ export default function OnboardingPage() {
         {currentStepIndex === 3 && (
           <div className="space-y-6">
             <div className="flex items-center gap-3 border-b border-stone-200 pb-4">
-              <Radio className="w-6 h-6 text-cyan-400" />
+              <Radio className="w-6 h-6 text-orange-600" />
               <div>
                 <h2 className="text-lg font-bold text-stone-900">Connect Slack Communication</h2>
                 <p className="text-xs text-stone-600">Ingest real work signals with HMAC signature verification.</p>
               </div>
             </div>
-            <div className="p-6 rounded-2xl bg-stone-50/50 border border-stone-200/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="p-6 rounded-2xl bg-stone-50 border border-stone-200 flex flex-col sm:flex-row items-center justify-between gap-4">
               <div>
                 <div className="font-semibold text-stone-900 text-sm">Slack Workspace App</div>
                 <p className="text-stone-600 text-xs mt-1">Connect Slack OAuth to monitor commitments across designated channels.</p>
               </div>
               <Link
                 href="/integrations"
-                className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-stone-950 rounded-xl text-xs font-semibold shrink-0"
+                className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-semibold shrink-0 shadow-sm transition"
               >
                 Configure Integration &rarr;
               </Link>
@@ -314,7 +314,7 @@ export default function OnboardingPage() {
               </button>
               <button
                 onClick={() => advanceStep(4)}
-                className="inline-flex items-center gap-1.5 px-6 py-2 bg-blue-600 hover:bg-blue-500 text-stone-950 rounded-xl text-xs font-semibold"
+                className="inline-flex items-center gap-1.5 px-6 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-semibold shadow"
               >
                 Continue <ArrowRight className="w-3.5 h-3.5" />
               </button>
@@ -326,14 +326,14 @@ export default function OnboardingPage() {
         {currentStepIndex === 4 && (
           <div className="space-y-6">
             <div className="flex items-center gap-3 border-b border-stone-200 pb-4">
-              <Bell className="w-6 h-6 text-amber-400" />
+              <Bell className="w-6 h-6 text-orange-600" />
               <div>
                 <h2 className="text-lg font-bold text-stone-900">Alert & Notification Policies</h2>
                 <p className="text-xs text-stone-600">Customize proactive alert conditions for human operators.</p>
               </div>
             </div>
             <div className="space-y-3 text-xs">
-              <label className="flex items-center justify-between p-3.5 rounded-xl bg-stone-50/40 border border-stone-200 cursor-pointer">
+              <label className="flex items-center justify-between p-3.5 rounded-xl bg-stone-50 border border-stone-200 cursor-pointer">
                 <div>
                   <div className="font-medium text-stone-800">Critical Risk & Cascade Alerts</div>
                   <div className="text-stone-600 text-[11px]">Notify when dependency risk crosses critical probability thresholds.</div>
@@ -342,10 +342,10 @@ export default function OnboardingPage() {
                   type="checkbox"
                   checked={alertsEnabled.critical_risk}
                   onChange={(e) => setAlertsEnabled({ ...alertsEnabled, critical_risk: e.target.checked })}
-                  className="rounded text-blue-600 bg-stone-100 border-stone-300"
+                  className="rounded text-orange-600 focus:ring-orange-500 bg-stone-100 border-stone-300"
                 />
               </label>
-              <label className="flex items-center justify-between p-3.5 rounded-xl bg-stone-50/40 border border-stone-200 cursor-pointer">
+              <label className="flex items-center justify-between p-3.5 rounded-xl bg-stone-50 border border-stone-200 cursor-pointer">
                 <div>
                   <div className="font-medium text-stone-800">Evidence Review Required</div>
                   <div className="text-stone-600 text-[11px]">Alert operators when suggested completion evidence requires human verification.</div>
@@ -354,10 +354,10 @@ export default function OnboardingPage() {
                   type="checkbox"
                   checked={alertsEnabled.evidence_confirmation}
                   onChange={(e) => setAlertsEnabled({ ...alertsEnabled, evidence_confirmation: e.target.checked })}
-                  className="rounded text-blue-600 bg-stone-100 border-stone-300"
+                  className="rounded text-orange-600 focus:ring-orange-500 bg-stone-100 border-stone-300"
                 />
               </label>
-              <label className="flex items-center justify-between p-3.5 rounded-xl bg-stone-50/40 border border-stone-200 cursor-pointer">
+              <label className="flex items-center justify-between p-3.5 rounded-xl bg-stone-50 border border-stone-200 cursor-pointer">
                 <div>
                   <div className="font-medium text-stone-800">Decision Plan Authorizations</div>
                   <div className="text-stone-600 text-[11px]">Notify operators when new strategic Decision Plans are generated.</div>
@@ -366,7 +366,7 @@ export default function OnboardingPage() {
                   type="checkbox"
                   checked={alertsEnabled.decision_approval}
                   onChange={(e) => setAlertsEnabled({ ...alertsEnabled, decision_approval: e.target.checked })}
-                  className="rounded text-blue-600 bg-stone-100 border-stone-300"
+                  className="rounded text-orange-600 focus:ring-orange-500 bg-stone-100 border-stone-300"
                 />
               </label>
             </div>
@@ -379,7 +379,7 @@ export default function OnboardingPage() {
               </button>
               <button
                 onClick={() => advanceStep(5)}
-                className="inline-flex items-center gap-1.5 px-6 py-2 bg-blue-600 hover:bg-blue-500 text-stone-950 rounded-xl text-xs font-semibold"
+                className="inline-flex items-center gap-1.5 px-6 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-semibold shadow"
               >
                 Continue <ArrowRight className="w-3.5 h-3.5" />
               </button>
@@ -391,7 +391,7 @@ export default function OnboardingPage() {
         {currentStepIndex === 5 && (
           <div className="space-y-6">
             <div className="flex items-center gap-3 border-b border-stone-200 pb-4">
-              <FileSpreadsheet className="w-6 h-6 text-emerald-400" />
+              <FileSpreadsheet className="w-6 h-6 text-emerald-600" />
               <div>
                 <h2 className="text-lg font-bold text-stone-900">Import Initial Obligations</h2>
                 <p className="text-xs text-stone-600">Bulk upload commitments via CSV or capture from unstructured text.</p>
@@ -400,17 +400,17 @@ export default function OnboardingPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
               <div
                 onClick={() => setImportModalOpen(true)}
-                className="p-6 rounded-2xl bg-stone-50/50 border border-stone-200 hover:border-emerald-500/50 cursor-pointer transition-colors text-center flex flex-col items-center justify-center"
+                className="p-6 rounded-2xl bg-stone-50 border border-stone-200 hover:border-orange-500/50 cursor-pointer transition-colors text-center flex flex-col items-center justify-center"
               >
-                <FileSpreadsheet className="w-8 h-8 text-emerald-400 mb-2" />
+                <FileSpreadsheet className="w-8 h-8 text-emerald-600 mb-2" />
                 <span className="font-semibold text-stone-800">Bulk CSV Ingestion</span>
                 <span className="text-stone-500 text-[11px] mt-0.5">Upload spreadsheet with owners & deadlines</span>
               </div>
               <Link
                 href="/capture"
-                className="p-6 rounded-2xl bg-stone-50/50 border border-stone-200 hover:border-blue-500/50 cursor-pointer transition-colors text-center flex flex-col items-center justify-center"
+                className="p-6 rounded-2xl bg-stone-50 border border-stone-200 hover:border-orange-500/50 cursor-pointer transition-colors text-center flex flex-col items-center justify-center"
               >
-                <Sparkles className="w-8 h-8 text-blue-500 mb-2" />
+                <Sparkles className="w-8 h-8 text-orange-600 mb-2" />
                 <span className="font-semibold text-stone-800">AI Message Capture</span>
                 <span className="text-stone-500 text-[11px] mt-0.5">Extract obligations from emails or chat transcripts</span>
               </Link>
@@ -424,7 +424,7 @@ export default function OnboardingPage() {
               </button>
               <button
                 onClick={() => advanceStep(6)}
-                className="inline-flex items-center gap-1.5 px-6 py-2 bg-blue-600 hover:bg-blue-500 text-stone-950 rounded-xl text-xs font-semibold"
+                className="inline-flex items-center gap-1.5 px-6 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-semibold shadow"
               >
                 Finish Setup <ArrowRight className="w-3.5 h-3.5" />
               </button>
@@ -435,7 +435,7 @@ export default function OnboardingPage() {
         {/* STEP 6: Completed */}
         {currentStepIndex === 6 && (
           <div className="space-y-6 text-center py-6">
-            <div className="w-16 h-16 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/10">
+            <div className="w-16 h-16 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center mx-auto shadow-sm">
               <ShieldCheck className="w-8 h-8" />
             </div>
             <div>
@@ -447,13 +447,13 @@ export default function OnboardingPage() {
             <div className="flex items-center justify-center gap-3 pt-4">
               <Link
                 href="/queues"
-                className="px-5 py-2.5 bg-stone-200 hover:bg-stone-300 text-stone-800 rounded-xl text-xs font-medium transition-colors"
+                className="px-5 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-800 border border-stone-200 rounded-xl text-xs font-semibold transition-colors"
               >
                 View Operational Queues
               </Link>
               <Link
                 href="/intelligence/decisions"
-                className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-stone-950 rounded-xl text-xs font-semibold shadow-lg shadow-blue-600/20 transition-colors"
+                className="px-6 py-2.5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-semibold shadow transition-colors"
               >
                 Launch Decision Center &rarr;
               </Link>

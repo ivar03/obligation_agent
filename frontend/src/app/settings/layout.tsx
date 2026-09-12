@@ -34,7 +34,7 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
               href={t.href}
               className={`flex items-center gap-2 px-4 py-2.5 text-xs font-medium border-b-2 transition-colors shrink-0 ${
                 isActive
-                  ? "border-blue-500 text-blue-500 font-semibold"
+                  ? "border-orange-500 text-orange-600 font-semibold"
                   : "border-transparent text-stone-600 hover:text-stone-800 hover:border-stone-300"
               }`}
             >

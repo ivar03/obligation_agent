@@ -34,27 +34,27 @@ export function InterventionCard({
     switch (intervention.urgency) {
       case "CRITICAL":
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">
-            <Flame className="w-3.5 h-3.5 text-rose-400 animate-pulse" />
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">
+            <Flame className="w-3.5 h-3.5 text-rose-600 animate-pulse" />
             CRITICAL
           </span>
         );
       case "HIGH":
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
-            <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-orange-50 text-orange-700 border border-orange-200">
+            <AlertTriangle className="w-3.5 h-3.5 text-orange-600" />
             HIGH
           </span>
         );
       case "MEDIUM":
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-500/20 text-blue-600 border border-blue-500/30">
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200">
             MEDIUM
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-stone-200 text-stone-700 border border-stone-300">
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-stone-100 text-stone-700 border border-stone-200">
             LOW
           </span>
         );
@@ -65,43 +65,43 @@ export function InterventionCard({
     switch (intervention.status) {
       case "PENDING_REVIEW":
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-300 border border-amber-500/30">
-            <Clock className="w-3 h-3 text-amber-400" />
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200">
+            <Clock className="w-3 h-3 text-amber-600" />
             Pending Review
           </span>
         );
       case "APPROVED":
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">
-            <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+            <CheckCircle2 className="w-3 h-3 text-emerald-600" />
             Approved
           </span>
         );
       case "SCHEDULED":
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-500/10 text-purple-300 border border-purple-500/30">
-            <Calendar className="w-3 h-3 text-purple-400" />
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-stone-100 text-stone-700 border border-stone-200">
+            <Calendar className="w-3 h-3 text-stone-500" />
             Scheduled
           </span>
         );
       case "EXECUTED":
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-600 border border-blue-500/30">
-            <Send className="w-3 h-3 text-blue-500" />
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-orange-50 text-orange-800 border border-orange-200">
+            <Send className="w-3 h-3 text-orange-600" />
             Executed
           </span>
         );
       case "ACKNOWLEDGED":
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-cyan-500/10 text-cyan-300 border border-cyan-500/30">
-            <MessageSquareText className="w-3 h-3 text-cyan-400" />
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-stone-100 text-stone-700 border border-stone-200">
+            <MessageSquareText className="w-3 h-3 text-stone-500" />
             Acknowledged
           </span>
         );
       case "RESOLVED":
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-stone-200 text-stone-600 border border-stone-300">
-            <CheckCircle2 className="w-3 h-3 text-stone-600" />
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-stone-100 text-stone-700 border border-stone-200">
+            <CheckCircle2 className="w-3 h-3 text-stone-500" />
             Resolved
           </span>
         );
@@ -113,7 +113,7 @@ export function InterventionCard({
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-stone-200 text-stone-600 border border-stone-300">
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-stone-100 text-stone-700 border border-stone-200">
             {intervention.status}
           </span>
         );
@@ -126,14 +126,14 @@ export function InterventionCard({
     <div
       className={`rounded-2xl border transition-all duration-200 p-5 ${
         isUrgent
-          ? "bg-stone-100/90 border-amber-500/40 hover:border-amber-500/60 shadow-lg shadow-amber-950/20"
-          : "bg-stone-100/70 border-stone-200/80 hover:border-stone-300 shadow-md"
+          ? "bg-orange-50/20 border-orange-200 hover:border-orange-300 shadow-sm hover:shadow-md"
+          : "bg-white border-stone-200 hover:border-stone-300 shadow-sm hover:shadow-md"
       }`}
     >
       {/* Header: Type, Urgency, Status */}
       <div className="flex flex-wrap items-center justify-between gap-2.5 mb-3">
         <div className="flex items-center gap-2">
-          <span className="px-2.5 py-0.5 rounded-lg text-xs font-bold uppercase tracking-wider bg-stone-200 text-stone-700 border border-stone-300">
+          <span className="px-2.5 py-0.5 rounded-lg text-xs font-semibold uppercase tracking-wider bg-stone-100 text-stone-700 border border-stone-200">
             {formattedType}
           </span>
           {getUrgencyBadge()}
@@ -143,11 +143,11 @@ export function InterventionCard({
 
       {/* Title & Target */}
       <div className="space-y-1 mb-3">
-        <h3 className="text-base font-bold text-stone-950 tracking-tight flex items-center justify-between gap-2">
+        <h3 className="text-base font-bold text-stone-900 tracking-tight flex items-center justify-between gap-2">
           <span>{intervention.title}</span>
           <Link
             href={`/interventions/${intervention.id}`}
-            className="text-stone-600 hover:text-blue-500 transition-colors"
+            className="text-stone-400 hover:text-orange-600 transition-colors"
             title="Inspect Audit Detail"
           >
             <ArrowUpRight className="w-4 h-4" />
@@ -155,11 +155,11 @@ export function InterventionCard({
         </h3>
         <div className="flex flex-wrap items-center gap-3 text-xs text-stone-600">
           <span className="inline-flex items-center gap-1 font-medium text-stone-700">
-            <User className="w-3.5 h-3.5 text-blue-500" />
-            Target: <strong className="text-stone-950 font-semibold">{intervention.target_owner}</strong>
+            <User className="w-3.5 h-3.5 text-stone-400" />
+            Target: <strong className="text-stone-900 font-semibold">{intervention.target_owner}</strong>
           </span>
           {intervention.chain_depth > 1 && (
-            <span className="inline-flex items-center gap-1 text-amber-300 font-medium bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20">
+            <span className="inline-flex items-center gap-1 text-amber-800 font-medium bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">
               ⚡ Follow-up #{intervention.chain_depth}
             </span>
           )}
@@ -167,21 +167,21 @@ export function InterventionCard({
       </div>
 
       {/* Rationale Explanation */}
-      <p className="text-xs text-stone-700 mb-3.5 bg-stone-50/60 p-2.5 rounded-xl border border-stone-200/80 leading-relaxed">
+      <p className="text-xs text-stone-700 mb-3.5 bg-stone-50 p-2.5 rounded-xl border border-stone-200 leading-relaxed">
         <strong className="text-stone-600 font-medium">Why: </strong>
         {intervention.rationale}
       </p>
 
       {/* Suggested / Approved Message Draft Snippet */}
       <div className="mb-4 bg-stone-50 border border-stone-200 rounded-xl p-3">
-        <div className="flex items-center justify-between text-[11px] font-semibold text-stone-600 uppercase tracking-wider mb-1.5">
+        <div className="flex items-center justify-between text-[11px] font-semibold text-stone-500 uppercase tracking-wider mb-1.5">
           <span className="flex items-center gap-1">
-            <Sparkles className="w-3 h-3 text-blue-500" />
+            <Sparkles className="w-3 h-3 text-orange-500" />
             {intervention.approved_message && intervention.status !== "PENDING_REVIEW"
               ? "Approved Message Draft"
               : "Suggested Message Draft"}
           </span>
-          <span className="text-stone-600 lowercase font-normal">human approval required</span>
+          <span className="text-stone-500 lowercase font-normal">human approval required</span>
         </div>
         <p className="text-xs text-stone-800 italic line-clamp-3 leading-relaxed">
           &ldquo;{intervention.approved_message || intervention.message_draft}&rdquo;
@@ -189,12 +189,12 @@ export function InterventionCard({
       </div>
 
       {/* Footer & Actions */}
-      <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-stone-200/80">
+      <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-stone-100">
         <Link
           href={`/obligations/${intervention.obligation_id}`}
-          className="text-xs text-stone-600 hover:text-stone-800 transition-colors inline-flex items-center gap-1"
+          className="text-xs text-stone-500 hover:text-stone-800 transition-colors inline-flex items-center gap-1"
         >
-          <Layers className="w-3.5 h-3.5 text-stone-600" />
+          <Layers className="w-3.5 h-3.5 text-stone-400" />
           <span>View Linked Obligation</span>
         </Link>
 
@@ -202,7 +202,7 @@ export function InterventionCard({
           {intervention.status === "APPROVED" && onExecute && (
             <button
               onClick={() => onExecute(intervention)}
-              className="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-stone-950 text-xs font-semibold shadow-sm transition-all active:scale-95 flex items-center gap-1.5"
+              className="px-3 py-1.5 rounded-lg bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold shadow-sm transition-all active:scale-95 flex items-center gap-1.5"
             >
               <Send className="w-3.5 h-3.5" />
               <span>Execute Mock</span>
@@ -212,10 +212,10 @@ export function InterventionCard({
           {onReview && intervention.status !== "RESOLVED" && intervention.status !== "CANCELLED" && (
             <button
               onClick={() => onReview(intervention)}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all active:scale-95 flex items-center gap-1.5 ${
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all active:scale-95 flex items-center gap-1.5 ${
                 intervention.status === "PENDING_REVIEW"
-                  ? "bg-amber-500 hover:bg-amber-400 text-stone-50 font-bold shadow-md shadow-amber-500/20"
-                  : "bg-stone-200 hover:bg-stone-300 text-stone-800"
+                  ? "bg-orange-600 hover:bg-orange-700 text-white font-semibold shadow-sm"
+                  : "bg-white hover:bg-stone-50 border border-stone-200 text-stone-700"
               }`}
             >
               <Sparkles className="w-3.5 h-3.5" />
@@ -227,7 +227,7 @@ export function InterventionCard({
 
           <Link
             href={`/interventions/${intervention.id}`}
-            className="p-1.5 rounded-lg border border-stone-200 hover:bg-stone-200 text-stone-600 hover:text-stone-800 transition-colors"
+            className="p-1.5 rounded-lg border border-stone-200 hover:bg-stone-100 text-stone-500 hover:text-stone-800 transition-colors"
             title="Full Audit Details"
           >
             <ArrowUpRight className="w-3.5 h-3.5" />

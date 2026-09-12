@@ -141,22 +141,22 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({ isOpen, onClose,
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-      <div className="w-full max-w-3xl max-h-[90vh] bg-stone-100 border border-stone-200 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/40 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+      <div className="w-full max-w-3xl max-h-[90vh] bg-white border border-stone-200 rounded-2xl shadow-xl flex flex-col overflow-hidden">
         {/* Header */}
         <div className="px-6 py-4 border-b border-stone-200 flex items-center justify-between bg-stone-50/60">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-blue-600/20 text-blue-500 border border-blue-500/30 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-orange-50 text-orange-600 border border-orange-200 flex items-center justify-center">
               <FileSpreadsheet className="w-4 h-4" />
             </div>
             <div>
               <h2 className="text-sm font-semibold text-stone-900">Bulk CSV Ingestion</h2>
-              <p className="text-xs text-stone-600">Import team commitments with validation & duplicate detection</p>
+              <p className="text-xs text-stone-500">Import team commitments with validation & duplicate detection</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-stone-600 hover:text-stone-900 hover:bg-stone-200 transition-colors"
+            className="p-1.5 rounded-lg text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -165,16 +165,16 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({ isOpen, onClose,
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-6 space-y-5">
           {/* Template & Helper Bar */}
-          <div className="bg-stone-200/60 border border-stone-300/60 rounded-xl p-3.5 flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div className="bg-stone-50 border border-stone-200 rounded-xl p-3.5 flex flex-wrap items-center justify-between gap-3 text-xs">
             <div className="flex items-center gap-2 text-stone-700">
-              <Info className="w-4 h-4 text-blue-500 shrink-0" />
-              <span>Format: <code className="bg-stone-100 px-1.5 py-0.5 rounded text-blue-600">action, owner, beneficiary, deadline, priority...</code></span>
+              <Info className="w-4 h-4 text-orange-600 shrink-0" />
+              <span>Format: <code className="bg-white border border-stone-200 px-1.5 py-0.5 rounded text-orange-700 font-mono">action, owner, beneficiary, deadline, priority...</code></span>
             </div>
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => setShowFormatGuide(!showFormatGuide)}
-                className="px-2.5 py-1.5 bg-stone-200 hover:bg-stone-300 border border-stone-400 rounded-lg text-stone-800 font-medium flex items-center gap-1.5 transition-colors"
+                className="px-2.5 py-1.5 bg-white hover:bg-stone-50 border border-stone-200 rounded-lg text-stone-700 font-medium flex items-center gap-1.5 transition-colors shadow-sm"
               >
                 <span>Format Guide</span>
                 {showFormatGuide ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
@@ -182,17 +182,17 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({ isOpen, onClose,
               <button
                 type="button"
                 onClick={handleLoadSample}
-                className="px-2.5 py-1.5 bg-indigo-950/60 hover:bg-indigo-900/80 border border-blue-600/30 rounded-lg text-blue-600 font-medium flex items-center gap-1.5 transition-colors"
+                className="px-2.5 py-1.5 bg-white hover:bg-stone-50 border border-stone-200 rounded-lg text-stone-700 font-medium flex items-center gap-1.5 transition-colors shadow-sm"
               >
-                <FileCode className="w-3.5 h-3.5" />
+                <FileCode className="w-3.5 h-3.5 text-stone-400" />
                 <span>Load Sample</span>
               </button>
               <button
                 type="button"
                 onClick={handleDownloadTemplate}
-                className="px-2.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-stone-950 rounded-lg font-medium flex items-center gap-1.5 transition-colors"
+                className="px-2.5 py-1.5 bg-white hover:bg-stone-50 border border-stone-200 text-stone-700 rounded-lg font-medium flex items-center gap-1.5 transition-colors shadow-sm"
               >
-                <Download className="w-3.5 h-3.5" />
+                <Download className="w-3.5 h-3.5 text-stone-400" />
                 <span>Download Template</span>
               </button>
             </div>
@@ -203,46 +203,46 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({ isOpen, onClose,
             <div className="bg-stone-50/80 border border-stone-200 rounded-xl p-4 text-xs space-y-2.5">
               <h4 className="font-semibold text-stone-800">Required & Optional CSV Columns</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-stone-700">
-                <div className="p-2 bg-stone-100 rounded border border-stone-200">
-                  <span className="font-mono text-emerald-400 font-semibold">action</span> <span className="text-rose-400 font-bold">*Required</span>
-                  <p className="text-[11px] text-stone-600">Actionable obligation commitment description.</p>
+                <div className="p-2 bg-white rounded border border-stone-200">
+                  <span className="font-mono text-emerald-700 font-semibold">action</span> <span className="text-rose-600 font-bold">*Required</span>
+                  <p className="text-[11px] text-stone-500">Actionable obligation commitment description.</p>
                 </div>
-                <div className="p-2 bg-stone-100 rounded border border-stone-200">
-                  <span className="font-mono text-emerald-400 font-semibold">owner</span> <span className="text-rose-400 font-bold">*Required</span>
-                  <p className="text-[11px] text-stone-600">Owner email address or assignee identifier.</p>
+                <div className="p-2 bg-white rounded border border-stone-200">
+                  <span className="font-mono text-emerald-700 font-semibold">owner</span> <span className="text-rose-600 font-bold">*Required</span>
+                  <p className="text-[11px] text-stone-500">Owner email address or assignee identifier.</p>
                 </div>
-                <div className="p-2 bg-stone-100 rounded border border-stone-200">
-                  <span className="font-mono text-blue-600 font-semibold">beneficiary</span> <span className="text-stone-500">Optional (default: Company)</span>
-                  <p className="text-[11px] text-stone-600">Recipient or stakeholder name.</p>
+                <div className="p-2 bg-white rounded border border-stone-200">
+                  <span className="font-mono text-orange-700 font-semibold">beneficiary</span> <span className="text-stone-500">Optional (default: Company)</span>
+                  <p className="text-[11px] text-stone-500">Recipient or stakeholder name.</p>
                 </div>
-                <div className="p-2 bg-stone-100 rounded border border-stone-200">
-                  <span className="font-mono text-blue-600 font-semibold">deadline</span> <span className="text-stone-500">Optional</span>
-                  <p className="text-[11px] text-stone-600">Format: <code className="text-stone-700">YYYY-MM-DD</code></p>
+                <div className="p-2 bg-white rounded border border-stone-200">
+                  <span className="font-mono text-orange-700 font-semibold">deadline</span> <span className="text-stone-500">Optional</span>
+                  <p className="text-[11px] text-stone-500">Format: <code className="text-stone-700">YYYY-MM-DD</code></p>
                 </div>
-                <div className="p-2 bg-stone-100 rounded border border-stone-200">
-                  <span className="font-mono text-blue-600 font-semibold">priority</span> <span className="text-stone-500">Optional (default: MEDIUM)</span>
-                  <p className="text-[11px] text-stone-600">Allowed: <code className="text-stone-700">LOW, MEDIUM, HIGH, CRITICAL</code></p>
+                <div className="p-2 bg-white rounded border border-stone-200">
+                  <span className="font-mono text-orange-700 font-semibold">priority</span> <span className="text-stone-500">Optional (default: MEDIUM)</span>
+                  <p className="text-[11px] text-stone-500">Allowed: <code className="text-stone-700">LOW, MEDIUM, HIGH, CRITICAL</code></p>
                 </div>
-                <div className="p-2 bg-stone-100 rounded border border-stone-200">
-                  <span className="font-mono text-blue-600 font-semibold">dependencies</span> <span className="text-stone-500">Optional</span>
-                  <p className="text-[11px] text-stone-600">Comma-separated matching actions for prerequisites.</p>
+                <div className="p-2 bg-white rounded border border-stone-200">
+                  <span className="font-mono text-orange-700 font-semibold">dependencies</span> <span className="text-stone-500">Optional</span>
+                  <p className="text-[11px] text-stone-500">Comma-separated matching actions for prerequisites.</p>
                 </div>
               </div>
             </div>
           )}
 
           {errorMsg && (
-            <div className="p-3 bg-rose-950/40 border border-rose-500/30 rounded-xl text-rose-300 text-xs flex items-start gap-2">
-              <AlertCircle className="w-4 h-4 shrink-0 text-rose-400 mt-0.5" />
+            <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-800 text-xs flex items-start gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0 text-rose-600 mt-0.5" />
               <span>{errorMsg}</span>
             </div>
           )}
 
           {/* Upload and Text Area */}
           <div className="grid grid-cols-1 gap-4">
-            <label className="border-2 border-dashed border-stone-300 hover:border-blue-500/50 bg-stone-50/40 hover:bg-stone-50/80 rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer transition-colors text-center">
-              <Upload className="w-5 h-5 text-stone-600 mb-1.5" />
-              <span className="font-medium text-xs text-stone-800">Click or drag .csv file to upload</span>
+            <label className="border-2 border-dashed border-stone-300 hover:border-orange-400 bg-stone-50/50 hover:bg-stone-50 rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer transition-colors text-center">
+              <Upload className="w-5 h-5 text-stone-400 mb-1.5" />
+              <span className="font-medium text-xs text-stone-700">Click or drag .csv file to upload</span>
               <input type="file" accept=".csv,text/csv" onChange={handleFileUpload} className="hidden" />
             </label>
 
@@ -256,15 +256,15 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({ isOpen, onClose,
                 }}
                 placeholder="action,owner,beneficiary,deadline,priority,obligation_type..."
                 rows={5}
-                className="w-full bg-stone-50 border border-stone-200 rounded-xl p-3 text-xs font-mono text-stone-800 focus:outline-none focus:border-blue-500"
+                className="w-full bg-white border border-stone-200 rounded-xl p-3 text-xs font-mono text-stone-800 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/20"
               />
             </div>
           </div>
 
           {/* Loading Indicator */}
           {loading && (
-            <div className="flex items-center justify-center py-4 text-xs text-stone-600 gap-2">
-              <Loader2 className="w-4 h-4 animate-spin text-blue-500" />
+            <div className="flex items-center justify-center py-4 text-xs text-stone-500 gap-2">
+              <Loader2 className="w-4 h-4 animate-spin text-orange-600" />
               <span>Validating CSV rows...</span>
             </div>
           )}
@@ -274,19 +274,19 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({ isOpen, onClose,
             <div className="space-y-4">
               <div className="flex items-center justify-between bg-stone-50 border border-stone-200 rounded-xl p-3.5 text-xs">
                 <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-1.5 text-emerald-400 font-medium">
-                    <CheckCircle2 className="w-4 h-4" />
+                  <div className="flex items-center gap-1.5 text-emerald-700 font-medium">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                     <span>{preview.valid_rows_count} Valid</span>
                   </div>
                   {preview.invalid_rows_count > 0 && (
-                    <div className="flex items-center gap-1.5 text-rose-400 font-medium">
-                      <AlertCircle className="w-4 h-4" />
+                    <div className="flex items-center gap-1.5 text-rose-700 font-medium">
+                      <AlertCircle className="w-4 h-4 text-rose-600" />
                       <span>{preview.invalid_rows_count} Invalid</span>
                     </div>
                   )}
                   {preview.detected_duplicates.length > 0 && (
-                    <div className="flex items-center gap-1.5 text-amber-400 font-medium">
-                      <AlertTriangle className="w-4 h-4" />
+                    <div className="flex items-center gap-1.5 text-amber-700 font-medium">
+                      <AlertTriangle className="w-4 h-4 text-amber-600" />
                       <span>{preview.detected_duplicates.length} Duplicate(s)</span>
                     </div>
                   )}
@@ -296,7 +296,7 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({ isOpen, onClose,
                     type="checkbox"
                     checked={skipDuplicates}
                     onChange={(e) => setSkipDuplicates(e.target.checked)}
-                    className="rounded border-stone-300 bg-stone-200 text-blue-600 focus:ring-0"
+                    className="rounded border-stone-300 accent-orange-600 focus:ring-0"
                   />
                   <span>Skip Duplicate Commitments</span>
                 </label>
@@ -305,7 +305,7 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({ isOpen, onClose,
               {/* Rows Table */}
               <div className="border border-stone-200 rounded-xl overflow-hidden max-h-60 overflow-y-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-stone-50/80 border-b border-stone-200 sticky top-0">
+                  <thead className="bg-stone-50 border-b border-stone-200 sticky top-0">
                     <tr>
                       <th className="py-2.5 px-3 font-semibold text-stone-600 w-12">Row</th>
                       <th className="py-2.5 px-3 font-semibold text-stone-600">Action</th>
@@ -314,31 +314,31 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({ isOpen, onClose,
                       <th className="py-2.5 px-3 font-semibold text-stone-600">Status</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-stone-200/50 bg-stone-100/40">
+                  <tbody className="divide-y divide-stone-100 bg-white">
                     {preview.validation_results.map((res) => (
-                      <tr key={res.row_index} className={res.is_valid ? "" : "bg-rose-950/20"}>
-                        <td className="py-2 px-3 font-mono text-stone-500">{res.row_index}</td>
+                      <tr key={res.row_index} className={res.is_valid ? "" : "bg-rose-50/50"}>
+                        <td className="py-2 px-3 font-mono text-stone-400">{res.row_index}</td>
                         <td className="py-2 px-3 text-stone-800">
-                          {res.parsed_data?.action || <span className="text-rose-400 italic">Empty Action</span>}
+                          {res.parsed_data?.action || <span className="text-rose-600 italic">Empty Action</span>}
                           {res.errors.length > 0 && (
-                            <div className="text-[11px] text-rose-400 mt-0.5 font-sans">
+                            <div className="text-[11px] text-rose-700 mt-0.5 font-sans">
                               {res.errors.join(", ")}
                             </div>
                           )}
                         </td>
-                        <td className="py-2 px-3 text-stone-700 font-mono text-[11px]">
+                        <td className="py-2 px-3 text-stone-600 font-mono text-[11px]">
                           {res.parsed_data?.owner || "-"}
                         </td>
-                        <td className="py-2 px-3 text-stone-600">
+                        <td className="py-2 px-3 text-stone-500">
                           {res.parsed_data?.deadline || "-"}
                         </td>
                         <td className="py-2 px-3">
                           {res.is_valid ? (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
                               Ready
                             </span>
                           ) : (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-rose-500/10 text-rose-400 border border-rose-500/20">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-rose-50 text-rose-700 border border-rose-200">
                               Invalid
                             </span>
                           )}
@@ -357,7 +357,7 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({ isOpen, onClose,
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-xs font-semibold text-stone-700 hover:text-stone-900 hover:bg-stone-200 rounded-lg transition-colors"
+            className="px-4 py-2 text-xs font-medium text-stone-600 hover:text-stone-900 hover:bg-stone-100 rounded-lg transition-colors"
           >
             Cancel
           </button>
@@ -365,7 +365,7 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({ isOpen, onClose,
             type="button"
             onClick={handleCommit}
             disabled={!preview?.can_commit || committing || preview.valid_rows_count === 0}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-stone-950 text-xs font-semibold rounded-lg shadow-sm transition-colors flex items-center gap-2"
+            className="px-4 py-2 bg-orange-600 hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-semibold rounded-lg shadow-sm transition-colors flex items-center gap-2"
           >
             {committing ? (
               <>

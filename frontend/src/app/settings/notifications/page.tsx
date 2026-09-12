@@ -73,7 +73,7 @@ export default function NotificationsSettingsPage() {
             type="checkbox"
             checked={prefs.critical_risk_detected}
             onChange={() => handleToggle("critical_risk_detected")}
-            className="rounded text-blue-600 bg-stone-100 border-stone-300"
+            className="rounded text-orange-600 focus:ring-orange-500 bg-stone-100 border-stone-300"
           />
         </label>
 
@@ -86,7 +86,7 @@ export default function NotificationsSettingsPage() {
             type="checkbox"
             checked={prefs.evidence_awaiting_confirmation}
             onChange={() => handleToggle("evidence_awaiting_confirmation")}
-            className="rounded text-blue-600 bg-stone-100 border-stone-300"
+            className="rounded text-orange-600 focus:ring-orange-500 bg-stone-100 border-stone-300"
           />
         </label>
 
@@ -99,7 +99,7 @@ export default function NotificationsSettingsPage() {
             type="checkbox"
             checked={prefs.decision_plan_awaiting_approval}
             onChange={() => handleToggle("decision_plan_awaiting_approval")}
-            className="rounded text-blue-600 bg-stone-100 border-stone-300"
+            className="rounded text-orange-600 focus:ring-orange-500 bg-stone-100 border-stone-300"
           />
         </label>
 
@@ -112,7 +112,7 @@ export default function NotificationsSettingsPage() {
             type="checkbox"
             checked={prefs.execution_failed}
             onChange={() => handleToggle("execution_failed")}
-            className="rounded text-blue-600 bg-stone-100 border-stone-300"
+            className="rounded text-orange-600 focus:ring-orange-500 bg-stone-100 border-stone-300"
           />
         </label>
       </div>
@@ -121,13 +121,13 @@ export default function NotificationsSettingsPage() {
         <button
           onClick={handleSave}
           disabled={loading}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-stone-950 rounded-xl text-xs font-semibold shadow transition-all"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-orange-600 hover:bg-orange-700 disabled:opacity-50 text-white rounded-xl text-xs font-semibold shadow transition-all"
         >
           {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
           <span>Save Preferences</span>
         </button>
         {saved && (
-          <span className="inline-flex items-center gap-1 text-emerald-400 text-xs animate-in fade-in">
+          <span className="inline-flex items-center gap-1 text-emerald-600 text-xs animate-in fade-in">
             <CheckCircle2 className="w-3.5 h-3.5" /> Preferences saved
           </span>
         )}

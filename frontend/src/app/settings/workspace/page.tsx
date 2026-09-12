@@ -81,7 +81,7 @@ export default function WorkspaceSettingsPage() {
           <select
             value={timezone}
             onChange={(e) => setTimezone(e.target.value)}
-            className="w-full bg-stone-50 border border-stone-200 rounded-xl px-3.5 py-2.5 text-stone-800 focus:outline-none focus:border-blue-500"
+            className="w-full bg-stone-50 border border-stone-200 rounded-xl px-3.5 py-2.5 text-stone-800 focus:outline-none focus:border-orange-500"
           >
             <option value="UTC">UTC (Coordinated Universal Time)</option>
             <option value="America/New_York">America/New_York (EST/EDT)</option>
@@ -101,7 +101,7 @@ export default function WorkspaceSettingsPage() {
             max={365}
             value={retentionDays}
             onChange={(e) => setRetentionDays(Number(e.target.value))}
-            className="w-full bg-stone-50 border border-stone-200 rounded-xl px-3.5 py-2.5 text-stone-800 focus:outline-none focus:border-blue-500"
+            className="w-full bg-stone-50 border border-stone-200 rounded-xl px-3.5 py-2.5 text-stone-800 focus:outline-none focus:border-orange-500"
           />
           <p className="text-[11px] text-stone-500 mt-1">Audit logs, event telemetry, and completed plans are preserved for this period.</p>
         </div>
@@ -110,13 +110,13 @@ export default function WorkspaceSettingsPage() {
           <button
             type="submit"
             disabled={loading}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-stone-950 rounded-xl text-xs font-semibold shadow-md transition-all active:scale-95"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-orange-600 hover:bg-orange-700 disabled:opacity-50 text-white rounded-xl text-xs font-semibold shadow-md transition-all active:scale-95"
           >
             {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
             <span>Save Settings</span>
           </button>
           {saved && (
-            <span className="inline-flex items-center gap-1 text-emerald-400 text-xs animate-in fade-in">
+            <span className="inline-flex items-center gap-1 text-emerald-600 text-xs animate-in fade-in">
               <CheckCircle2 className="w-3.5 h-3.5" /> Saved successfully
             </span>
           )}

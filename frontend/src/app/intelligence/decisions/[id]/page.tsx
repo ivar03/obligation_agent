@@ -267,7 +267,7 @@ export default function DecisionDetailPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-stone-50 flex flex-col items-center justify-center text-stone-600">
-        <RefreshCw className="w-8 h-8 animate-spin mb-3 text-violet-400" />
+        <RefreshCw className="w-8 h-8 animate-spin mb-3 text-orange-600" />
         <p className="text-sm">Synthesizing Decision Plan & Multi-Source Intelligence...</p>
       </div>
     );
@@ -276,13 +276,13 @@ export default function DecisionDetailPage() {
   if (error && !plan) {
     return (
       <div className="min-h-screen bg-stone-50 text-stone-900 p-8">
-        <div className="max-w-2xl mx-auto bg-stone-100 border border-stone-200 rounded-xl p-6 text-center">
-          <AlertTriangle className="w-12 h-12 text-rose-400 mx-auto mb-3" />
+        <div className="max-w-2xl mx-auto bg-white border border-stone-200 rounded-xl p-6 text-center shadow-sm">
+          <AlertTriangle className="w-12 h-12 text-rose-600 mx-auto mb-3" />
           <h2 className="text-lg font-bold text-stone-950 mb-2">Error Loading Decision Plan</h2>
           <p className="text-sm text-stone-600 mb-4">{error}</p>
           <Link
             href="/intelligence/decisions"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-violet-600 hover:bg-violet-500 text-stone-950 rounded-lg text-sm transition"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-lg text-sm transition shadow-sm"
           >
             <ArrowLeft className="w-4 h-4" /> Back to Decision Center
           </Link>
@@ -307,23 +307,23 @@ export default function DecisionDetailPage() {
         <div>
           <Link
             href="/intelligence/decisions"
-            className="inline-flex items-center gap-1.5 text-xs text-stone-600 hover:text-violet-400 transition mb-2"
+            className="inline-flex items-center gap-1.5 text-xs text-stone-600 hover:text-orange-600 transition mb-2"
           >
             <ArrowLeft className="w-3.5 h-3.5" /> Back to Decision Queue
           </Link>
           <div className="flex items-center gap-3">
             <h1 className="text-2xl font-bold tracking-tight text-stone-950 flex items-center gap-2">
               <span>Decision Plan</span>
-              <span className="text-xs px-2.5 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-500/30 font-mono">
+              <span className="text-xs px-2.5 py-0.5 rounded-full bg-orange-50 text-orange-700 border border-orange-200 font-mono">
                 v{plan.plan_version}
               </span>
               <span
                 className={`text-xs px-2.5 py-0.5 rounded-full font-bold uppercase ${
                   plan.status === "APPROVED"
-                    ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                    ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
                     : plan.status === "REJECTED"
-                    ? "bg-rose-500/20 text-rose-300 border border-rose-500/30"
-                    : "bg-amber-500/20 text-amber-300 border border-amber-500/30"
+                    ? "bg-rose-50 text-rose-700 border border-rose-200"
+                    : "bg-amber-50 text-amber-700 border border-amber-200"
                 }`}
               >
                 {plan.status}
@@ -342,14 +342,14 @@ export default function DecisionDetailPage() {
               <button
                 onClick={() => setShowApproveModal(true)}
                 disabled={actionLoading}
-                className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-stone-950 font-medium text-sm rounded-lg transition shadow-lg shadow-emerald-950/40"
+                className="flex items-center gap-1.5 px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-semibold text-sm rounded-lg transition shadow-sm"
               >
                 <Check className="w-4 h-4" /> Authorize & Approve
               </button>
               <button
                 onClick={() => setShowRejectModal(true)}
                 disabled={actionLoading}
-                className="flex items-center gap-1.5 px-4 py-2 bg-stone-200 hover:bg-rose-900/60 text-stone-800 hover:text-rose-200 border border-stone-300 font-medium text-sm rounded-lg transition"
+                className="flex items-center gap-1.5 px-4 py-2 bg-white hover:bg-rose-50 text-rose-700 border border-stone-200 font-semibold text-sm rounded-lg transition shadow-xs"
               >
                 <X className="w-4 h-4" /> Reject Plan
               </button>
@@ -359,7 +359,7 @@ export default function DecisionDetailPage() {
           <button
             onClick={handleRefresh}
             disabled={actionLoading}
-            className="flex items-center gap-1.5 px-3.5 py-2 bg-stone-100 border border-stone-300 hover:bg-stone-200 text-stone-700 text-sm font-medium rounded-lg transition"
+            className="flex items-center gap-1.5 px-3.5 py-2 bg-white border border-stone-200 hover:bg-stone-50 text-stone-700 text-sm font-medium rounded-lg transition shadow-xs"
             title="Recalculate and generate new plan version"
           >
             <RefreshCw className={`w-4 h-4 ${actionLoading ? "animate-spin" : ""}`} /> Refresh
@@ -369,14 +369,14 @@ export default function DecisionDetailPage() {
 
       {/* Staleness Banner */}
       {plan.is_stale && (
-        <div className="bg-amber-500/10 border border-amber-500/30 text-amber-300 px-4 py-3 rounded-xl text-sm my-4 flex items-center justify-between">
+        <div className="bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded-xl text-sm my-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4 text-amber-400" />
+            <AlertTriangle className="w-4 h-4 text-amber-600" />
             <span>This plan is marked <strong>STALE</strong> due to recent graph state or dependency changes.</span>
           </div>
           <button
             onClick={handleRefresh}
-            className="text-xs bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 px-3 py-1 rounded-md font-semibold transition"
+            className="text-xs bg-amber-100 hover:bg-amber-200 text-amber-900 px-3 py-1 rounded-md font-semibold transition"
           >
             Refresh to v{plan.plan_version + 1}
           </button>
@@ -388,11 +388,11 @@ export default function DecisionDetailPage() {
         {/* Left Column: Situation, Critical Path, Strategies, Simulator */}
         <div className="lg:col-span-2 space-y-6">
           {/* Situation & Target Obligation */}
-          <div className="bg-stone-100/80 border border-stone-200/80 rounded-xl p-5 shadow-sm backdrop-blur-sm">
+          <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-sm">
             <h2 className="text-xs font-semibold uppercase tracking-wider text-stone-600 mb-3 flex items-center gap-2">
-              <Layers className="w-4 h-4 text-violet-400" /> Situation & Commitment State
+              <Layers className="w-4 h-4 text-stone-500" /> Situation & Commitment State
             </h2>
-            <div className="bg-stone-50/60 border border-stone-200 rounded-lg p-4">
+            <div className="bg-stone-50 border border-stone-200 rounded-lg p-4">
               <div className="text-lg font-bold text-stone-950 mb-2">
                 {plan.target_obligation_action}
               </div>
@@ -409,7 +409,7 @@ export default function DecisionDetailPage() {
                 </div>
                 <div>
                   <span className="text-stone-500 block">Risk Score</span>
-                  <strong className={plan.overall_risk >= 0.5 ? "text-rose-400" : "text-stone-800"}>
+                  <strong className={plan.overall_risk >= 0.5 ? "text-rose-700" : "text-stone-800"}>
                     {(plan.overall_risk * 100).toFixed(0)}%
                   </strong>
                 </div>
@@ -424,21 +424,21 @@ export default function DecisionDetailPage() {
           </div>
 
           {/* Critical Path Visualizer */}
-          <div className="bg-stone-100/80 border border-stone-200/80 rounded-xl p-5 shadow-sm backdrop-blur-sm">
+          <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-sm">
             <h2 className="text-xs font-semibold uppercase tracking-wider text-stone-600 mb-3 flex items-center gap-2">
-              <GitCommit className="w-4 h-4 text-violet-400" /> Critical Dependency Path ({criticalPathNodes.length || 1} Hops)
+              <GitCommit className="w-4 h-4 text-orange-600" /> Critical Dependency Path ({criticalPathNodes.length || 1} Hops)
             </h2>
             <div className="flex items-center gap-2 overflow-x-auto py-2">
               {criticalPathNodes.map((node, idx) => (
                 <React.Fragment key={node.obligation_id || idx}>
                   <div className={`p-3 rounded-lg border text-xs min-w-[170px] ${
                     idx === 0
-                      ? "bg-rose-500/10 border-rose-500/30 text-rose-200"
+                      ? "bg-rose-50 border-rose-200 text-rose-800"
                       : idx === (criticalPathNodes.length - 1)
-                      ? "bg-violet-500/10 border-violet-500/30 text-violet-200"
-                      : "bg-stone-50/60 border-stone-200 text-stone-700"
+                      ? "bg-orange-50 border-orange-200 text-orange-800"
+                      : "bg-stone-50 border-stone-200 text-stone-700"
                   }`}>
-                    <div className="text-[10px] uppercase font-bold text-stone-600 mb-1 flex items-center justify-between">
+                    <div className="text-[10px] uppercase font-bold text-stone-500 mb-1 flex items-center justify-between">
                       <span>Hop {idx + 1}{idx === 0 ? " (Root)" : ""}</span>
                       <span className="font-mono text-[9px] text-stone-500">{node.status}</span>
                     </div>
@@ -458,9 +458,9 @@ export default function DecisionDetailPage() {
           </div>
 
           {/* Resolution Strategies & Ranking */}
-          <div className="bg-stone-100/80 border border-stone-200/80 rounded-xl p-5 shadow-sm backdrop-blur-sm">
+          <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-sm">
             <h2 className="text-xs font-semibold uppercase tracking-wider text-stone-600 mb-3 flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-violet-400" /> Candidate Resolution Strategies ({allStrategies.length})
+              <Sparkles className="w-4 h-4 text-orange-600" /> Candidate Resolution Strategies ({allStrategies.length})
             </h2>
 
             <div className="space-y-3">
@@ -469,14 +469,14 @@ export default function DecisionDetailPage() {
                   key={strat.strategy_id || idx}
                   className={`p-4 rounded-xl border transition ${
                     strat.is_primary_recommendation
-                      ? "bg-gradient-to-r from-violet-950/30 to-indigo-950/20 border-violet-500/40 shadow-sm"
-                      : "bg-stone-50/60 border-stone-200 hover:border-stone-300"
+                      ? "bg-[#FFF7ED] border-orange-200 shadow-xs"
+                      : "bg-white border-stone-200 hover:border-stone-300"
                   }`}
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
                     <div className="flex items-center gap-2">
                       {strat.is_primary_recommendation && (
-                        <span className="px-2 py-0.5 rounded-full bg-violet-500/20 text-violet-300 text-[10px] font-bold uppercase tracking-wider border border-violet-500/30">
+                        <span className="px-2 py-0.5 rounded-full bg-orange-100 text-orange-800 text-[10px] font-bold uppercase tracking-wider border border-orange-200">
                           Recommended
                         </span>
                       )}
@@ -486,15 +486,15 @@ export default function DecisionDetailPage() {
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <div className="text-xs text-stone-600 bg-stone-100 px-2.5 py-1 rounded border border-stone-200">
-                        Score: <strong className="text-violet-400 font-mono">{strat.decision_score?.toFixed(2)}</strong>
+                      <div className="text-xs text-stone-600 bg-white px-2.5 py-1 rounded border border-stone-200">
+                        Score: <strong className="text-orange-700 font-mono">{strat.decision_score?.toFixed(2)}</strong>
                       </div>
                       <button
                         onClick={() => handleRunSimulation(strat.is_primary_recommendation ? "primary" : strat.strategy_id)}
                         disabled={simulating}
-                        className="px-2.5 py-1 bg-violet-600/20 hover:bg-violet-600/30 text-violet-300 border border-violet-500/30 text-xs rounded font-medium transition flex items-center gap-1"
+                        className="px-2.5 py-1 bg-white hover:bg-stone-50 text-stone-700 border border-stone-200 text-xs rounded-lg font-medium transition flex items-center gap-1 shadow-2xs"
                       >
-                        <Zap className="w-3 h-3" /> Simulate
+                        <Zap className="w-3 h-3 text-orange-600" /> Simulate
                       </button>
                     </div>
                   </div>
@@ -503,7 +503,7 @@ export default function DecisionDetailPage() {
                     {strat.rationale}
                   </p>
 
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] text-stone-600 bg-stone-50/80 p-2.5 rounded border border-stone-200/80">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] text-stone-600 bg-stone-50 p-2.5 rounded border border-stone-200">
                     <div>
                       <span className="text-stone-500 block">Target Owner</span>
                       <strong className="text-stone-800">{strat.target_owner}</strong>
@@ -514,11 +514,11 @@ export default function DecisionDetailPage() {
                     </div>
                     <div>
                       <span className="text-stone-500 block">Risk Reduction (Δ)</span>
-                      <strong className="text-emerald-400 font-mono">{strat.risk_reduction?.toFixed(2)}</strong>
+                      <strong className="text-emerald-700 font-mono">{strat.risk_reduction?.toFixed(2)}</strong>
                     </div>
                     <div>
                       <span className="text-stone-500 block">Projected Unblocks</span>
-                      <strong className="text-violet-400">{strat.projected_unblocks_count} obligation(s)</strong>
+                      <strong className="text-stone-900">{strat.projected_unblocks_count} obligation(s)</strong>
                     </div>
                   </div>
                 </div>
@@ -527,21 +527,21 @@ export default function DecisionDetailPage() {
           </div>
 
           {/* Interactive Counterfactual Simulator */}
-          <div className="bg-stone-100/80 border border-stone-200/80 rounded-xl p-5 shadow-sm backdrop-blur-sm">
+          <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-sm">
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-xs font-semibold uppercase tracking-wider text-stone-600 flex items-center gap-2">
-                <Zap className="w-4 h-4 text-amber-400" /> Counterfactual Resolution Simulator
+                <Zap className="w-4 h-4 text-amber-600" /> Counterfactual Resolution Simulator
               </h2>
-              <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[10px] font-bold tracking-wider border border-amber-500/30">
+              <span className="px-2 py-0.5 rounded bg-amber-50 text-amber-800 text-[10px] font-bold tracking-wider border border-amber-200">
                 ⚠️ SIMULATION — NO CHANGES HAVE BEEN MADE TO LIVE STATE
               </span>
             </div>
 
             {simulationResult ? (
-              <div className="bg-stone-50/70 border border-stone-200 rounded-xl p-4">
+              <div className="bg-stone-50 border border-stone-200 rounded-xl p-4">
                 <div className="flex items-center justify-between text-xs text-stone-600 mb-3 pb-2 border-b border-stone-200">
-                  <span>Action Simulated: <strong className="text-violet-400">{simulationResult.simulated_action}</strong></span>
-                  <span>Risk Delta (Δ): <strong className="text-emerald-400 font-mono">{simulationResult.risk_delta?.toFixed(2)}</strong></span>
+                  <span>Action Simulated: <strong className="text-orange-700">{simulationResult.simulated_action}</strong></span>
+                  <span>Risk Delta (Δ): <strong className="text-emerald-700 font-mono">{simulationResult.risk_delta?.toFixed(2)}</strong></span>
                 </div>
 
                 <p className="text-xs text-stone-700 mb-3">
@@ -550,14 +550,14 @@ export default function DecisionDetailPage() {
 
                 {simulationResult.unblocked_obligations?.length > 0 && (
                   <div>
-                    <div className="text-[11px] font-semibold uppercase tracking-wider text-emerald-400 mb-2">
+                    <div className="text-[11px] font-semibold uppercase tracking-wider text-emerald-700 mb-2">
                       Projected Unblocked Obligations ({simulationResult.unblocked_obligations.length}):
                     </div>
                     <div className="space-y-1.5">
                       {((simulationResult.unblocked_obligations || []) as unknown as UnblockedItem[]).map((unb, idx) => (
-                        <div key={idx} className="bg-emerald-950/20 border border-emerald-500/20 rounded px-3 py-1.5 text-xs text-emerald-300 flex items-center justify-between">
+                        <div key={idx} className="bg-emerald-50 border border-emerald-200 rounded px-3 py-1.5 text-xs text-emerald-800 flex items-center justify-between">
                           <span>{unb.owner}: {unb.action}</span>
-                          <span className="font-mono text-[10px]">{unb.previous_status || "BLOCKED"} ➔ {unb.projected_status || "CONFIRMED"}</span>
+                          <span className="font-mono text-[10px] font-semibold">{unb.previous_status || "BLOCKED"} ➔ {unb.projected_status || "CONFIRMED"}</span>
                         </div>
                       ))}
                     </div>
@@ -575,18 +575,18 @@ export default function DecisionDetailPage() {
         {/* Right Column: Human Decisions, Explainability, Provenance & History */}
         <div className="space-y-6">
           {/* Phase 16: Controlled Decision Execution Panel */}
-          <div className="bg-gradient-to-b from-stone-100/90 to-stone-50/90 border border-violet-500/30 rounded-xl p-5 shadow-lg relative overflow-hidden">
+          <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-sm relative overflow-hidden">
             <div className="flex items-center justify-between gap-2 mb-3">
-              <h2 className="text-xs font-semibold uppercase tracking-wider text-violet-300 flex items-center gap-2">
-                <Send className="w-4 h-4 text-violet-400" /> Controlled Execution Layer
+              <h2 className="text-xs font-semibold uppercase tracking-wider text-stone-700 flex items-center gap-2">
+                <Send className="w-4 h-4 text-orange-600" /> Controlled Execution Layer
               </h2>
               {latestExecution && (
                 <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold ${
                   latestExecution.status === "RESOLVED"
-                    ? "bg-emerald-950 border border-emerald-500/40 text-emerald-300"
+                    ? "bg-emerald-50 border border-emerald-200 text-emerald-700"
                     : latestExecution.status === "FAILED"
-                    ? "bg-rose-950 border border-rose-500/40 text-rose-300"
-                    : "bg-violet-950 border border-violet-500/40 text-violet-300 animate-pulse"
+                    ? "bg-rose-50 border border-rose-200 text-rose-700"
+                    : "bg-orange-50 border border-orange-200 text-orange-700 animate-pulse"
                 }`}>
                   {latestExecution.status}
                 </span>
@@ -596,14 +596,14 @@ export default function DecisionDetailPage() {
             {/* Provider Selector & Action Dispatch */}
             {plan.status === "APPROVED" || plan.status === "PARTIALLY_EXECUTED" ? (
               <div className="space-y-3">
-                <div className="bg-stone-50/80 p-3 rounded-lg border border-stone-200 space-y-2 text-xs">
+                <div className="bg-stone-50 p-3 rounded-lg border border-stone-200 space-y-2 text-xs">
                   <div className="flex items-center justify-between">
                     <span className="text-stone-600">Target Provider</span>
                     <select
                       value={selectedProvider}
                       onChange={(e) => setSelectedProvider(e.target.value)}
                       disabled={actionLoading || Boolean(latestExecution && ["EXECUTING", "RESPONSE_PENDING"].includes(latestExecution.status))}
-                      className="bg-stone-100 border border-stone-300 text-stone-800 text-xs rounded px-2 py-1 outline-none font-mono"
+                      className="bg-white border border-stone-300 text-stone-800 text-xs rounded px-2 py-1 outline-none font-mono"
                     >
                       <option value="mock">Mock Simulator (Deterministic)</option>
                       <option value="slack">Slack Outbound Adapter</option>
@@ -617,7 +617,7 @@ export default function DecisionDetailPage() {
 
                   <div className="space-y-1 pt-1">
                     <span className="text-[11px] text-stone-500 block">Outbound Payload Snippet</span>
-                    <p className="text-[11px] text-stone-700 font-mono bg-stone-100 p-2 rounded border border-stone-200/80">
+                    <p className="text-[11px] text-stone-700 font-mono bg-white p-2 rounded border border-stone-200">
                       {((plan.recommended_actions as unknown as Record<string, unknown>)?.action_summary as string) || plan.recommended_actions?.strategy_name || "Follow up on overdue obligation."}
                     </p>
                   </div>
@@ -629,7 +629,7 @@ export default function DecisionDetailPage() {
                     <button
                       onClick={handleExecuteAction}
                       disabled={actionLoading}
-                      className="flex-1 py-2 bg-gradient-to-r from-violet-600 to-blue-700 hover:from-violet-500 hover:to-blue-600 text-stone-950 font-semibold text-xs rounded-lg transition shadow-md shadow-violet-950/40 flex items-center justify-center gap-1.5"
+                      className="flex-1 py-2 bg-orange-600 hover:bg-orange-700 text-white font-semibold text-xs rounded-lg transition shadow-sm flex items-center justify-center gap-1.5"
                     >
                       <Send className="w-3.5 h-3.5" /> Execute Outbound Action
                     </button>
@@ -637,7 +637,7 @@ export default function DecisionDetailPage() {
                     <button
                       onClick={() => handleRetryExec(latestExecution.id)}
                       disabled={actionLoading}
-                      className="flex-1 py-2 bg-violet-600 hover:bg-violet-500 text-stone-950 font-semibold text-xs rounded-lg transition flex items-center justify-center gap-1.5"
+                      className="flex-1 py-2 bg-orange-600 hover:bg-orange-700 text-white font-semibold text-xs rounded-lg transition flex items-center justify-center gap-1.5"
                     >
                       <RotateCcw className="w-3.5 h-3.5" /> Retry Execution ({latestExecution.retry_count}/{latestExecution.max_retries})
                     </button>
@@ -646,9 +646,9 @@ export default function DecisionDetailPage() {
                   {latestExecution && (
                     <button
                       onClick={() => handleViewReceipt(latestExecution.id)}
-                      className="px-3 py-2 bg-stone-100 border border-stone-300 hover:bg-stone-200 text-stone-700 text-xs font-semibold rounded-lg transition flex items-center gap-1"
+                      className="px-3 py-2 bg-white border border-stone-200 hover:bg-stone-50 text-stone-700 text-xs font-semibold rounded-lg transition flex items-center gap-1 shadow-2xs"
                     >
-                      <FileCheck className="w-3.5 h-3.5 text-violet-400" /> Receipt
+                      <FileCheck className="w-3.5 h-3.5 text-orange-600" /> Receipt
                     </button>
                   )}
                 </div>
@@ -658,7 +658,7 @@ export default function DecisionDetailPage() {
                     <span className="font-mono">Ref: {latestExecution.provider_execution_ref || "None"}</span>
                     <Link
                       href={`/intelligence/execution/${latestExecution.id}`}
-                      className="text-violet-400 hover:underline flex items-center gap-1"
+                      className="text-orange-600 hover:underline flex items-center gap-1"
                     >
                       Full Details <ExternalLink className="w-3 h-3" />
                     </Link>
@@ -666,38 +666,38 @@ export default function DecisionDetailPage() {
                 )}
 
                 {executionFeedback && (
-                  <div className="p-2.5 rounded bg-emerald-950/30 border border-emerald-500/30 text-emerald-300 text-xs">
+                  <div className="p-2.5 rounded bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs">
                     {executionFeedback}
                   </div>
                 )}
               </div>
             ) : (
-              <div className="text-xs text-stone-500 italic p-3 bg-stone-50/50 rounded-lg border border-stone-200/80">
+              <div className="text-xs text-stone-500 italic p-3 bg-stone-50 rounded-lg border border-stone-200">
                 Decision Plan must be <strong>APPROVED</strong> by operator before controlled execution can be dispatched.
               </div>
             )}
 
             {/* Invariant Note */}
-            <div className="mt-3 text-[10px] text-stone-500 leading-normal border-t border-stone-200/80 pt-2 flex items-center gap-1.5">
-              <LockIcon className="w-3 h-3 text-emerald-400 flex-shrink-0" />
+            <div className="mt-3 text-[10px] text-stone-500 leading-normal border-t border-stone-200 pt-2 flex items-center gap-1.5">
+              <LockIcon className="w-3 h-3 text-stone-500 flex-shrink-0" />
               <span>Zero-mutation invariant: Outbound execution notifies recipient. Only verified evidence completes the obligation.</span>
             </div>
           </div>
 
           {/* Human Decisions Required */}
-          <div className="bg-stone-100/80 border border-stone-200/80 rounded-xl p-5 shadow-sm backdrop-blur-sm">
+          <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-sm">
             <h2 className="text-xs font-semibold uppercase tracking-wider text-stone-600 mb-3 flex items-center gap-2">
-              <UserCheck className="w-4 h-4 text-amber-400" /> Human Authorization Boundaries
+              <UserCheck className="w-4 h-4 text-amber-600" /> Human Authorization Boundaries
             </h2>
 
             {plan.human_decisions_required?.length > 0 ? (
               <div className="space-y-2.5">
                 {plan.human_decisions_required.map((dec, idx) => (
-                  <div key={idx} className="bg-stone-50/80 border border-stone-200 rounded-lg p-3 text-xs">
-                    <div className="flex items-center justify-between text-amber-400 font-semibold mb-1">
+                  <div key={idx} className="bg-stone-50 border border-stone-200 rounded-lg p-3 text-xs">
+                    <div className="flex items-center justify-between text-amber-700 font-semibold mb-1">
                       <span>{dec.decision_type}</span>
                       {dec.requires_admin && (
-                        <span className="text-[10px] px-1.5 py-0.2 bg-amber-500/20 rounded text-amber-300">ADMIN</span>
+                        <span className="text-[10px] px-1.5 py-0.2 bg-amber-50 rounded text-amber-800 border border-amber-200">ADMIN</span>
                       )}
                     </div>
                     <p className="text-stone-700 mb-1.5">{dec.reason}</p>
@@ -716,19 +716,19 @@ export default function DecisionDetailPage() {
           <HistoricalContextCard obligationId={plan.target_obligation_id} />
 
           {/* Explainability Narrative */}
-          <div className="bg-stone-100/80 border border-stone-200/80 rounded-xl p-5 shadow-sm backdrop-blur-sm">
+          <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-sm">
             <h2 className="text-xs font-semibold uppercase tracking-wider text-stone-600 mb-3 flex items-center gap-2">
-              <FileText className="w-4 h-4 text-violet-400" /> Explainability Narrative
+              <FileText className="w-4 h-4 text-stone-500" /> Explainability Narrative
             </h2>
-            <div className="bg-stone-50/70 border border-stone-200 rounded-lg p-3 text-xs text-stone-700 font-mono whitespace-pre-wrap leading-relaxed">
+            <div className="bg-stone-50 border border-stone-200 rounded-lg p-3 text-xs text-stone-700 font-mono whitespace-pre-wrap leading-relaxed">
               {plan.explainability_narrative || "No narrative generated."}
             </div>
           </div>
 
           {/* Version History & Immutability */}
-          <div className="bg-stone-100/80 border border-stone-200/80 rounded-xl p-5 shadow-sm backdrop-blur-sm">
+          <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-sm">
             <h2 className="text-xs font-semibold uppercase tracking-wider text-stone-600 mb-3 flex items-center gap-2">
-              <Clock className="w-4 h-4 text-stone-600" /> Immutable Version History ({history.length})
+              <Clock className="w-4 h-4 text-stone-500" /> Immutable Version History ({history.length})
             </h2>
             <div className="space-y-2">
               {history.map((h) => (
@@ -736,8 +736,8 @@ export default function DecisionDetailPage() {
                   key={h.id}
                   className={`p-2.5 rounded-lg border text-xs flex items-center justify-between ${
                     h.id === plan.id
-                      ? "bg-violet-950/30 border-violet-500/40 text-violet-200"
-                      : "bg-stone-50/50 border-stone-200/60 text-stone-600"
+                      ? "bg-orange-50/50 border-orange-200 text-stone-900"
+                      : "bg-stone-50 border-stone-200 text-stone-600"
                   }`}
                 >
                   <div>
@@ -758,9 +758,9 @@ export default function DecisionDetailPage() {
 
       {/* Approve Modal */}
       {showApproveModal && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-stone-100 border border-stone-200 rounded-xl p-6 max-w-md w-full shadow-2xl">
-            <h3 className="text-base font-bold text-stone-950 mb-2">Authorize & Approve Decision Plan</h3>
+        <div className="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white border border-stone-200 rounded-2xl p-6 max-w-md w-full shadow-2xl">
+            <h3 className="text-base font-bold text-stone-900 mb-2">Authorize & Approve Decision Plan</h3>
             <p className="text-xs text-stone-600 mb-4">
               Authorizes the primary strategy ({plan.recommended_actions?.strategy_name}).
               This authorizes human execution without autonomous operational mutations.
@@ -769,20 +769,20 @@ export default function DecisionDetailPage() {
               value={approveNotes}
               onChange={(e) => setApproveNotes(e.target.value)}
               placeholder="Optional operator authorization notes..."
-              className="w-full bg-stone-50 border border-stone-200 rounded-lg p-3 text-xs text-stone-800 focus:ring-2 focus:ring-emerald-500 outline-none mb-4"
+              className="w-full bg-stone-50 border border-stone-200 rounded-lg p-3 text-xs text-stone-800 focus:ring-2 focus:ring-orange-500 outline-none mb-4"
               rows={3}
             />
             <div className="flex items-center justify-end gap-2">
               <button
                 onClick={() => setShowApproveModal(false)}
-                className="px-3 py-1.5 text-xs text-stone-600 hover:text-stone-800"
+                className="px-3.5 py-2 text-xs font-medium text-stone-600 hover:text-stone-900 transition"
               >
                 Cancel
               </button>
               <button
                 onClick={handleApprove}
                 disabled={actionLoading}
-                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-stone-950 font-medium text-xs rounded-lg transition"
+                className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-medium text-xs rounded-lg transition shadow-sm disabled:opacity-50"
               >
                 Confirm Approval
               </button>
@@ -793,9 +793,9 @@ export default function DecisionDetailPage() {
 
       {/* Reject Modal */}
       {showRejectModal && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-stone-100 border border-stone-200 rounded-xl p-6 max-w-md w-full shadow-2xl">
-            <h3 className="text-base font-bold text-stone-950 mb-2">Reject Decision Plan</h3>
+        <div className="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white border border-stone-200 rounded-2xl p-6 max-w-md w-full shadow-2xl">
+            <h3 className="text-base font-bold text-stone-900 mb-2">Reject Decision Plan</h3>
             <p className="text-xs text-stone-600 mb-4">
               Please provide a rationale for rejecting this decision plan.
             </p>
@@ -809,14 +809,14 @@ export default function DecisionDetailPage() {
             <div className="flex items-center justify-end gap-2">
               <button
                 onClick={() => setShowRejectModal(false)}
-                className="px-3 py-1.5 text-xs text-stone-600 hover:text-stone-800"
+                className="px-3.5 py-2 text-xs font-medium text-stone-600 hover:text-stone-900 transition"
               >
                 Cancel
               </button>
               <button
                 onClick={handleReject}
                 disabled={actionLoading}
-                className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-stone-950 font-medium text-xs rounded-lg transition"
+                className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-medium text-xs rounded-lg transition shadow-sm disabled:opacity-50"
               >
                 Confirm Rejection
               </button>
@@ -827,16 +827,16 @@ export default function DecisionDetailPage() {
 
       {/* Execution Receipt Modal (Phase 16) */}
       {showReceiptModal && executionReceipt && (
-        <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-stone-100 border border-stone-200 rounded-xl p-6 max-w-lg w-full shadow-2xl space-y-4">
+        <div className="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white border border-stone-200 rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-4">
             <div className="flex items-center justify-between border-b border-stone-200 pb-3">
               <div className="flex items-center gap-2">
-                <FileCheck className="w-5 h-5 text-violet-400" />
-                <h3 className="text-base font-bold text-stone-950">Immutable Execution Receipt</h3>
+                <FileCheck className="w-5 h-5 text-orange-600" />
+                <h3 className="text-base font-bold text-stone-900">Immutable Execution Receipt</h3>
               </div>
               <button
                 onClick={() => setShowReceiptModal(false)}
-                className="p-1 rounded text-stone-600 hover:text-stone-950"
+                className="p-1 rounded text-stone-400 hover:text-stone-700 transition"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -846,11 +846,11 @@ export default function DecisionDetailPage() {
               <div className="bg-stone-50 p-3 rounded-lg border border-stone-200 space-y-1.5 font-mono">
                 <div className="flex justify-between text-stone-600">
                   <span>Execution ID:</span>
-                  <span className="text-violet-300 font-bold">{executionReceipt.execution_id}</span>
+                  <span className="text-stone-900 font-bold">{executionReceipt.execution_id}</span>
                 </div>
                 <div className="flex justify-between text-stone-600">
                   <span>Provider Reference:</span>
-                  <span className="text-emerald-300 font-bold">{executionReceipt.provider_execution_ref || "None"}</span>
+                  <span className="text-emerald-700 font-bold">{executionReceipt.provider_execution_ref || "None"}</span>
                 </div>
                 <div className="flex justify-between text-stone-600">
                   <span>Provider:</span>
@@ -876,11 +876,11 @@ export default function DecisionDetailPage() {
                 </div>
               </div>
 
-              <div className="p-3 bg-emerald-950/20 border border-emerald-500/20 rounded-lg text-emerald-300 text-xs">
-                <div className="font-semibold flex items-center gap-1.5 mb-1">
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> Redaction Verified
+              <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-800 text-xs">
+                <div className="font-semibold flex items-center gap-1.5 mb-1 text-emerald-900">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> Redaction Verified
                 </div>
-                <p className="text-[11px] text-emerald-300/80">
+                <p className="text-[11px] text-emerald-700">
                   All external credentials and sensitive tokens are strictly redacted from this receipt and audit logs.
                 </p>
               </div>
@@ -889,13 +889,13 @@ export default function DecisionDetailPage() {
             <div className="flex items-center justify-end gap-2 pt-2 border-t border-stone-200">
               <Link
                 href={`/intelligence/execution/${executionReceipt.execution_id}`}
-                className="px-3.5 py-1.5 bg-violet-600 hover:bg-violet-500 text-stone-950 text-xs font-semibold rounded-lg transition"
+                className="px-3.5 py-1.5 bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold rounded-lg transition shadow-sm"
               >
                 View Full Audit Details
               </Link>
               <button
                 onClick={() => setShowReceiptModal(false)}
-                className="px-3.5 py-1.5 bg-stone-200 hover:bg-stone-300 text-stone-700 text-xs rounded-lg transition"
+                className="px-3.5 py-1.5 bg-white border border-stone-200 hover:bg-stone-50 text-stone-700 text-xs rounded-lg transition"
               >
                 Close
               </button>

@@ -47,26 +47,27 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           return (
             <div
               key={t.id}
-              className={`pointer-events-auto flex items-start gap-3 p-4 rounded-xl border shadow-xl transition-all duration-300 animate-in fade-in slide-in-from-bottom-2 backdrop-blur-md ${
+              className={`pointer-events-auto flex items-start gap-3 p-4 rounded-xl border shadow-lg transition-all duration-300 animate-in fade-in slide-in-from-bottom-2 bg-white ${
                 isSuccess
-                  ? "bg-emerald-950/90 border-emerald-500/30 text-emerald-100"
+                  ? "border-emerald-200 text-stone-900"
                   : isError
-                  ? "bg-rose-950/90 border-rose-500/30 text-rose-100"
-                  : "bg-stone-100/90 border-stone-300/50 text-stone-900"
+                  ? "border-rose-200 text-stone-900"
+                  : "border-orange-200 text-stone-900"
               }`}
             >
-              {isSuccess && <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />}
-              {isError && <AlertCircle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />}
-              {!isSuccess && !isError && <Info className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />}
+              {isSuccess && <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />}
+              {isError && <AlertCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />}
+              {!isSuccess && !isError && <Info className="w-5 h-5 text-orange-600 shrink-0 mt-0.5" />}
 
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-semibold">{t.title}</div>
-                {t.description && <div className="text-xs opacity-80 mt-0.5 break-words">{t.description}</div>}
+                <div className="text-sm font-semibold text-stone-900">{t.title}</div>
+                {t.description && <div className="text-xs text-stone-600 mt-0.5 break-words">{t.description}</div>}
               </div>
 
               <button
                 onClick={() => removeToast(t.id)}
-                className="text-stone-600 hover:text-stone-950 p-1 transition-colors"
+                className="text-stone-400 hover:text-stone-700 hover:bg-stone-100 p-1 rounded-lg transition-colors"
+                aria-label="Dismiss notification"
               >
                 <X className="w-4 h-4" />
               </button>

@@ -78,16 +78,16 @@ export default function TraceGraphExplorerPage() {
     switch (comp.toUpperCase()) {
       case "WEBHOOK":
       case "INBOX":
-        return <Radio className="w-4 h-4 text-cyan-400" />;
+        return <Radio className="w-4 h-4 text-orange-600" />;
       case "WORKER":
-        return <Layers className="w-4 h-4 text-amber-400" />;
+        return <Layers className="w-4 h-4 text-amber-500" />;
       case "LLM":
-        return <Brain className="w-4 h-4 text-purple-400" />;
+        return <Brain className="w-4 h-4 text-orange-600" />;
       case "OBLIGATION":
-        return <FileCheck className="w-4 h-4 text-emerald-400" />;
+        return <FileCheck className="w-4 h-4 text-emerald-600" />;
       case "DECISION":
       case "EXECUTION":
-        return <Zap className="w-4 h-4 text-blue-500" />;
+        return <Zap className="w-4 h-4 text-orange-600" />;
       default:
         return <Activity className="w-4 h-4 text-stone-600" />;
     }
@@ -101,13 +101,13 @@ export default function TraceGraphExplorerPage() {
           <div className="flex items-center gap-2">
             <Link
               href="/operations"
-              className="p-1.5 rounded-lg bg-stone-200 hover:bg-stone-300 text-stone-700 border border-stone-300 transition-colors mr-1"
+              className="p-1.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-200 transition-colors mr-1"
             >
               <ArrowLeft className="w-4 h-4" />
             </Link>
             <h1 className="text-xl font-bold tracking-tight text-stone-900 flex items-center gap-2">
-              <Activity className="w-5 h-5 text-cyan-400" />
-              Distributed Trace DAG: <span className="font-mono text-cyan-300">{traceId}</span>
+              <Activity className="w-5 h-5 text-orange-600" />
+              Distributed Trace DAG: <span className="font-mono text-orange-600">{traceId}</span>
             </h1>
           </div>
           <p className="text-xs text-stone-600 mt-1">
@@ -118,7 +118,7 @@ export default function TraceGraphExplorerPage() {
         <button
           onClick={fetchTrace}
           disabled={loading}
-          className="p-2 rounded-lg bg-stone-200 hover:bg-stone-300 text-stone-700 border border-stone-300 transition-colors"
+          className="p-2 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-200 transition-colors"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
         </button>
@@ -127,17 +127,17 @@ export default function TraceGraphExplorerPage() {
       {/* Trace Overview Card */}
       {traceData && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div className="p-3 rounded-xl bg-stone-100/60 border border-stone-200 text-xs">
+          <div className="p-3 rounded-xl bg-white border border-stone-200 text-xs shadow-xs">
             <span className="text-[10px] text-stone-500 uppercase font-mono block">Root Event</span>
             <span className="font-semibold text-stone-800">{traceData.root_event_type}</span>
           </div>
-          <div className="p-3 rounded-xl bg-stone-100/60 border border-stone-200 text-xs">
+          <div className="p-3 rounded-xl bg-white border border-stone-200 text-xs shadow-xs">
             <span className="text-[10px] text-stone-500 uppercase font-mono block">Total Duration</span>
-            <span className="font-semibold text-cyan-400 font-mono">
+            <span className="font-semibold text-orange-600 font-mono">
               {traceData.total_duration_ms !== null ? `${traceData.total_duration_ms}ms` : "—"}
             </span>
           </div>
-          <div className="p-3 rounded-xl bg-stone-100/60 border border-stone-200 text-xs">
+          <div className="p-3 rounded-xl bg-white border border-stone-200 text-xs shadow-xs">
             <span className="text-[10px] text-stone-500 uppercase font-mono block">Node Count</span>
             <span className="font-semibold text-stone-800">{traceData.node_count} spans</span>
           </div>
@@ -158,7 +158,7 @@ export default function TraceGraphExplorerPage() {
       {/* Trace DAG Chronological Flow */}
       <div className="bg-stone-100/60 border border-stone-200 rounded-xl p-6 space-y-6">
         <h3 className="text-sm font-semibold text-stone-900 flex items-center gap-2 border-b border-stone-200 pb-3">
-          <Clock className="w-4 h-4 text-blue-500" />
+          <Clock className="w-4 h-4 text-orange-600" />
           Chronological Execution Timeline
         </h3>
 
@@ -174,31 +174,31 @@ export default function TraceGraphExplorerPage() {
               <div key={node.node_id} className="relative group">
 
                 {/* Node icon / indicator */}
-                <div className="absolute -left-[27px] top-1 w-5 h-5 rounded-full bg-stone-50 border-2 border-stone-300 flex items-center justify-center group-hover:border-cyan-400 transition-colors">
+                <div className="absolute -left-[27px] top-1 w-5 h-5 rounded-full bg-white border-2 border-stone-300 flex items-center justify-center group-hover:border-orange-500 transition-colors">
                   <span
                     className={`w-1.5 h-1.5 rounded-full ${
                       node.status === "SUCCESS" || node.status === "PROCESSED"
-                        ? "bg-emerald-400"
+                        ? "bg-emerald-500"
                         : node.status === "FAILURE" || node.status === "DEAD_LETTER"
-                        ? "bg-rose-400"
-                        : "bg-amber-400"
+                        ? "bg-rose-500"
+                        : "bg-amber-500"
                     }`}
                   />
                 </div>
 
                 {/* Node Card */}
-                <div className="p-4 rounded-xl bg-stone-50/80 border border-stone-200/80 hover:border-stone-300 transition-colors space-y-2">
+                <div className="p-4 rounded-xl bg-white border border-stone-200 hover:border-orange-300 transition-colors space-y-2 shadow-xs">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       {getComponentIcon(node.component)}
                       <span className="text-xs font-semibold text-stone-800">{node.step_name}</span>
-                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-stone-200 text-stone-600 border border-stone-300">
+                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-stone-100 text-stone-600 border border-stone-200">
                         {node.component}
                       </span>
                     </div>
                     <div className="flex items-center gap-3 text-xs font-mono">
                       {node.duration_ms !== null && node.duration_ms !== undefined && (
-                        <span className="text-cyan-400 font-bold">{node.duration_ms}ms</span>
+                        <span className="text-orange-600 font-bold">{node.duration_ms}ms</span>
                       )}
                       <span className="text-stone-500">{new Date(node.timestamp).toLocaleTimeString()}</span>
                     </div>

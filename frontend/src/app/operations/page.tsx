@@ -91,11 +91,11 @@ export default function OperationsDashboardPage() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-stone-200 pb-5">
         <div>
           <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+            <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-orange-50 text-orange-700 border border-orange-200">
               Phase 21
             </span>
             <h1 className="text-2xl font-bold tracking-tight text-stone-900 flex items-center gap-2">
-              <Activity className="w-6 h-6 text-cyan-400" />
+              <Activity className="w-6 h-6 text-orange-600" />
               Operations & Observability Control Center
             </h1>
           </div>
@@ -109,14 +109,14 @@ export default function OperationsDashboardPage() {
             href="/operations/audit"
             className="px-3 py-1.5 rounded-lg bg-stone-200 hover:bg-stone-300 text-stone-800 text-xs font-semibold border border-stone-300 transition-colors flex items-center gap-1.5"
           >
-            <ShieldCheck className="w-3.5 h-3.5 text-blue-500" />
+            <ShieldCheck className="w-3.5 h-3.5 text-orange-600" />
             Audit Explorer
           </Link>
           <Link
             href="/operations/incidents"
             className="px-3 py-1.5 rounded-lg bg-stone-200 hover:bg-stone-300 text-stone-800 text-xs font-semibold border border-stone-300 transition-colors flex items-center gap-1.5"
           >
-            <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
+            <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
             Alerts & Incidents
           </Link>
           <button
@@ -142,7 +142,7 @@ export default function OperationsDashboardPage() {
         {searchTraceId.trim() && (
           <Link
             href={`/operations/traces/${encodeURIComponent(searchTraceId.trim())}`}
-            className="px-3 py-1 bg-cyan-600 hover:bg-cyan-500 text-stone-950 rounded text-xs font-semibold flex items-center gap-1 transition-colors"
+            className="px-3.5 py-1.5 bg-orange-600 hover:bg-orange-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1 transition-colors shadow-sm"
           >
             Explore Trace <ArrowUpRight className="w-3 h-3" />
           </Link>
@@ -165,10 +165,10 @@ export default function OperationsDashboardPage() {
           </div>
         </div>
 
-        <div className="bg-stone-100/60 border border-stone-200 rounded-xl p-4">
+        <div className="bg-white border border-stone-200 rounded-xl p-4 shadow-sm">
           <div className="flex items-center justify-between text-xs text-stone-600">
             <span>Queue Depth & DLQ</span>
-            <Layers className="w-4 h-4 text-cyan-400" />
+            <Layers className="w-4 h-4 text-orange-600" />
           </div>
           <div className="text-2xl font-bold text-stone-900 mt-2 font-mono">
             {data?.total_queued_events || 0}
@@ -187,9 +187,9 @@ export default function OperationsDashboardPage() {
         <div className="bg-stone-100/60 border border-stone-200 rounded-xl p-4">
           <div className="flex items-center justify-between text-xs text-stone-600">
             <span>API Latency (p95)</span>
-            <Clock className="w-4 h-4 text-blue-500" />
+            <Clock className="w-4 h-4 text-orange-600" />
           </div>
-          <div className="text-2xl font-bold text-blue-500 mt-2 font-mono">
+          <div className="text-2xl font-bold text-stone-900 mt-2 font-mono">
             {data?.latency_percentiles?.api?.p95 !== null && data?.latency_percentiles?.api?.p95 !== undefined
               ? `${data.latency_percentiles.api.p95}ms`
               : "—"}
@@ -269,13 +269,13 @@ export default function OperationsDashboardPage() {
         </div>
 
         {/* Right: Error Budget Burn Table */}
-        <div className="bg-stone-100/60 border border-stone-200 rounded-xl p-5 space-y-4">
+        <div className="bg-white border border-stone-200 rounded-xl p-5 space-y-4 shadow-sm">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-semibold text-stone-900 flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-cyan-400" />
+              <TrendingUp className="w-4 h-4 text-orange-500" />
               Error Budget Consumption
             </h3>
-            <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+            <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-orange-50 text-orange-700 border border-orange-200 font-semibold">
               Budget Burn
             </span>
           </div>
@@ -285,7 +285,7 @@ export default function OperationsDashboardPage() {
               <div key={idx} className="p-3 rounded-lg bg-stone-50 border border-stone-200 text-xs space-y-1.5">
                 <div className="flex items-center justify-between">
                   <span className="font-semibold text-stone-800">{b.slo_name}</span>
-                  <span className="font-mono text-cyan-400 font-bold">
+                  <span className="font-mono text-orange-600 font-bold">
                     {b.remaining_percentage !== null ? `${b.remaining_percentage}% remaining` : "INSUFFICIENT DATA"}
                   </span>
                 </div>
@@ -313,7 +313,7 @@ export default function OperationsDashboardPage() {
       {/* Provider Health State */}
       <div className="bg-stone-100/60 border border-stone-200 rounded-xl p-5 space-y-3">
         <h3 className="text-sm font-semibold text-stone-900 flex items-center gap-2">
-          <Radio className="w-4 h-4 text-blue-500" />
+          <Radio className="w-4 h-4 text-orange-600" />
           Provider Health & Circuit Breaker States
         </h3>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">

@@ -28,28 +28,28 @@ export const ConfidenceBadge: React.FC<ConfidenceBadgeProps> = ({
 
   const percentage = Math.round(score * 100);
 
-  let colorClass = "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
+  let colorClass = "bg-emerald-50 text-emerald-800 border-emerald-200";
   let Icon = CheckCircle2;
   let label = "High AI Confidence";
 
   if (percentage < 60) {
-    colorClass = "bg-rose-500/10 text-rose-400 border-rose-500/20";
+    colorClass = "bg-rose-50 text-rose-800 border-rose-200";
     Icon = AlertTriangle;
     label = "Ambiguous / Review";
   } else if (percentage < 85) {
-    colorClass = "bg-amber-500/10 text-amber-400 border-amber-500/20";
+    colorClass = "bg-amber-50 text-amber-800 border-amber-200";
     Icon = Sparkles;
     label = "Moderate Confidence";
   }
 
   return (
     <span
-      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium border ${colorClass}`}
+      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium border ${colorClass}`}
       title={`Field: ${field} (${percentage}% confidence)`}
     >
       {showIcon && <Icon className="w-3 h-3" />}
       <span>{percentage}%</span>
-      <span className="hidden sm:inline opacity-75">{label}</span>
+      <span className="hidden sm:inline opacity-80">{label}</span>
     </span>
   );
 };

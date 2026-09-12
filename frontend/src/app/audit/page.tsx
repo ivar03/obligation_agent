@@ -181,74 +181,74 @@ export default function GovernanceCenterPage() {
 
   const getActionColor = (action: string) => {
     if (action.includes("SECURITY") || action.includes("DENIED") || action.includes("FAILED")) {
-      return "text-rose-400 bg-rose-950/40 border-rose-500/30";
+      return "text-rose-700 bg-rose-50 border-rose-200";
     }
     if (action.includes("CREATED") || action.includes("CONFIRMED") || action.includes("APPROVED")) {
-      return "text-emerald-400 bg-emerald-950/40 border-emerald-500/30";
+      return "text-emerald-700 bg-emerald-50 border-emerald-200";
     }
     if (action.includes("DELETED") || action.includes("REMOVED") || action.includes("CANCELLED")) {
-      return "text-amber-400 bg-amber-950/40 border-amber-500/30";
+      return "text-amber-700 bg-amber-50 border-amber-200";
     }
     if (action.includes("AUTH_")) {
-      return "text-blue-500 bg-indigo-950/40 border-blue-600/30";
+      return "text-orange-700 bg-orange-50 border-orange-200";
     }
-    return "text-sky-400 bg-sky-950/40 border-sky-500/30";
+    return "text-stone-700 bg-stone-100 border-stone-200";
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8 pb-16">
+    <div className="space-y-8">
       {/* Header Banner */}
-      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 p-6 bg-gradient-to-r from-stone-100 via-stone-100/90 to-indigo-950/40 border border-stone-200 rounded-3xl shadow-2xl backdrop-blur-xl">
+      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 p-6 bg-white border border-slate-200 rounded-2xl shadow-xs">
         <div className="space-y-1">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-blue-700/20 border border-blue-600/30 rounded-2xl">
-              <ShieldCheck className="w-6 h-6 text-blue-500" />
+            <div className="p-2.5 bg-orange-50 border border-orange-200 rounded-xl text-orange-600">
+              <ShieldCheck className="w-6 h-6" />
             </div>
             <div>
-              <h1 className="text-2xl font-black tracking-tight text-stone-950 flex items-center gap-2.5">
-                Enterprise Governance & Audit Center
+              <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
+                Governance &amp; Audit Center
               </h1>
-              <p className="text-xs text-stone-600">
-                Cryptographic SHA-256 hash-chained provenance ledger with zero-secret sanitization & RBAC attribution.
+              <p className="text-xs text-slate-500">
+                Cryptographic SHA-256 hash-chained provenance ledger with zero-secret sanitization &amp; RBAC attribution.
               </p>
             </div>
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2.5">
           {/* Chain Integrity Badge */}
           <div
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl border text-xs font-semibold ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold ${
               verification?.chain_valid
-                ? "bg-emerald-950/50 border-emerald-500/40 text-emerald-300"
-                : "bg-rose-950/50 border-rose-500/40 text-rose-300"
+                ? "bg-emerald-50 border-emerald-200 text-emerald-800"
+                : "bg-rose-50 border-rose-200 text-rose-800"
             }`}
           >
-            <Shield className="w-3.5 h-3.5" />
+            <Shield className="w-3.5 h-3.5 text-emerald-600" />
             <span>Chain: {verification?.chain_valid ? "Cryptographically Valid" : "Tamper Detected"}</span>
           </div>
 
           <button
             onClick={handleVerifyChain}
             disabled={verifying}
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-stone-200 hover:bg-stone-300 border border-stone-300 text-stone-800 text-xs font-medium transition-all shadow-sm disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold transition-all shadow-2xs disabled:opacity-50"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${verifying ? "animate-spin" : ""}`} />
+            <RefreshCw className={`w-3.5 h-3.5 text-orange-600 ${verifying ? "animate-spin" : ""}`} />
             <span>{verifying ? "Verifying..." : "Verify Hash Chain"}</span>
           </button>
 
-          <div className="flex items-center rounded-xl bg-stone-200/80 border border-stone-300 p-0.5">
+          <div className="flex items-center rounded-xl bg-slate-50 border border-slate-200 p-0.5">
             <button
               onClick={() => handleExport("json")}
               disabled={exporting}
-              className="px-2.5 py-1 rounded-lg text-xs text-stone-700 hover:text-stone-950 hover:bg-stone-300 transition-colors"
+              className="px-2.5 py-1 rounded-lg text-xs font-medium text-slate-700 hover:text-slate-900 hover:bg-white transition-colors"
             >
               Export JSON
             </button>
             <button
               onClick={() => handleExport("csv")}
               disabled={exporting}
-              className="px-2.5 py-1 rounded-lg text-xs text-stone-700 hover:text-stone-950 hover:bg-stone-300 transition-colors"
+              className="px-2.5 py-1 rounded-lg text-xs font-medium text-slate-700 hover:text-slate-900 hover:bg-white transition-colors"
             >
               Export CSV
             </button>
@@ -260,17 +260,17 @@ export default function GovernanceCenterPage() {
       {summary && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* 1. Total Audited Events */}
-          <div className="p-5 rounded-2xl bg-stone-100/60 border border-stone-200/80 shadow-lg space-y-3 relative overflow-hidden">
+          <div className="p-5 rounded-2xl bg-white border border-stone-200 shadow-sm space-y-3 relative overflow-hidden">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-stone-600 uppercase tracking-wider">
                 Total Audit Trail
               </span>
-              <FileText className="w-4 h-4 text-stone-600" />
+              <FileText className="w-4 h-4 text-stone-500" />
             </div>
             <div className="text-3xl font-black text-stone-950 font-mono">
               {summary.total_audit_events.toLocaleString()}
             </div>
-            <div className="flex items-center gap-3 text-[11px] text-stone-600 pt-1 border-t border-stone-200/60">
+            <div className="flex items-center gap-3 text-[11px] text-stone-600 pt-1 border-t border-stone-100">
               <span>Today: <strong className="text-stone-800">{summary.events_today}</strong></span>
               <span>•</span>
               <span>Mutations: <strong className="text-stone-800">{summary.mutations_today}</strong></span>
@@ -278,35 +278,35 @@ export default function GovernanceCenterPage() {
           </div>
 
           {/* 2. Security & Access Control */}
-          <div className="p-5 rounded-2xl bg-stone-100/60 border border-stone-200/80 shadow-lg space-y-3 relative overflow-hidden">
+          <div className="p-5 rounded-2xl bg-white border border-stone-200 shadow-sm space-y-3 relative overflow-hidden">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-rose-300 uppercase tracking-wider">
+              <span className="text-xs font-semibold text-rose-700 uppercase tracking-wider">
                 Security & Access
               </span>
-              <Lock className="w-4 h-4 text-rose-400" />
+              <Lock className="w-4 h-4 text-rose-600" />
             </div>
-            <div className="text-3xl font-black text-rose-200 font-mono">
+            <div className="text-3xl font-black text-rose-700 font-mono">
               {summary.security_events_count}
             </div>
-            <div className="flex items-center gap-3 text-[11px] text-stone-600 pt-1 border-t border-stone-200/60">
-              <span>Denials: <strong className="text-rose-300">{summary.permission_denials_count}</strong></span>
+            <div className="flex items-center gap-3 text-[11px] text-stone-600 pt-1 border-t border-stone-100">
+              <span>Denials: <strong className="text-rose-700">{summary.permission_denials_count}</strong></span>
               <span>•</span>
-              <span>Failed Logins: <strong className="text-amber-300">{summary.failed_logins_count}</strong></span>
+              <span>Failed Logins: <strong className="text-amber-700">{summary.failed_logins_count}</strong></span>
             </div>
           </div>
 
           {/* 3. Governed Decisions */}
-          <div className="p-5 rounded-2xl bg-stone-100/60 border border-stone-200/80 shadow-lg space-y-3 relative overflow-hidden">
+          <div className="p-5 rounded-2xl bg-white border border-stone-200 shadow-sm space-y-3 relative overflow-hidden">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-emerald-300 uppercase tracking-wider">
+              <span className="text-xs font-semibold text-emerald-700 uppercase tracking-wider">
                 Governed Actions
               </span>
-              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
             </div>
-            <div className="text-3xl font-black text-emerald-200 font-mono">
+            <div className="text-3xl font-black text-emerald-700 font-mono">
               {summary.evidence_confirmations_count + summary.interventions_approved_count}
             </div>
-            <div className="flex items-center gap-2 text-[11px] text-stone-600 pt-1 border-t border-stone-200/60">
+            <div className="flex items-center gap-2 text-[11px] text-stone-600 pt-1 border-t border-stone-100">
               <span>Approved: <strong className="text-stone-800">{summary.interventions_approved_count}</strong></span>
               <span>•</span>
               <span>Evidence: <strong className="text-stone-800">{summary.evidence_confirmations_count}</strong></span>
@@ -316,18 +316,18 @@ export default function GovernanceCenterPage() {
           </div>
 
           {/* 4. Provenance Engine */}
-          <div className="p-5 rounded-2xl bg-stone-100/60 border border-stone-200/80 shadow-lg space-y-3 relative overflow-hidden">
+          <div className="p-5 rounded-2xl bg-white border border-stone-200 shadow-sm space-y-3 relative overflow-hidden">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-blue-600 uppercase tracking-wider">
+              <span className="text-xs font-semibold text-orange-700 uppercase tracking-wider">
                 Provenance Engine
               </span>
-              <Key className="w-4 h-4 text-blue-500" />
+              <Key className="w-4 h-4 text-orange-600" />
             </div>
-            <div className="text-sm font-bold text-stone-800 flex items-center gap-2">
-              <span className="inline-block w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+            <div className="text-sm font-bold text-stone-900 flex items-center gap-2">
+              <span className="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500" />
               <span>SHA-256 Immutability</span>
             </div>
-            <div className="text-[11px] text-stone-600 pt-1 border-t border-stone-200/60">
+            <div className="text-[11px] text-stone-600 pt-1 border-t border-stone-100">
               <span>Verified count: <strong className="text-stone-800">{verification?.verified_event_count || summary.total_audit_events}</strong> events</span>
             </div>
           </div>
@@ -338,9 +338,9 @@ export default function GovernanceCenterPage() {
       {summary && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Top Actors */}
-          <div className="p-5 rounded-2xl bg-stone-100/50 border border-stone-200/80 space-y-3">
+          <div className="p-5 rounded-2xl bg-white border border-stone-200 shadow-sm space-y-3">
             <h3 className="text-xs font-bold text-stone-700 uppercase tracking-wider flex items-center gap-2">
-              <User className="w-4 h-4 text-blue-500" />
+              <User className="w-4 h-4 text-orange-600" />
               <span>Top Actors by Mutation Volume</span>
             </h3>
             <div className="space-y-2">
@@ -353,7 +353,7 @@ export default function GovernanceCenterPage() {
                     className="flex items-center justify-between p-2.5 bg-stone-50/60 border border-stone-200/60 rounded-xl text-xs"
                   >
                     <div className="flex items-center gap-2">
-                      <span className="w-5 h-5 rounded-full bg-blue-600/20 text-blue-600 flex items-center justify-center font-bold text-[10px]">
+                      <span className="w-5 h-5 rounded-full bg-orange-50 text-orange-700 border border-orange-200 flex items-center justify-center font-bold text-[10px]">
                         {idx + 1}
                       </span>
                       <div>
@@ -373,9 +373,9 @@ export default function GovernanceCenterPage() {
           </div>
 
           {/* Most Modified Entities */}
-          <div className="p-5 rounded-2xl bg-stone-100/50 border border-stone-200/80 space-y-3">
+          <div className="p-5 rounded-2xl bg-white border border-stone-200 shadow-sm space-y-3">
             <h3 className="text-xs font-bold text-stone-700 uppercase tracking-wider flex items-center gap-2">
-              <Layers className="w-4 h-4 text-emerald-400" />
+              <Layers className="w-4 h-4 text-orange-600" />
               <span>Activity by Domain Entity</span>
             </h3>
             <div className="space-y-2">
@@ -402,11 +402,10 @@ export default function GovernanceCenterPage() {
         </div>
       )}
 
-      {/* Audit Log Feed Controls & Filters */}
-      <div className="space-y-4">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-2 border-b border-stone-200">
-          {/* Tabs */}
-          <div className="flex items-center gap-1.5 p-1 bg-stone-100 border border-stone-200 rounded-xl text-xs">
+      {/* Tab Controls & Filter Bar */}
+      <div className="bg-white border border-stone-200 rounded-2xl p-4 shadow-sm space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex bg-stone-100 border border-stone-200 rounded-xl p-1 text-xs">
             <button
               onClick={() => {
                 setActiveTab("all");
@@ -414,7 +413,7 @@ export default function GovernanceCenterPage() {
               }}
               className={`px-3 py-1.5 rounded-lg font-medium transition-colors ${
                 activeTab === "all"
-                  ? "bg-blue-700 text-stone-950 shadow-sm"
+                  ? "bg-orange-600 text-white shadow-sm font-semibold"
                   : "text-stone-600 hover:text-stone-800"
               }`}
             >
@@ -427,14 +426,15 @@ export default function GovernanceCenterPage() {
               }}
               className={`px-3 py-1.5 rounded-lg font-medium transition-colors flex items-center gap-1.5 ${
                 activeTab === "security"
-                  ? "bg-rose-600 text-stone-950 shadow-sm"
-                  : "text-stone-600 hover:text-rose-300"
+                  ? "bg-rose-600 text-white shadow-sm font-semibold"
+                  : "text-stone-600 hover:text-rose-700"
               }`}
             >
               <ShieldAlert className="w-3.5 h-3.5" />
               <span>Security Anomaly Feed</span>
             </button>
           </div>
+        </div>
 
           {/* Filters (Active only on "all" tab) */}
           {activeTab === "all" && (
@@ -445,7 +445,7 @@ export default function GovernanceCenterPage() {
                   setSelectedAction(e.target.value);
                   setPage(0);
                 }}
-                className="px-2.5 py-1.5 rounded-lg bg-stone-100 border border-stone-200 text-stone-700"
+                className="px-2.5 py-1.5 rounded-lg bg-stone-50 border border-stone-200 text-stone-700 focus:outline-none focus:border-orange-500"
               >
                 <option value="">All Action Types</option>
                 <option value="OBLIGATION_CREATED">OBLIGATION_CREATED</option>
@@ -467,7 +467,7 @@ export default function GovernanceCenterPage() {
                   setSelectedSeverity(e.target.value);
                   setPage(0);
                 }}
-                className="px-2.5 py-1.5 rounded-lg bg-stone-100 border border-stone-200 text-stone-700"
+                className="px-2.5 py-1.5 rounded-lg bg-stone-50 border border-stone-200 text-stone-700 focus:outline-none focus:border-orange-500"
               >
                 <option value="">All Severities</option>
                 <option value="INFO">INFO</option>
@@ -482,7 +482,7 @@ export default function GovernanceCenterPage() {
                   setSelectedEntityType(e.target.value);
                   setPage(0);
                 }}
-                className="px-2.5 py-1.5 rounded-lg bg-stone-100 border border-stone-200 text-stone-700"
+                className="px-2.5 py-1.5 rounded-lg bg-stone-50 border border-stone-200 text-stone-700 focus:outline-none focus:border-orange-500"
               >
                 <option value="">All Entities</option>
                 <option value="obligation">Obligation</option>
@@ -497,7 +497,7 @@ export default function GovernanceCenterPage() {
         </div>
 
         {/* Audit Log Table */}
-        <div className="bg-stone-100/60 border border-stone-200 rounded-2xl shadow-xl overflow-hidden">
+        <div className="bg-white border border-stone-200 rounded-2xl shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
@@ -517,7 +517,7 @@ export default function GovernanceCenterPage() {
                   <tr>
                     <td colSpan={8} className="py-12 text-center text-stone-500">
                       <div className="flex items-center justify-center gap-2">
-                        <RefreshCw className="w-4 h-4 animate-spin text-blue-500" />
+                        <RefreshCw className="w-4 h-4 animate-spin text-orange-600" />
                         <span>Loading audit records...</span>
                       </div>
                     </td>
@@ -592,7 +592,7 @@ export default function GovernanceCenterPage() {
                       </td>
 
                       <td className="py-3 px-4 whitespace-nowrap font-mono text-[11px]">
-                        <div className="flex items-center gap-1.5 text-emerald-400">
+                        <div className="flex items-center gap-1.5 text-emerald-600">
                           <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
                           <span title={ev.event_hash}>{ev.event_hash.slice(0, 10)}...</span>
                         </div>
@@ -640,12 +640,11 @@ export default function GovernanceCenterPage() {
             </div>
           </div>
         </div>
-      </div>
 
       {/* Payload Inspector Modal */}
       {inspectedEvent && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
-          <div className="bg-stone-100 border border-stone-200 rounded-3xl max-w-2xl w-full p-6 shadow-2xl space-y-4 max-h-[85vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
+          <div className="bg-white border border-stone-200 rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-4 max-h-[85vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-3 border-b border-stone-200">
               <div className="space-y-0.5">
                 <div className="flex items-center gap-2">
@@ -662,7 +661,7 @@ export default function GovernanceCenterPage() {
               </div>
               <button
                 onClick={() => setInspectedEvent(null)}
-                className="p-1 rounded-lg text-stone-600 hover:text-stone-950 hover:bg-stone-200"
+                className="p-1 rounded-lg text-stone-600 hover:text-stone-950 hover:bg-stone-100"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -670,7 +669,7 @@ export default function GovernanceCenterPage() {
 
             {/* Metadata Overview */}
             <div className="grid grid-cols-2 gap-3 text-xs">
-              <div className="p-3 bg-stone-50 rounded-xl border border-stone-200/80 space-y-1">
+              <div className="p-3 bg-stone-50 rounded-xl border border-stone-200 space-y-1">
                 <span className="text-stone-500 font-medium">Actor / Attribution</span>
                 <div className="font-semibold text-stone-800">
                   {inspectedEvent.actor_name || "System Worker"}
@@ -683,7 +682,7 @@ export default function GovernanceCenterPage() {
                 )}
               </div>
 
-              <div className="p-3 bg-stone-50 rounded-xl border border-stone-200/80 space-y-1">
+              <div className="p-3 bg-stone-50 rounded-xl border border-stone-200 space-y-1">
                 <span className="text-stone-500 font-medium">Correlation & Origin</span>
                 <div className="text-stone-800">Source: {inspectedEvent.source}</div>
                 {inspectedEvent.ip_address && (
@@ -699,7 +698,7 @@ export default function GovernanceCenterPage() {
 
             {/* Reason */}
             {inspectedEvent.reason && (
-              <div className="p-3 bg-stone-50 rounded-xl border border-stone-200/80 text-xs">
+              <div className="p-3 bg-stone-50 rounded-xl border border-stone-200 text-xs">
                 <span className="text-stone-500 font-medium block mb-0.5">Stated Reason / Justification:</span>
                 <span className="text-stone-800 italic">&ldquo;{inspectedEvent.reason}&rdquo;</span>
               </div>
@@ -723,10 +722,10 @@ export default function GovernanceCenterPage() {
                     </pre>
                   </div>
                   <div>
-                    <span className="text-[11px] font-semibold text-emerald-400 block mb-1">
+                    <span className="text-[11px] font-semibold text-emerald-700 block mb-1">
                       After State
                     </span>
-                    <pre className="p-3 bg-stone-50 rounded-xl border border-stone-200 text-[11px] font-mono text-emerald-300 overflow-x-auto">
+                    <pre className="p-3 bg-emerald-50/50 rounded-xl border border-emerald-200 text-[11px] font-mono text-emerald-800 overflow-x-auto">
                       {inspectedEvent.after_state
                         ? JSON.stringify(inspectedEvent.after_state, null, 2)
                         : "null"}
@@ -743,7 +742,7 @@ export default function GovernanceCenterPage() {
               </span>
               <div>
                 <span className="text-stone-500">Event Hash: </span>
-                <span className="text-emerald-400 break-all">{inspectedEvent.event_hash}</span>
+                <span className="text-emerald-700 font-semibold break-all">{inspectedEvent.event_hash}</span>
               </div>
               <div>
                 <span className="text-stone-500">Previous Hash: </span>

@@ -9,6 +9,7 @@ import {
   User,
   ShieldAlert,
   AlertCircle,
+  AlertTriangle,
   CheckCircle2,
   PlayCircle,
   Edit,
@@ -428,8 +429,8 @@ export default function ObligationDetailPage({ params }: PageProps) {
       {/* Navigation Breadcrumb */}
       <div className="flex items-center justify-between">
         <Link
-          href="/"
-          className="inline-flex items-center gap-2 text-xs font-semibold text-stone-600 hover:text-stone-800 transition-colors"
+          href="/dashboard"
+          className="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Dashboard</span>
@@ -438,7 +439,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setIsEditing(!isEditing)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-stone-200 bg-stone-100/80 hover:bg-stone-200 text-stone-800 text-xs font-medium transition-colors"
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors shadow-2xs"
           >
             <Edit className="w-3.5 h-3.5" />
             <span>{isEditing ? "Cancel Edit" : "Edit Details"}</span>
@@ -447,7 +448,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
           <button
             onClick={handleDelete}
             disabled={updating}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-rose-500/30 bg-rose-950/20 hover:bg-rose-950/40 text-rose-300 text-xs font-medium transition-colors"
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold transition-colors shadow-2xs"
           >
             <Trash2 className="w-3.5 h-3.5" />
             <span>Delete</span>
@@ -455,15 +456,207 @@ export default function ObligationDetailPage({ params }: PageProps) {
         </div>
       </div>
 
+      {/* FLAGSHIP HEADER: Section 11 Product Specification */}
+      <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-5">
+        <div className="flex flex-wrap items-start justify-between gap-4 pb-4 border-b border-slate-100">
+          <div className="space-y-2 max-w-2xl">
+            <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
+              <span className={`w-2.5 h-2.5 rounded-full ${isOwedByMe ? "bg-orange-500" : "bg-emerald-500"}`} />
+              <span>{isOwedByMe ? "Outgoing Commitment (You Owe)" : "Incoming Commitment (Others Owe You)"}</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-snug">
+              {obligation.action}
+            </h1>
+          </div>
+
+          <div className="flex items-center gap-2.5">
+            {obligation.is_at_risk && (
+              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
+                <span>At Risk</span>
+              </span>
+            )}
+            <StatusBadge status={obligation.status} />
+          </div>
+        </div>
+
+        {/* Core Metadata Row */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+          <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 space-y-0.5">
+            <span className="text-[10px] font-bold text-slate-600 uppercase tracking-wider">Owner (Obligor)</span>
+            <div className="font-bold text-slate-900 truncate flex items-center gap-1.5">
+              <User className="w-3.5 h-3.5 text-orange-600 shrink-0" />
+              <span className="truncate">{obligation.owner}</span>
+            </div>
+          </div>
+
+          <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 space-y-0.5">
+            <span className="text-[10px] font-bold text-slate-600 uppercase tracking-wider">Beneficiary (Obligee)</span>
+            <div className="font-bold text-slate-900 truncate flex items-center gap-1.5">
+              <User className="w-3.5 h-3.5 text-slate-600 shrink-0" />
+              <span className="truncate">{obligation.beneficiary}</span>
+            </div>
+          </div>
+
+          <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 space-y-0.5">
+            <span className="text-[10px] font-bold text-slate-600 uppercase tracking-wider">Deadline</span>
+            <div className="font-bold text-slate-900 truncate flex items-center gap-1.5">
+              <Clock className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+              <span>{obligation.deadline ? new Date(obligation.deadline).toLocaleDateString() : "Flexible"}</span>
+            </div>
+          </div>
+
+          <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 space-y-0.5">
+            <span className="text-[10px] font-bold text-slate-600 uppercase tracking-wider">Priority / Risk</span>
+            <div className="font-bold text-slate-900 truncate flex items-center gap-1.5">
+              <Flame className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+              <span>{riskAssessment?.risk_level || (obligation.is_at_risk ? "HIGH" : "NORMAL")}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* CURRENT STATE CALLOUT */}
+        {isBlocked ? (
+          <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-xs space-y-1.5">
+            <div className="flex items-center gap-2 text-rose-800 font-bold">
+              <AlertTriangle className="w-4 h-4 text-rose-600" />
+              <span>CURRENT STATE: BLOCKED</span>
+            </div>
+            <p className="text-slate-800 leading-relaxed font-medium">
+              {obligation.block_reason && typeof obligation.block_reason === "object" && (obligation.block_reason as Record<string, unknown>).blocked_by
+                ? ((obligation.block_reason as Record<string, unknown>).blocked_by as Array<Record<string, unknown>>)?.[0]?.reason as string ||
+                  "Finance approval / upstream benchmark is delaying execution."
+                : "Upstream prerequisite commitments are unresolved or delayed, preventing progression."}
+            </p>
+          </div>
+        ) : obligation.is_at_risk ? (
+          <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-xs space-y-1.5">
+            <div className="flex items-center gap-2 text-amber-800 font-bold">
+              <AlertTriangle className="w-4 h-4 text-amber-600" />
+              <span>CURRENT STATE: AT RISK</span>
+            </div>
+            <p className="text-slate-800 leading-relaxed font-medium">
+              Commitment deadline is rapidly approaching with remaining incomplete verification steps.
+            </p>
+          </div>
+        ) : (
+          <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs space-y-1.5">
+            <div className="flex items-center gap-2 text-emerald-800 font-bold">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+              <span>CURRENT STATE: ON TRACK</span>
+            </div>
+            <p className="text-slate-800 leading-relaxed font-medium">
+              No active blockers detected. Deliverable is progressing according to schedule.
+            </p>
+          </div>
+        )}
+
+        {/* INTERACTIVE TIMELINE PROGRESSION */}
+        <div className="pt-2">
+          <div className="text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-3">
+            Obligation Lifecycle Timeline
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-center text-xs">
+            <div className="p-2.5 rounded-xl bg-slate-50 border border-emerald-200 text-emerald-800 font-semibold space-y-1">
+              <div className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 mx-auto flex items-center justify-center font-bold text-[10px]">
+                ✓
+              </div>
+              <div className="text-[11px]">Commitment Created</div>
+            </div>
+
+            <div className="p-2.5 rounded-xl bg-slate-50 border border-emerald-200 text-emerald-800 font-semibold space-y-1">
+              <div className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 mx-auto flex items-center justify-center font-bold text-[10px]">
+                ✓
+              </div>
+              <div className="text-[11px]">Progress Update</div>
+            </div>
+
+            <div className={`p-2.5 rounded-xl border font-semibold space-y-1 ${
+              isBlocked ? "bg-rose-50 border-rose-300 text-rose-800" : "bg-slate-50 border-slate-200 text-slate-400"
+            }`}>
+              <div className={`w-5 h-5 rounded-full mx-auto flex items-center justify-center font-bold text-[10px] ${
+                isBlocked ? "bg-rose-200 text-rose-800" : "bg-slate-200 text-slate-500"
+              }`}>
+                {isBlocked ? "!" : "3"}
+              </div>
+              <div className="text-[11px]">Blocker Detected</div>
+            </div>
+
+            <div className={`p-2.5 rounded-xl border font-semibold space-y-1 ${
+              obligation.is_at_risk || isBlocked ? "bg-amber-50 border-amber-300 text-amber-800" : "bg-slate-50 border-slate-200 text-slate-400"
+            }`}>
+              <div className={`w-5 h-5 rounded-full mx-auto flex items-center justify-center font-bold text-[10px] ${
+                obligation.is_at_risk || isBlocked ? "bg-amber-200 text-amber-800" : "bg-slate-200 text-slate-500"
+              }`}>
+                {obligation.is_at_risk || isBlocked ? "▲" : "4"}
+              </div>
+              <div className="text-[11px]">Risk Increased</div>
+            </div>
+
+            <div className="p-2.5 rounded-xl bg-orange-50 border border-orange-300 text-orange-900 font-semibold space-y-1">
+              <div className="w-5 h-5 rounded-full bg-orange-200 text-orange-800 mx-auto flex items-center justify-center font-bold text-[10px]">
+                ★
+              </div>
+              <div className="text-[11px]">Action Recommended</div>
+            </div>
+          </div>
+        </div>
+
+        {/* WHY IS THIS AT RISK? (SECTION 11 PROMINENT INTELLIGENCE) */}
+        {(isBlocked || obligation.is_at_risk || rootCause) && (
+          <div className="p-5 rounded-2xl bg-gradient-to-r from-orange-50/70 via-amber-50/50 to-orange-50/70 border border-orange-200 shadow-xs space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Brain className="w-4 h-4 text-orange-600" />
+                <h3 className="text-sm font-bold text-slate-900">Why Is This At Risk?</h3>
+              </div>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-orange-100 text-orange-800 border border-orange-200">
+                Gemini Causal Intelligence
+              </span>
+            </div>
+
+            <p className="text-xs text-slate-800 leading-relaxed font-medium">
+              {rootCause?.overall_explanation ||
+                (isBlocked
+                  ? "Upstream database benchmark metrics required to size migration targets are overdue. Without resolution, downstream production release cannot be authorized."
+                  : "Velocity metrics indicate high likelihood of deadline overrun based on cross-team workload and unconfirmed prerequisites.")}
+            </p>
+
+            {/* RECOMMENDED NEXT ACTION & HUMAN AUTHORIZATION */}
+            <div className="pt-2 border-t border-orange-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="space-y-0.5">
+                <span className="text-[10px] font-bold text-orange-800 uppercase tracking-wider">
+                  Recommended Next Action
+                </span>
+                <div className="text-xs font-bold text-slate-900">
+                  {obligation.next_action ||
+                    rootCause?.recommended_resolution ||
+                    "Expedite benchmark on secondary replica before escalating cutover window."}
+                </div>
+              </div>
+
+              <button
+                onClick={handlePlanIntervention}
+                disabled={planningIntervention}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold shadow-xs transition-all active:scale-[0.98] shrink-0 disabled:opacity-50"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>{planningIntervention ? "Synthesizing Plan..." : "Review Recommendation"}</span>
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* PHASE 4: Suggested Completion Evidence Review Card */}
       {obligation.status !== "COMPLETED" && pendingSuggestedEvidence.length > 0 && (
-        <div className="bg-emerald-950/30 border border-emerald-500/40 rounded-2xl p-6 shadow-xl space-y-4 animate-in fade-in">
+        <div className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm space-y-4 animate-in fade-in">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-emerald-300 font-bold text-sm">
-              <Sparkles className="w-5 h-5 text-emerald-400 animate-pulse" />
+            <div className="flex items-center gap-2 text-stone-900 font-bold text-sm">
+              <Sparkles className="w-5 h-5 text-orange-600" />
               <span>Possible Fulfillment / Completion Evidence Detected</span>
             </div>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-orange-50 text-orange-700 border border-orange-200">
               {pendingSuggestedEvidence.length} Candidate(s)
             </span>
           </div>
@@ -472,21 +665,21 @@ export default function ObligationDetailPage({ params }: PageProps) {
             {pendingSuggestedEvidence.map((ev) => (
               <div
                 key={ev.id}
-                className="p-4 rounded-xl bg-stone-50/80 border border-emerald-500/30 space-y-3"
+                className="p-4 rounded-xl bg-stone-50/60 border border-stone-200 space-y-3"
               >
                 <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
                   <div className="flex items-center gap-2">
                     <span className="font-semibold text-stone-800">
                       {ev.actor || "External Actor"}
                     </span>
-                    <span className="text-stone-500">•</span>
+                    <span className="text-stone-400">•</span>
                     <span className="text-stone-600 capitalize">{ev.source_type}</span>
                     {ev.source_ref && (
                       <span className="text-stone-500 font-mono text-[11px]">({ev.source_ref})</span>
                     )}
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-emerald-400 font-bold text-xs">
+                    <span className="text-orange-700 font-bold text-xs">
                       Match: {Math.round(ev.correlation_confidence * 100)}%
                     </span>
                     <span className="text-stone-500 text-[11px]">
@@ -495,20 +688,20 @@ export default function ObligationDetailPage({ params }: PageProps) {
                   </div>
                 </div>
 
-                <p className="text-sm text-stone-900 font-medium bg-stone-100/60 p-3 rounded-lg border border-stone-200/80">
+                <p className="text-sm text-stone-900 font-medium bg-white p-3 rounded-lg border border-stone-200">
                   &ldquo;{ev.content}&rdquo;
                 </p>
 
                 {/* Match Signals Breakdown */}
                 {ev.reasoning && Array.isArray(ev.reasoning) && ev.reasoning.length > 0 && (
                   <div className="space-y-1">
-                    <span className="text-[11px] font-semibold text-emerald-400/90 uppercase tracking-wider block">
+                    <span className="text-[11px] font-semibold text-stone-600 uppercase tracking-wider block">
                       Correlation Match Reasoning:
                     </span>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs text-stone-700">
                       {ev.reasoning.map((r, ri) => (
                         <div key={ri} className="flex items-center gap-1.5">
-                          <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                          <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                           <span className="text-stone-700">{r}</span>
                         </div>
                       ))}
@@ -521,14 +714,14 @@ export default function ObligationDetailPage({ params }: PageProps) {
                   <button
                     onClick={() => handleRejectEvidence(ev.id)}
                     disabled={updating}
-                    className="px-3.5 py-1.5 rounded-lg border border-stone-200 hover:bg-stone-200 text-stone-600 hover:text-stone-800 text-xs font-medium transition-colors"
+                    className="px-3.5 py-1.5 rounded-lg border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 hover:text-stone-900 text-xs font-medium transition-colors"
                   >
                     Reject Evidence
                   </button>
                   <button
                     onClick={() => handleConfirmEvidence(ev.id)}
                     disabled={updating}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-stone-950 text-xs font-bold shadow-md shadow-emerald-600/20 active:scale-95 transition-all"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold shadow-sm active:scale-95 transition-all"
                   >
                     <CheckCircle2 className="w-4 h-4" />
                     <span>Confirm Completion</span>
@@ -542,26 +735,26 @@ export default function ObligationDetailPage({ params }: PageProps) {
 
       {/* PHASE 3: Prominent BLOCKED State Banner */}
       {isBlocked && (
-        <div className="bg-rose-950/40 border border-rose-500/40 rounded-2xl p-6 shadow-xl space-y-3 animate-in fade-in">
-          <div className="flex items-center gap-2.5 text-rose-300 font-bold text-sm">
-            <Ban className="w-5 h-5 text-rose-400 animate-pulse" />
+        <div className="bg-rose-50/70 border border-rose-200 rounded-2xl p-6 shadow-sm space-y-3 animate-in fade-in">
+          <div className="flex items-center gap-2.5 text-rose-700 font-bold text-sm">
+            <Ban className="w-5 h-5 text-rose-600 animate-pulse" />
             <span>This Obligation is BLOCKED</span>
           </div>
 
-          <p className="text-xs text-rose-200/90 leading-relaxed">
+          <p className="text-xs text-stone-700 leading-relaxed">
             Progress cannot proceed because one or more prerequisite obligations are unresolved or overdue.
           </p>
 
           {graph && graph.blockers.length > 0 ? (
             <div className="space-y-2 pt-2">
-              <span className="text-[11px] font-semibold text-rose-400 uppercase tracking-wider block">
+              <span className="text-[11px] font-semibold text-rose-700 uppercase tracking-wider block">
                 Active Blocker(s):
               </span>
               <div className="space-y-2">
                 {graph.blockers.map((blocker) => (
                   <div
                     key={blocker.obligation_id}
-                    className="p-3.5 rounded-xl bg-stone-50/80 border border-rose-500/30 flex flex-wrap items-center justify-between gap-3 text-xs"
+                    className="p-3.5 rounded-xl bg-white border border-rose-200 flex flex-wrap items-center justify-between gap-3 text-xs"
                   >
                     <div className="space-y-1 max-w-xl">
                       <div className="flex items-center gap-2">
@@ -570,12 +763,12 @@ export default function ObligationDetailPage({ params }: PageProps) {
                         <StatusBadge status={blocker.status} />
                       </div>
                       <div className="text-stone-700 font-medium">{blocker.action}</div>
-                      <div className="text-[11px] text-rose-300/80 italic">{blocker.reason}</div>
+                      <div className="text-[11px] text-rose-700 italic">{blocker.reason}</div>
                     </div>
 
                     <Link
                       href={`/obligations/${blocker.obligation_id}`}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 border border-rose-500/30 text-xs font-semibold transition-colors"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold transition-colors"
                     >
                       <span>View Blocker</span>
                       <ArrowRight className="w-3.5 h-3.5" />
@@ -590,29 +783,19 @@ export default function ObligationDetailPage({ params }: PageProps) {
 
       {/* PHASE 5: Proactive Risk & Rescue Inspector Panel */}
       {riskAssessment && (
-        <div
-          className={`rounded-2xl border p-6 shadow-xl space-y-6 ${
-            riskAssessment.risk_level === "CRITICAL"
-              ? "bg-red-950/20 border-red-500/40 shadow-red-950/20"
-              : riskAssessment.risk_level === "HIGH"
-              ? "bg-amber-950/20 border-amber-500/40 shadow-amber-950/20"
-              : riskAssessment.risk_level === "MEDIUM"
-              ? "bg-blue-950/20 border-blue-500/30 shadow-blue-950/10"
-              : "bg-stone-100/60 border-stone-200"
-          }`}
-        >
+        <div className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm space-y-6">
           {/* Header Row */}
           <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-stone-200/80">
             <div className="flex items-center gap-3">
               <div
                 className={`w-10 h-10 rounded-xl flex items-center justify-center border ${
                   riskAssessment.risk_level === "CRITICAL"
-                    ? "bg-red-500/20 text-red-400 border-red-500/30"
+                    ? "bg-rose-50 text-rose-700 border-rose-200"
                     : riskAssessment.risk_level === "HIGH"
-                    ? "bg-amber-500/20 text-amber-400 border-amber-500/30"
+                    ? "bg-amber-50 text-amber-700 border-amber-200"
                     : riskAssessment.risk_level === "MEDIUM"
-                    ? "bg-blue-500/20 text-blue-500 border-blue-500/30"
-                    : "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
+                    ? "bg-orange-50 text-orange-700 border-orange-200"
+                    : "bg-emerald-50 text-emerald-700 border-emerald-200"
                 }`}
               >
                 <Flame className="w-5 h-5" />
@@ -620,17 +803,17 @@ export default function ObligationDetailPage({ params }: PageProps) {
               <div>
                 <div className="flex items-center gap-2">
                   <h2 className="text-base font-bold text-stone-950">
-                    Proactive Risk & Deadline Rescue Inspector
+                    Proactive Risk &amp; Deadline Rescue Inspector
                   </h2>
                   <span
                     className={`px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider border ${
                       riskAssessment.risk_level === "CRITICAL"
-                        ? "bg-red-500/20 text-red-300 border-red-500/40"
+                        ? "bg-rose-50 text-rose-700 border-rose-200"
                         : riskAssessment.risk_level === "HIGH"
-                        ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
+                        ? "bg-amber-50 text-amber-700 border-amber-200"
                         : riskAssessment.risk_level === "MEDIUM"
-                        ? "bg-blue-500/20 text-blue-600 border-blue-500/40"
-                        : "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
+                        ? "bg-orange-50 text-orange-700 border-orange-200"
+                        : "bg-emerald-50 text-emerald-700 border-emerald-200"
                     }`}
                   >
                     {riskAssessment.risk_level} Risk · {Math.round(riskAssessment.risk_score * 100)}%
@@ -643,14 +826,14 @@ export default function ObligationDetailPage({ params }: PageProps) {
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="px-3 py-1.5 rounded-lg bg-stone-50/80 border border-stone-200 text-xs">
+              <div className="px-3 py-1.5 rounded-lg bg-stone-50 border border-stone-200 text-xs">
                 <span className="text-stone-500 font-medium">Priority Score: </span>
                 <span className="text-stone-800 font-bold font-mono">
                   {Math.round(riskAssessment.priority_score * 100)} / 100
                 </span>
               </div>
               {riskAssessment.dependent_count > 0 && (
-                <div className="px-3 py-1.5 rounded-lg bg-amber-950/40 border border-amber-500/30 text-xs font-semibold text-amber-300">
+                <div className="px-3 py-1.5 rounded-lg bg-amber-50 border border-amber-200 text-xs font-semibold text-amber-800">
                   ⚡ Blocks {riskAssessment.dependent_count}{" "}
                   {riskAssessment.dependent_count === 1 ? "task" : "tasks"}
                 </div>
@@ -659,9 +842,9 @@ export default function ObligationDetailPage({ params }: PageProps) {
           </div>
 
           {/* Recommended Next Action Banner */}
-          <div className="p-4 rounded-xl bg-stone-50/80 border border-stone-200 space-y-2">
+          <div className="p-4 rounded-xl bg-orange-50/50 border border-orange-200 space-y-2">
             <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-blue-600/20 text-blue-600 border border-blue-500/30">
+              <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-orange-100 text-orange-800 border border-orange-200">
                 RECOMMENDED ACTION: {riskAssessment.action_type.replace(/_/g, " ")}
               </span>
             </div>
@@ -704,7 +887,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
                 </div>
                 <div className="w-full h-1.5 bg-stone-200 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-purple-500 to-rose-500"
+                    className="h-full bg-gradient-to-r from-amber-500 to-orange-500"
                     style={{
                       width: `${Math.min(100, riskAssessment.breakdown.dependency_risk * 250)}%`,
                     }}
@@ -719,7 +902,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
                   <span
                     className={`font-mono font-bold ${
                       riskAssessment.breakdown.progress_risk < 0
-                        ? "text-emerald-400"
+                        ? "text-emerald-700"
                         : "text-stone-800"
                     }`}
                   >
@@ -752,7 +935,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
                 </div>
                 <div className="w-full h-1.5 bg-stone-200 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-blue-600"
+                    className="h-full bg-orange-600"
                     style={{
                       width: `${Math.min(100, riskAssessment.breakdown.ownership_risk * 500)}%`,
                     }}
@@ -778,12 +961,12 @@ export default function ObligationDetailPage({ params }: PageProps) {
                       <span
                         className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${
                           sig.severity === "CRITICAL"
-                            ? "bg-red-500/20 text-red-300 border-red-500/40"
+                            ? "bg-rose-50 text-rose-700 border-rose-200"
                             : sig.severity === "HIGH"
-                            ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
+                            ? "bg-amber-50 text-amber-700 border-amber-200"
                             : sig.severity === "MEDIUM"
-                            ? "bg-blue-500/20 text-blue-600 border-blue-500/40"
-                            : "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
+                            ? "bg-orange-50 text-orange-700 border-orange-200"
+                            : "bg-emerald-50 text-emerald-700 border-emerald-200"
                         }`}
                       >
                         {sig.severity}
@@ -807,7 +990,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
       {/* Main Content Card */}
       {isEditing ? (
         /* Edit Form */
-        <div className="bg-stone-100 border border-stone-200 rounded-2xl p-6 shadow-xl space-y-5">
+        <div className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm space-y-5">
           <h2 className="text-lg font-bold text-stone-950 pb-3 border-b border-stone-200">
             Edit Obligation
           </h2>
@@ -816,9 +999,9 @@ export default function ObligationDetailPage({ params }: PageProps) {
               <button
                 type="button"
                 onClick={() => setEditType("OWED_BY_ME")}
-                className={`p-3 rounded-xl border text-left text-xs font-medium ${
+                className={`p-3 rounded-xl border text-left text-xs font-semibold ${
                   editType === "OWED_BY_ME"
-                    ? "bg-blue-600/20 border-blue-500 text-stone-950"
+                    ? "bg-orange-50 border-orange-500 text-orange-950"
                     : "bg-stone-50 border-stone-200 text-stone-600"
                 }`}
               >
@@ -827,9 +1010,9 @@ export default function ObligationDetailPage({ params }: PageProps) {
               <button
                 type="button"
                 onClick={() => setEditType("OWED_TO_ME")}
-                className={`p-3 rounded-xl border text-left text-xs font-medium ${
+                className={`p-3 rounded-xl border text-left text-xs font-semibold ${
                   editType === "OWED_TO_ME"
-                    ? "bg-emerald-600/20 border-emerald-500 text-stone-950"
+                    ? "bg-emerald-50 border-emerald-500 text-emerald-950"
                     : "bg-stone-50 border-stone-200 text-stone-600"
                 }`}
               >
@@ -913,7 +1096,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
               <button
                 type="submit"
                 disabled={updating}
-                className="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-stone-950 text-xs font-semibold"
+                className="px-5 py-2 rounded-xl bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold shadow"
               >
                 Save Changes
               </button>
@@ -922,12 +1105,12 @@ export default function ObligationDetailPage({ params }: PageProps) {
         </div>
       ) : (
         /* Detailed View */
-        <div className="bg-stone-100/80 border border-stone-200 rounded-2xl p-6 sm:p-8 shadow-xl space-y-8">
+        <div className="bg-white border border-stone-200 rounded-2xl p-6 sm:p-8 shadow-sm space-y-8">
           {/* Header row */}
           <div className="flex flex-wrap items-start justify-between gap-4 pb-6 border-b border-stone-200">
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-xs font-medium text-stone-600">
-                <span className={`w-2.5 h-2.5 rounded-full ${isOwedByMe ? "bg-blue-500" : "bg-emerald-400"}`} />
+                <span className={`w-2.5 h-2.5 rounded-full ${isOwedByMe ? "bg-orange-500" : "bg-emerald-500"}`} />
                 <span>
                   {isOwedByMe ? "Outgoing Commitment (You Owe)" : "Incoming Commitment (Others Owe You)"}
                 </span>
@@ -939,7 +1122,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
 
             <div className="flex items-center gap-3">
               {obligation.is_at_risk && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/30 animate-pulse">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 animate-pulse">
                   <ShieldAlert className="w-3.5 h-3.5" />
                   At Risk
                 </span>
@@ -950,22 +1133,22 @@ export default function ObligationDetailPage({ params }: PageProps) {
 
           {/* Reciprocal Parties Visualization */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="p-4 rounded-xl bg-stone-50/80 border border-stone-200/80 space-y-1">
+            <div className="p-4 rounded-xl bg-stone-50 border border-stone-200 space-y-1">
               <span className="text-[11px] font-semibold text-stone-600 uppercase tracking-wider">
                 Duty Bearer (Owner)
               </span>
               <div className="text-base font-bold text-stone-900 flex items-center gap-2">
-                <User className="w-4 h-4 text-blue-500" />
+                <User className="w-4 h-4 text-orange-600" />
                 <span>{obligation.owner}</span>
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-stone-50/80 border border-stone-200/80 space-y-1">
+            <div className="p-4 rounded-xl bg-stone-50 border border-stone-200 space-y-1">
               <span className="text-[11px] font-semibold text-stone-600 uppercase tracking-wider">
                 Obligee (Beneficiary)
               </span>
               <div className="text-base font-bold text-stone-900 flex items-center gap-2">
-                <User className="w-4 h-4 text-emerald-400" />
+                <User className="w-4 h-4 text-emerald-600" />
                 <span>{obligation.beneficiary}</span>
               </div>
             </div>
@@ -973,12 +1156,12 @@ export default function ObligationDetailPage({ params }: PageProps) {
 
           {/* Temporal & Conditions Block */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="p-4 rounded-xl bg-stone-50/80 border border-stone-200/80 space-y-1">
+            <div className="p-4 rounded-xl bg-stone-50 border border-stone-200 space-y-1">
               <span className="text-[11px] font-semibold text-stone-600 uppercase tracking-wider">
                 Deadline
               </span>
               <div className="text-sm font-semibold text-stone-800 flex items-center gap-2">
-                <Clock className="w-4 h-4 text-amber-400" />
+                <Clock className="w-4 h-4 text-amber-500" />
                 <span>
                   {obligation.deadline
                     ? new Date(obligation.deadline).toLocaleString(undefined, {
@@ -990,13 +1173,13 @@ export default function ObligationDetailPage({ params }: PageProps) {
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-stone-50/80 border border-stone-200/80 space-y-1">
+            <div className="p-4 rounded-xl bg-stone-50 border border-stone-200 space-y-1">
               <span className="text-[11px] font-semibold text-stone-600 uppercase tracking-wider">
                 Conditions / Triggers
               </span>
               <div className="text-sm text-stone-700">
                 {obligation.conditions ? (
-                  <span className="text-amber-300 font-medium">{String(obligation.conditions)}</span>
+                  <span className="text-amber-700 font-medium">{String(obligation.conditions)}</span>
                 ) : (
                   <span className="text-stone-600 italic">None (Unconditional)</span>
                 )}
@@ -1006,24 +1189,24 @@ export default function ObligationDetailPage({ params }: PageProps) {
 
           {/* Next Action Callout */}
           {obligation.next_action && (
-            <div className="p-4 rounded-xl bg-blue-950/30 border border-blue-500/30 space-y-1">
-              <span className="text-[11px] font-semibold text-blue-500 uppercase tracking-wider">
+            <div className="p-4 rounded-xl bg-orange-50 border border-orange-200 space-y-1">
+              <span className="text-[11px] font-semibold text-orange-700 uppercase tracking-wider">
                 Immediate Next Step
               </span>
-              <div className="text-sm text-stone-800 font-medium">{obligation.next_action}</div>
+              <div className="text-sm text-stone-900 font-medium">{obligation.next_action}</div>
             </div>
           )}
 
           {/* Provenance & Confidence */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="p-4 rounded-xl bg-stone-50/80 border border-stone-200/80 space-y-1">
+            <div className="p-4 rounded-xl bg-stone-50 border border-stone-200 space-y-1">
               <span className="text-[11px] font-semibold text-stone-600 uppercase tracking-wider">
                 Source Reference
               </span>
               <div className="text-xs text-stone-700">{obligation.source_ref || "Manual Input"}</div>
             </div>
 
-            <div className="p-4 rounded-xl bg-stone-50/80 border border-stone-200/80 space-y-1">
+            <div className="p-4 rounded-xl bg-stone-50 border border-stone-200 space-y-1">
               <span className="text-[11px] font-semibold text-stone-600 uppercase tracking-wider">
                 AI Confidence Breakdown
               </span>
@@ -1043,8 +1226,8 @@ export default function ObligationDetailPage({ params }: PageProps) {
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <h3 className="text-sm font-bold text-stone-950 flex items-center gap-2">
-                  <GitFork className="w-4 h-4 text-blue-500" />
-                  <span>Obligation Relationships & Dependency Graph</span>
+                  <GitFork className="w-4 h-4 text-orange-600" />
+                  <span>Obligation Relationships &amp; Dependency Graph</span>
                 </h3>
                 <p className="text-[11px] text-stone-600">
                   Connected commitments, prerequisite blockers, and reciprocal dependencies.
@@ -1053,7 +1236,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
 
               <button
                 onClick={handleOpenAddEdgeModal}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-blue-600/20 hover:bg-blue-600/30 text-blue-600 border border-blue-500/30 text-xs font-semibold transition-colors"
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-orange-50 hover:bg-orange-100 text-orange-700 border border-orange-200 text-xs font-semibold transition-colors"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Add Relationship</span>
@@ -1078,7 +1261,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
                       className="p-3.5 rounded-xl bg-stone-50 border border-stone-200 hover:border-stone-300 transition-all space-y-1.5 block group"
                     >
                       <div className="flex items-center justify-between text-xs">
-                        <span className="font-semibold text-stone-700 group-hover:text-blue-500 transition-colors">
+                        <span className="font-semibold text-stone-700 group-hover:text-orange-600 transition-colors">
                           {dep.owner}
                         </span>
                         <StatusBadge status={dep.status} />
@@ -1135,11 +1318,11 @@ export default function ObligationDetailPage({ params }: PageProps) {
                     <Link
                       key={link.id}
                       href={`/obligations/${link.id}`}
-                      className="p-3.5 rounded-xl bg-purple-950/10 border border-purple-500/20 hover:border-purple-500/40 transition-all space-y-1.5 block group"
+                      className="p-3.5 rounded-xl bg-orange-50/40 border border-orange-200 hover:border-orange-300 transition-all space-y-1.5 block group"
                     >
                       <div className="flex items-center justify-between text-xs">
-                        <span className="font-semibold text-purple-300 group-hover:text-purple-200 transition-colors flex items-center gap-1.5">
-                          <LinkIcon className="w-3 h-3 text-purple-400" />
+                        <span className="font-semibold text-stone-900 group-hover:text-orange-600 transition-colors flex items-center gap-1.5">
+                          <LinkIcon className="w-3 h-3 text-orange-600" />
                           <span>{link.owner}</span>
                         </span>
                         <StatusBadge status={link.status} />
@@ -1224,18 +1407,18 @@ export default function ObligationDetailPage({ params }: PageProps) {
             if (calendarEvs.length === 0) return null;
 
             return (
-              <div className="bg-gradient-to-r from-emerald-950/30 via-stone-100 to-stone-100 border border-emerald-800/40 rounded-2xl p-6 space-y-4 shadow-md">
+              <div className="bg-white border border-stone-200 rounded-2xl p-6 space-y-4 shadow-sm">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="space-y-0.5">
                     <h3 className="text-sm font-bold text-stone-950 flex items-center gap-2">
-                      <Calendar className="w-4 h-4 text-emerald-400" />
+                      <Calendar className="w-4 h-4 text-orange-600" />
                       <span>Temporal Context &amp; Related Meetings ({calendarEvs.length})</span>
                     </h3>
                     <p className="text-[11px] text-stone-600">
                       Observed Google Calendar meetings correlating with this commitment.
                     </p>
                   </div>
-                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-950/80 text-emerald-300 border border-emerald-800/60">
+                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-orange-50 text-orange-700 border border-orange-200">
                     Temporal Intelligence Active
                   </span>
                 </div>
@@ -1252,19 +1435,19 @@ export default function ObligationDetailPage({ params }: PageProps) {
                     return (
                       <div
                         key={cev.id}
-                        className="p-4 rounded-xl bg-stone-50/90 border border-emerald-900/40 space-y-2.5 text-xs"
+                        className="p-4 rounded-xl bg-stone-50/70 border border-stone-200 space-y-2.5 text-xs"
                       >
                         <div className="flex flex-wrap items-center justify-between gap-2">
                           <div className="flex items-center gap-2">
                             <span
                               className={`px-2 py-0.5 rounded-full font-bold uppercase text-[10px] ${
                                 mStatus === "MEETING_COMPLETED"
-                                  ? "bg-blue-950/80 text-blue-600 border border-blue-800/60"
+                                  ? "bg-slate-100 text-slate-700 border border-slate-200"
                                   : mStatus === "MEETING_CANCELLED"
-                                  ? "bg-rose-950/80 text-rose-300 border border-rose-800/60"
+                                  ? "bg-rose-50 text-rose-700 border border-rose-200"
                                   : mStatus === "MEETING_RESCHEDULED"
-                                  ? "bg-amber-950/80 text-amber-300 border border-amber-800/60"
-                                  : "bg-emerald-950/80 text-emerald-300 border border-emerald-800/60"
+                                  ? "bg-amber-50 text-amber-700 border border-amber-200"
+                                  : "bg-emerald-50 text-emerald-700 border border-emerald-200"
                               }`}
                             >
                               {mStatus.replace("MEETING_", "")}
@@ -1276,7 +1459,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
 
                           {startTime && (
                             <span className="text-stone-600 flex items-center gap-1 font-mono text-[11px]">
-                              <Clock className="w-3 h-3 text-emerald-400" />
+                              <Clock className="w-3 h-3 text-stone-500" />
                               {new Date(startTime).toLocaleString(undefined, {
                                 month: "short",
                                 day: "numeric",
@@ -1287,7 +1470,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
                           )}
                         </div>
 
-                        <p className="text-stone-700 bg-stone-100/60 p-2.5 rounded-lg border border-stone-200/80">
+                        <p className="text-stone-700 bg-white p-2.5 rounded-lg border border-stone-200">
                           {cev.content}
                         </p>
 
@@ -1316,18 +1499,18 @@ export default function ObligationDetailPage({ params }: PageProps) {
           {/* PHASE 11: CROSS-PROVIDER EVIDENCE RECONCILIATION */}
           {reconciliation && (
             <div
-              className={`border rounded-2xl p-6 space-y-4 shadow-md transition-all ${
+              className={`border rounded-2xl p-6 space-y-4 shadow-sm transition-all ${
                 reconciliation.status === "CONFLICTING"
-                  ? "bg-gradient-to-r from-rose-950/30 via-stone-100 to-stone-100 border-rose-800/40"
+                  ? "bg-rose-50/40 border-rose-200"
                   : reconciliation.status === "CONSISTENT"
-                  ? "bg-gradient-to-r from-emerald-950/30 via-stone-100 to-stone-100 border-emerald-800/40"
-                  : "bg-stone-100 border-stone-200"
+                  ? "bg-emerald-50/40 border-emerald-200"
+                  : "bg-white border-stone-200"
               }`}
             >
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="space-y-0.5">
                   <h3 className="text-sm font-bold text-stone-950 flex items-center gap-2">
-                    <Scale className="w-4 h-4 text-blue-500" />
+                    <Scale className="w-4 h-4 text-orange-600" />
                     <span>Cross-Provider Reconciliation &amp; Contradiction Status</span>
                   </h3>
                   <p className="text-[11px] text-stone-600">
@@ -1338,17 +1521,17 @@ export default function ObligationDetailPage({ params }: PageProps) {
                   <span
                     className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${
                       reconciliation.status === "CONFLICTING"
-                        ? "bg-rose-500/20 text-rose-300 border border-rose-500/40"
+                        ? "bg-rose-50 text-rose-700 border border-rose-200"
                         : reconciliation.status === "CONSISTENT"
-                        ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
-                        : "bg-amber-500/20 text-amber-300 border border-amber-500/40"
+                        ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                        : "bg-amber-50 text-amber-700 border border-amber-200"
                     }`}
                   >
                     {reconciliation.status.replace("_", " ")}
                   </span>
                   <button
                     onClick={() => setShowReconciliationModal(true)}
-                    className="px-3 py-1 bg-blue-700 hover:bg-blue-600 text-stone-950 text-xs font-semibold rounded-lg shadow-sm transition-all"
+                    className="px-3 py-1 bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-all"
                   >
                     Adjudicate Decision
                   </button>
@@ -1357,10 +1540,10 @@ export default function ObligationDetailPage({ params }: PageProps) {
 
               {/* Consistency vs Contradiction Meters */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                <div className="p-3 bg-stone-50/60 rounded-xl border border-stone-200 space-y-1.5">
+                <div className="p-3 bg-stone-50 rounded-xl border border-stone-200 space-y-1.5">
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-stone-600">Consistency Score</span>
-                    <span className="text-emerald-400 font-bold">
+                    <span className="text-emerald-700 font-bold">
                       {(reconciliation.consistency_score * 100).toFixed(0)}%
                     </span>
                   </div>
@@ -1372,10 +1555,10 @@ export default function ObligationDetailPage({ params }: PageProps) {
                   </div>
                 </div>
 
-                <div className="p-3 bg-stone-50/60 rounded-xl border border-stone-200 space-y-1.5">
+                <div className="p-3 bg-stone-50 rounded-xl border border-stone-200 space-y-1.5">
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-stone-600">Contradiction Score</span>
-                    <span className="text-rose-400 font-bold">
+                    <span className="text-rose-700 font-bold">
                       {(reconciliation.contradiction_score * 100).toFixed(0)}%
                     </span>
                   </div>
@@ -1390,13 +1573,13 @@ export default function ObligationDetailPage({ params }: PageProps) {
 
               {/* Finding notes */}
               {reconciliation.explanation && reconciliation.explanation.length > 0 && (
-                <div className="p-3 bg-stone-50/70 rounded-xl border border-stone-200 text-xs text-stone-700 space-y-1">
+                <div className="p-3 bg-stone-50 rounded-xl border border-stone-200 text-xs text-stone-700 space-y-1">
                   <span className="text-stone-600 font-medium text-[11px] uppercase tracking-wider block mb-1">
                     Intelligence Findings:
                   </span>
                   {reconciliation.explanation.map((exp: string, idx: number) => (
                     <p key={idx} className="text-stone-700 flex items-start gap-1.5">
-                      <span className="text-blue-500 font-mono">•</span>
+                      <span className="text-orange-600 font-mono">•</span>
                       <span>{exp}</span>
                     </p>
                   ))}
@@ -1405,11 +1588,11 @@ export default function ObligationDetailPage({ params }: PageProps) {
 
               <div className="flex items-center justify-between text-xs text-stone-600 pt-1">
                 <span>
-                  Recommended Action: <strong className="text-blue-600">{reconciliation.recommended_action || "REVIEW"}</strong>
+                  Recommended Action: <strong className="text-stone-900 font-semibold">{reconciliation.recommended_action || "REVIEW"}</strong>
                 </span>
                 <Link
                   href={`/reconciliation/${reconciliation.id}`}
-                  className="text-blue-500 hover:text-blue-600 font-medium flex items-center gap-1"
+                  className="text-orange-600 hover:text-orange-700 font-medium flex items-center gap-1"
                 >
                   <span>Full Evidence Timeline &rarr;</span>
                 </Link>
@@ -1419,17 +1602,17 @@ export default function ObligationDetailPage({ params }: PageProps) {
 
           {/* PHASE 12: PREDICTIVE INTELLIGENCE & PATTERN LEARNING */}
           {prediction && (
-            <div className="bg-gradient-to-r from-indigo-950/30 via-stone-100 to-stone-100 border border-blue-600/30 rounded-2xl p-6 space-y-6 shadow-md">
+            <div className="bg-white border border-stone-200 rounded-2xl p-6 space-y-6 shadow-sm">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="w-8 h-8 rounded-lg bg-blue-600/20 border border-blue-600/40 flex items-center justify-center text-blue-500">
+                    <span className="w-8 h-8 rounded-lg bg-orange-50 border border-orange-200 flex items-center justify-center text-orange-600">
                       <Brain className="w-4 h-4" />
                     </span>
                     <div>
                       <h3 className="text-sm font-bold text-stone-950 flex items-center gap-2">
                         <span>Predictive Intelligence &amp; Pattern Learning</span>
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-600/20 text-blue-600 border border-blue-600/40">
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-orange-50 text-orange-700 border border-orange-200">
                           {prediction.model_version}
                         </span>
                       </h3>
@@ -1441,7 +1624,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
                 </div>
 
                 <div className="text-right">
-                  <div className="text-xl font-bold font-mono text-blue-600">
+                  <div className="text-xl font-bold font-mono text-stone-900">
                     {Math.round(prediction.failure_probability * 100)}% Failure Prob.
                   </div>
                   <div className="text-[11px] text-stone-600">
@@ -1453,11 +1636,11 @@ export default function ObligationDetailPage({ params }: PageProps) {
               {/* Progress Bar */}
               <div className="space-y-1.5">
                 <div className="flex justify-between text-xs font-medium text-stone-600">
-                  <span className="text-emerald-400 flex items-center gap-1">
+                  <span className="text-emerald-700 flex items-center gap-1">
                     <CheckCircle2 className="w-3.5 h-3.5" />
                     Completion Likelihood: {Math.round(prediction.completion_probability * 100)}%
                   </span>
-                  <span className="text-rose-400 flex items-center gap-1">
+                  <span className="text-rose-700 flex items-center gap-1">
                     <AlertCircle className="w-3.5 h-3.5" />
                     Failure / Delay Likelihood: {Math.round(prediction.failure_probability * 100)}%
                   </span>
@@ -1474,7 +1657,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="p-3 bg-stone-50/60 rounded-xl border border-stone-200 space-y-1">
                   <div className="text-[11px] text-stone-600">Expected Delay Latency</div>
-                  <div className="text-base font-bold text-amber-300 font-mono">
+                  <div className="text-base font-bold text-amber-700 font-mono">
                     {prediction.expected_delay_hours > 0 ? `+${prediction.expected_delay_hours}h` : "On Schedule"}
                   </div>
                   <div className="text-[10px] text-stone-500">Derived from historical priors</div>
@@ -1482,7 +1665,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
 
                 <div className="p-3 bg-stone-50/60 rounded-xl border border-stone-200 space-y-1">
                   <div className="text-[11px] text-stone-600">Intervention Likelihood</div>
-                  <div className="text-base font-bold text-blue-600 font-mono">
+                  <div className="text-base font-bold text-orange-600 font-mono">
                     {Math.round(prediction.intervention_likelihood * 100)}%
                   </div>
                   <div className="text-[10px] text-stone-500">Likely to need check-in</div>
@@ -1490,7 +1673,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
 
                 <div className="p-3 bg-stone-50/60 rounded-xl border border-stone-200 space-y-1">
                   <div className="text-[11px] text-stone-600">Blockage Risk</div>
-                  <div className="text-base font-bold text-rose-300 font-mono">
+                  <div className="text-base font-bold text-rose-700 font-mono">
                     {Math.round(prediction.blockage_likelihood * 100)}%
                   </div>
                   <div className="text-[10px] text-stone-500">Prerequisite bottleneck risk</div>
@@ -1507,11 +1690,11 @@ export default function ObligationDetailPage({ params }: PageProps) {
                     {prediction.reasons.map((r, i) => (
                       <div
                         key={i}
-                        className="flex items-start gap-2.5 p-2.5 rounded-lg bg-stone-50/50 border border-stone-200/80 text-xs"
+                        className="flex items-start gap-2.5 p-2.5 rounded-lg bg-stone-50 border border-stone-200 text-xs"
                       >
                         <span
                           className={`font-mono text-[10px] font-bold px-1.5 py-0.5 rounded shrink-0 ${
-                            r.impact > 0 ? "bg-rose-500/20 text-rose-300 border border-rose-500/30" : "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                            r.impact > 0 ? "bg-orange-50 text-orange-700 border border-orange-200" : "bg-emerald-50 text-emerald-700 border border-emerald-200"
                           }`}
                         >
                           {r.impact > 0 ? `+${r.impact}` : r.impact}
@@ -1554,10 +1737,10 @@ export default function ObligationDetailPage({ params }: PageProps) {
                             {sim.owner}
                           </span>
                           <span
-                            className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                            className={`px-1.5 py-0.5 rounded text-[10px] font-bold border ${
                               sim.outcome_type.includes("ON_TIME")
-                                ? "bg-emerald-500/20 text-emerald-300"
-                                : "bg-amber-500/20 text-amber-300"
+                                ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                : "bg-amber-50 text-amber-700 border-amber-200"
                             }`}
                           >
                             {sim.outcome_type.replace(/_/g, " ")}
@@ -1575,19 +1758,19 @@ export default function ObligationDetailPage({ params }: PageProps) {
 
               {/* PHASE 13: MODEL COMPARISON BREAKDOWN */}
               {modelComparison && (
-                <div className="space-y-3 pt-3 border-t border-blue-600/20">
+                <div className="space-y-3 pt-3 border-t border-stone-200">
                   <div className="flex items-center justify-between">
                     <h4 className="text-xs font-semibold text-stone-800 uppercase tracking-wider flex items-center gap-1.5">
-                      <Sparkles className="w-3.5 h-3.5 text-blue-500" />
+                      <Sparkles className="w-3.5 h-3.5 text-orange-600" />
                       <span>Model Comparison: predictive-v1 vs adaptive-v1</span>
                     </h4>
-                    <span className="text-[11px] font-mono text-blue-600 bg-blue-600/10 px-2 py-0.5 rounded border border-blue-600/30">
+                    <span className="text-[11px] font-mono text-orange-700 bg-orange-50 px-2 py-0.5 rounded border border-orange-200">
                       Variance: {modelComparison.probability_variance >= 0 ? `+${(modelComparison.probability_variance * 100).toFixed(1)}%` : `${(modelComparison.probability_variance * 100).toFixed(1)}%`}
                     </span>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div className="p-3 bg-stone-50/50 rounded-xl border border-stone-200 space-y-1">
+                    <div className="p-3 bg-stone-50 rounded-xl border border-stone-200 space-y-1">
                       <div className="flex items-center justify-between text-[11px]">
                         <span className="font-semibold text-stone-700">predictive-v1 (Baseline)</span>
                         <span className="font-mono text-stone-600">
@@ -1599,10 +1782,10 @@ export default function ObligationDetailPage({ params }: PageProps) {
                       </div>
                     </div>
 
-                    <div className="p-3 bg-stone-50/50 rounded-xl border border-blue-600/40 space-y-1">
+                    <div className="p-3 bg-orange-50/50 rounded-xl border border-orange-200 space-y-1">
                       <div className="flex items-center justify-between text-[11px]">
-                        <span className="font-semibold text-blue-600">adaptive-v1 (Calibrated)</span>
-                        <span className="font-mono text-blue-500 font-bold">
+                        <span className="font-semibold text-orange-700">adaptive-v1 (Calibrated)</span>
+                        <span className="font-mono text-orange-600 font-bold">
                           {Math.round(modelComparison.adaptive_v1.failure_probability * 100)}% Failure
                         </span>
                       </div>
@@ -1613,10 +1796,10 @@ export default function ObligationDetailPage({ params }: PageProps) {
                   </div>
 
                   {modelComparison.adjustment_reasons.length > 0 && (
-                    <div className="p-2.5 bg-stone-50/40 rounded-lg text-[11px] text-stone-600 space-y-0.5">
+                    <div className="p-2.5 bg-stone-50 rounded-lg text-[11px] text-stone-600 space-y-0.5 border border-stone-200">
                       {modelComparison.adjustment_reasons.map((r, i) => (
                         <div key={i} className="flex items-center gap-1.5 text-stone-700">
-                          <span className="text-blue-500">•</span>
+                          <span className="text-orange-600">•</span>
                           <span>{r}</span>
                         </div>
                       ))}
@@ -1627,9 +1810,9 @@ export default function ObligationDetailPage({ params }: PageProps) {
 
               {/* PHASE 13: PREDICTION HISTORY TIMELINE */}
               {predictionHistory.length > 0 && (
-                <div className="space-y-3 pt-3 border-t border-blue-600/20">
+                <div className="space-y-3 pt-3 border-t border-stone-200">
                   <h4 className="text-xs font-semibold text-stone-800 uppercase tracking-wider flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5 text-amber-400" />
+                    <Clock className="w-3.5 h-3.5 text-orange-600" />
                     <span>Prediction & Feedback History ({predictionHistory.length})</span>
                   </h4>
 
@@ -1641,14 +1824,14 @@ export default function ObligationDetailPage({ params }: PageProps) {
                       >
                         <div>
                           <div className="flex items-center gap-2">
-                            <span className="font-mono text-blue-600 font-semibold">{item.model_version}</span>
+                            <span className="font-mono text-stone-800 font-semibold">{item.model_version}</span>
                             <span className="text-stone-500 text-[10px]">
                               {new Date(item.predicted_at).toLocaleString()}
                             </span>
                           </div>
                           <div className="text-[11px] text-stone-600 mt-0.5">
                             Failure Prob: <span className="text-stone-800 font-mono font-semibold">{Math.round(item.failure_probability * 100)}%</span> •
-                            Exp Delay: <span className="text-amber-300 font-mono">~{item.expected_delay_hours}h</span>
+                            Exp Delay: <span className="text-amber-700 font-mono">~{item.expected_delay_hours}h</span>
                           </div>
                         </div>
 
@@ -1671,13 +1854,13 @@ export default function ObligationDetailPage({ params }: PageProps) {
               )}
 
               {/* Preventative Advisory Recommendation */}
-              <div className="p-3.5 bg-indigo-950/40 rounded-xl border border-blue-600/30 flex items-start gap-3 text-xs">
-                <ShieldAlert className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
+              <div className="p-3.5 bg-[#FFF7ED] rounded-xl border border-[#FED7AA] flex items-start gap-3 text-xs">
+                <ShieldAlert className="w-4 h-4 text-orange-600 shrink-0 mt-0.5" />
                 <div>
-                  <div className="font-semibold text-blue-700">
+                  <div className="font-semibold text-stone-900">
                     Recommended Preventative Action:
                   </div>
-                  <div className="text-stone-700 mt-0.5">
+                  <div className="text-stone-800 mt-0.5">
                     {prediction.preventative_recommendation || "Maintain standard monitoring."}
                   </div>
                   <div className="text-[10px] text-stone-500 mt-1 italic">
@@ -1730,7 +1913,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
                           ? "border-emerald-400"
                           : ev.correlation_status === "REJECTED"
                           ? "border-rose-400"
-                          : "border-blue-500"
+                          : "border-amber-500"
                       }`}
                     />
 
@@ -1740,10 +1923,10 @@ export default function ObligationDetailPage({ params }: PageProps) {
                           <span
                             className={`px-2 py-0.5 rounded font-bold uppercase text-[10px] ${
                               ev.correlation_status === "CONFIRMED"
-                                ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                                ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
                                 : ev.correlation_status === "REJECTED"
-                                ? "bg-rose-500/20 text-rose-300 border border-rose-500/30"
-                                : "bg-blue-500/20 text-blue-600 border border-blue-500/30"
+                                ? "bg-rose-50 text-rose-700 border border-rose-200"
+                                : "bg-orange-50 text-orange-700 border border-orange-200"
                             }`}
                           >
                             {ev.correlation_status}
@@ -1787,7 +1970,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div className="space-y-0.5">
                   <h3 className="text-sm font-bold text-stone-950 flex items-center gap-2">
-                    <Brain className="w-4 h-4 text-blue-500" />
+                    <Brain className="w-4 h-4 text-orange-600" />
                     <span>Causal Root-Cause & Blast Radius Intelligence</span>
                   </h3>
                   <p className="text-[11px] text-stone-600">
@@ -1796,65 +1979,57 @@ export default function ObligationDetailPage({ params }: PageProps) {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <span
-                    className={`px-2 py-0.5 rounded text-[11px] font-mono font-bold border ${
-                      rootCause.confidence_level === "HIGH"
-                        ? "bg-emerald-950/60 text-emerald-300 border-emerald-500/40"
-                        : rootCause.confidence_level === "MEDIUM"
-                        ? "bg-amber-950/60 text-amber-300 border-amber-500/40"
-                        : "bg-stone-200 text-stone-600 border-stone-300"
-                    }`}
-                  >
+                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-orange-50 text-orange-700 border border-orange-200">
                     Causal Confidence: {Math.round(rootCause.confidence * 100)}% ({rootCause.confidence_level})
                   </span>
                 </div>
               </div>
 
               {/* Primary Cause Card */}
-              <div className="p-4 rounded-xl bg-indigo-950/20 border border-blue-600/30 space-y-2">
+              <div className="p-4 rounded-xl bg-white border border-stone-200 space-y-2 shadow-sm">
                 <div className="flex items-center justify-between">
-                  <div className="text-[11px] font-mono text-blue-500 uppercase font-bold flex items-center gap-1.5">
+                  <div className="text-[11px] font-semibold text-orange-600 uppercase tracking-wider flex items-center gap-1.5">
                     <Zap className="w-3.5 h-3.5" />
                     <span>Primary Root Cause</span>
                   </div>
-                  <span className="px-1.5 py-0.2 rounded text-[10px] font-mono bg-indigo-950 text-blue-600 border border-blue-600/40">
+                  <span className="px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-orange-50 text-orange-700 border border-orange-200">
                     {rootCause.root_cause_type}
                   </span>
                 </div>
-                <div className="text-xs font-bold text-stone-950">{rootCause.primary_root_cause}</div>
-                <p className="text-xs text-stone-700 leading-relaxed">{rootCause.overall_explanation}</p>
+                <div className="text-sm font-bold text-stone-950">{rootCause.primary_root_cause}</div>
+                <p className="text-xs text-stone-600 leading-relaxed">{rootCause.overall_explanation}</p>
               </div>
 
               {/* Impact & Blast Radius Grid */}
               {impact && (
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  <div className="p-3 rounded-xl bg-stone-50/60 border border-stone-200 space-y-0.5">
+                  <div className="p-3 rounded-xl bg-white border border-stone-200 space-y-0.5 shadow-sm">
                     <div className="text-[10px] text-stone-500 uppercase tracking-wider">Impact Score</div>
-                    <div className="text-xl font-bold font-mono text-blue-500">
+                    <div className="text-xl font-bold font-mono text-orange-600">
                       {impact.impact_score.toFixed(2)}
                     </div>
                     <div className="text-[10px] text-stone-600 uppercase">{impact.impact_level} Blast Radius</div>
                   </div>
 
-                  <div className="p-3 rounded-xl bg-stone-50/60 border border-stone-200 space-y-0.5">
+                  <div className="p-3 rounded-xl bg-white border border-stone-200 space-y-0.5 shadow-sm">
                     <div className="text-[10px] text-stone-500 uppercase tracking-wider">Downstream Total</div>
-                    <div className="text-xl font-bold font-mono text-stone-800">
+                    <div className="text-xl font-bold font-mono text-stone-900">
                       {impact.total_downstream_dependents_count}
                     </div>
                     <div className="text-[10px] text-stone-600">Commitments affected</div>
                   </div>
 
-                  <div className="p-3 rounded-xl bg-stone-50/60 border border-stone-200 space-y-0.5">
+                  <div className="p-3 rounded-xl bg-white border border-stone-200 space-y-0.5 shadow-sm">
                     <div className="text-[10px] text-stone-500 uppercase tracking-wider">Max Depth</div>
-                    <div className="text-xl font-bold font-mono text-stone-800">
+                    <div className="text-xl font-bold font-mono text-stone-900">
                       {impact.maximum_dependency_depth}
                     </div>
                     <div className="text-[10px] text-stone-600">Hops downstream</div>
                   </div>
 
-                  <div className="p-3 rounded-xl bg-stone-50/60 border border-stone-200 space-y-0.5">
+                  <div className="p-3 rounded-xl bg-white border border-stone-200 space-y-0.5 shadow-sm">
                     <div className="text-[10px] text-stone-500 uppercase tracking-wider">Affected Owners</div>
-                    <div className="text-xl font-bold font-mono text-stone-800">
+                    <div className="text-xl font-bold font-mono text-stone-900">
                       {impact.affected_owners.length}
                     </div>
                     <div className="text-[10px] text-stone-600">Team members</div>
@@ -1866,16 +2041,16 @@ export default function ObligationDetailPage({ params }: PageProps) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {/* Critical Path Card */}
                 {criticalPath && (
-                  <div className="p-4 rounded-xl bg-stone-50/60 border border-stone-200 space-y-2">
+                  <div className="p-4 rounded-xl bg-white border border-stone-200 space-y-2 shadow-sm">
                     <div className="text-xs font-bold text-stone-800 flex items-center gap-1.5">
-                      <Route className="w-3.5 h-3.5 text-blue-500" />
+                      <Route className="w-3.5 h-3.5 text-orange-600" />
                       <span>Critical Dependency Path ({criticalPath.critical_path_length} hops)</span>
                     </div>
                     <p className="text-[11px] text-stone-600">{criticalPath.explanation}</p>
                     {criticalPath.root_blocker_action && (
-                      <div className="p-2 rounded bg-rose-950/30 border border-rose-500/30 text-[11px] space-y-0.5">
-                        <div className="text-[10px] font-mono text-rose-300 uppercase font-bold">Root Upstream Blocker</div>
-                        <div className="text-stone-800 font-semibold">{criticalPath.root_blocker_action}</div>
+                      <div className="p-2.5 rounded-lg bg-rose-50 border border-rose-200 text-[11px] space-y-0.5">
+                        <div className="text-[10px] font-bold text-rose-700 uppercase tracking-wider">Root Upstream Blocker</div>
+                        <div className="text-stone-900 font-semibold">{criticalPath.root_blocker_action}</div>
                         <div className="text-stone-600 text-[10px]">Owner: {criticalPath.root_blocker_owner}</div>
                       </div>
                     )}
@@ -1884,21 +2059,21 @@ export default function ObligationDetailPage({ params }: PageProps) {
 
                 {/* Resolution Recommendation */}
                 {resolutionPlan && (
-                  <div className="p-4 rounded-xl bg-emerald-950/20 border border-emerald-500/30 space-y-2">
+                  <div className="p-4 rounded-xl bg-orange-50 border border-orange-200 space-y-2 shadow-sm">
                     <div className="flex items-center justify-between">
-                      <div className="text-xs font-bold text-emerald-300 flex items-center gap-1.5">
-                        <Play className="w-3.5 h-3.5" />
+                      <div className="text-xs font-bold text-orange-900 flex items-center gap-1.5">
+                        <Play className="w-3.5 h-3.5 text-orange-600" />
                         <span>Upstream Resolution Plan</span>
                       </div>
-                      <span className="px-1.5 py-0.2 rounded text-[10px] font-mono bg-emerald-950 text-emerald-300 border border-emerald-500/40">
+                      <span className="px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-white text-orange-700 border border-orange-200">
                         {resolutionPlan.strategy}
                       </span>
                     </div>
-                    <div className="text-xs font-semibold text-stone-800">
+                    <div className="text-xs font-semibold text-stone-900">
                       Target: {resolutionPlan.target_action} ({resolutionPlan.target_owner})
                     </div>
                     <p className="text-[11px] text-stone-700 leading-relaxed">{resolutionPlan.rationale}</p>
-                    <div className="text-[10px] text-emerald-400 font-mono">
+                    <div className="text-[10px] text-orange-700 font-mono font-medium">
                       Expected Impact: {resolutionPlan.expected_impact}
                     </div>
                   </div>
@@ -1912,11 +2087,11 @@ export default function ObligationDetailPage({ params }: PageProps) {
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <h3 className="text-sm font-bold text-stone-950 flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-blue-500" />
-                  <span>Authoritative Audit & Provenance History ({auditTrail.length})</span>
+                  <ShieldCheck className="w-4 h-4 text-orange-600" />
+                  <span>Authoritative Audit &amp; Provenance History ({auditTrail.length})</span>
                 </h3>
                 <p className="text-[11px] text-stone-600">
-                  Cryptographic SHA-256 hash-chained lifecycle record with operator attribution & zero-secret state diffs.
+                  Cryptographic SHA-256 hash-chained lifecycle record with operator attribution &amp; zero-secret state diffs.
                 </p>
               </div>
 
@@ -1934,16 +2109,16 @@ export default function ObligationDetailPage({ params }: PageProps) {
                 No audit events recorded for this obligation yet.
               </div>
             ) : (
-              <div className="space-y-3 relative before:absolute before:left-3 before:top-3 before:bottom-3 before:w-0.5 before:bg-indigo-950">
+              <div className="space-y-3 relative before:absolute before:left-3 before:top-3 before:bottom-3 before:w-0.5 before:bg-stone-200">
                 {auditTrail.map((item) => (
                   <div key={item.id} className="pl-8 relative space-y-2 text-xs">
                     {/* Timeline dot */}
-                    <div className="absolute left-1.5 top-2 -translate-x-1/2 w-3.5 h-3.5 rounded-full border-2 border-blue-600 bg-stone-50" />
+                    <div className="absolute left-1.5 top-2 -translate-x-1/2 w-3.5 h-3.5 rounded-full border-2 border-orange-500 bg-white" />
 
                     <div className="p-4 rounded-xl bg-stone-50/80 border border-stone-200/80 space-y-2">
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <div className="flex items-center gap-2">
-                          <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-indigo-950/60 text-blue-600 border border-blue-600/30 font-mono">
+                          <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-stone-100 text-stone-700 border border-stone-200 font-mono">
                             {item.action}
                           </span>
                           <span className="text-stone-600 font-semibold">
@@ -2014,7 +2189,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
                   <button
                     onClick={() => handleStatusChange("IN_PROGRESS")}
                     disabled={updating}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-stone-950 text-xs font-semibold shadow-md shadow-amber-600/20 active:scale-95 transition-all"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold shadow-sm active:scale-95 transition-all"
                   >
                     <PlayCircle className="w-4 h-4" />
                     <span>Start Work (In Progress)</span>
@@ -2022,22 +2197,22 @@ export default function ObligationDetailPage({ params }: PageProps) {
                   <button
                     onClick={() => setShowEvidenceModal(true)}
                     disabled={updating}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-stone-950 text-xs font-semibold shadow-md shadow-emerald-600/20 active:scale-95 transition-all"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-sm active:scale-95 transition-all"
                   >
                     <CheckCircle2 className="w-4 h-4" />
-                    <span>Complete & Attach Evidence</span>
+                    <span>Complete &amp; Attach Evidence</span>
                   </button>
                   <button
                     onClick={() => handleStatusChange("BLOCKED")}
                     disabled={updating}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-stone-200 hover:bg-stone-300 text-stone-700 text-xs font-medium transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 border border-stone-200 text-stone-700 text-xs font-medium transition-colors"
                   >
                     <span>Mark Blocked</span>
                   </button>
                   <button
                     onClick={() => handleStatusChange("CANCELLED")}
                     disabled={updating}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-stone-200 hover:bg-stone-300 text-stone-600 hover:text-stone-800 text-xs font-medium transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 border border-stone-200 text-stone-600 hover:text-stone-800 text-xs font-medium transition-colors"
                   >
                     <span>Cancel Obligation</span>
                   </button>
@@ -2050,22 +2225,22 @@ export default function ObligationDetailPage({ params }: PageProps) {
                   <button
                     onClick={() => setShowEvidenceModal(true)}
                     disabled={updating}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-stone-950 text-xs font-semibold shadow-md shadow-emerald-600/20 active:scale-95 transition-all"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-sm active:scale-95 transition-all"
                   >
                     <CheckCircle2 className="w-4 h-4" />
-                    <span>Complete & Attach Evidence</span>
+                    <span>Complete &amp; Attach Evidence</span>
                   </button>
                   <button
                     onClick={() => handleStatusChange("BLOCKED")}
                     disabled={updating}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-stone-200 hover:bg-stone-300 text-stone-700 text-xs font-medium transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 border border-stone-200 text-stone-700 text-xs font-medium transition-colors"
                   >
                     <span>Mark Blocked</span>
                   </button>
                   <button
                     onClick={() => handleStatusChange("CANCELLED")}
                     disabled={updating}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-stone-200 hover:bg-stone-300 text-stone-600 hover:text-stone-800 text-xs font-medium transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 border border-stone-200 text-stone-600 hover:text-stone-800 text-xs font-medium transition-colors"
                   >
                     <span>Cancel Obligation</span>
                   </button>
@@ -2078,15 +2253,15 @@ export default function ObligationDetailPage({ params }: PageProps) {
                   <button
                     onClick={() => handleStatusChange("IN_PROGRESS")}
                     disabled={updating}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-stone-950 text-xs font-semibold transition-all"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold shadow-sm transition-all"
                   >
                     <PlayCircle className="w-4 h-4" />
-                    <span>Override & Resume (In Progress)</span>
+                    <span>Override &amp; Resume (In Progress)</span>
                   </button>
                   <button
                     onClick={() => handleStatusChange("CONFIRMED")}
                     disabled={updating}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-stone-200 hover:bg-stone-300 text-stone-700 text-xs font-medium transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 border border-stone-200 text-stone-700 text-xs font-medium transition-colors"
                   >
                     <Unlock className="w-3.5 h-3.5" />
                     <span>Return to Confirmed</span>
@@ -2100,7 +2275,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
                   <button
                     onClick={() => handleStatusChange("IN_PROGRESS")}
                     disabled={updating}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-stone-950 text-xs font-semibold transition-all"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold shadow-sm transition-all"
                   >
                     <PlayCircle className="w-4 h-4" />
                     <span>Work on Overdue Item</span>
@@ -2108,7 +2283,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
                   <button
                     onClick={() => setShowEvidenceModal(true)}
                     disabled={updating}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-stone-950 text-xs font-semibold transition-all"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-sm transition-all"
                   >
                     <CheckCircle2 className="w-4 h-4" />
                     <span>Complete Now</span>
@@ -2144,16 +2319,16 @@ export default function ObligationDetailPage({ params }: PageProps) {
 
       {/* Add Relationship Modal */}
       {showAddEdgeModal && (
-        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
-          <div className="bg-stone-100 border border-stone-200 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+        <div className="fixed inset-0 z-50 bg-stone-900/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
+          <div className="bg-white border border-stone-200 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-stone-200">
               <h3 className="text-base font-bold text-stone-950 flex items-center gap-2">
-                <GitFork className="w-5 h-5 text-blue-500" />
+                <GitFork className="w-5 h-5 text-orange-600" />
                 <span>Connect Obligation Relationship</span>
               </h3>
               <button
                 onClick={() => setShowAddEdgeModal(false)}
-                className="text-stone-600 hover:text-stone-950 p-1"
+                className="text-stone-500 hover:text-stone-950 p-1 rounded-lg hover:bg-stone-100"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -2170,7 +2345,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
                     onClick={() => setEdgeType("DEPENDS_ON")}
                     className={`p-3 rounded-xl border text-left text-xs space-y-1 ${
                       edgeType === "DEPENDS_ON"
-                        ? "bg-amber-600/20 border-amber-500 text-amber-200"
+                        ? "bg-amber-50 border-amber-400 text-amber-900"
                         : "bg-stone-50 border-stone-200 text-stone-600"
                     }`}
                   >
@@ -2187,7 +2362,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
                     onClick={() => setEdgeType("LINKED")}
                     className={`p-3 rounded-xl border text-left text-xs space-y-1 ${
                       edgeType === "LINKED"
-                        ? "bg-purple-600/20 border-purple-500 text-purple-200"
+                        ? "bg-orange-50 border-orange-500 text-orange-950"
                         : "bg-stone-50 border-stone-200 text-stone-600"
                     }`}
                   >
@@ -2212,7 +2387,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
                   <select
                     value={targetObligationId}
                     onChange={(e) => setTargetObligationId(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-stone-50 border border-stone-200 text-xs text-stone-900"
+                    className="w-full px-3 py-2 rounded-xl bg-stone-50 border border-stone-200 text-xs text-stone-900 focus:outline-none focus:border-orange-500"
                     required
                   >
                     <option value="">-- Choose an obligation from the ledger --</option>
@@ -2236,7 +2411,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
                 <button
                   type="submit"
                   disabled={updating || !targetObligationId}
-                  className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-stone-950 text-xs font-semibold transition-all disabled:opacity-50"
+                  className="px-4 py-2 rounded-xl bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold shadow transition-all disabled:opacity-50"
                 >
                   Create Edge
                 </button>
@@ -2248,16 +2423,16 @@ export default function ObligationDetailPage({ params }: PageProps) {
 
       {/* Manual Evidence Attachment Modal */}
       {showEvidenceModal && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
-          <div className="bg-stone-100 border border-stone-200 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+        <div className="fixed inset-0 z-50 bg-stone-900/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
+          <div className="bg-white border border-stone-200 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-stone-200">
               <h3 className="text-base font-bold text-stone-950 flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                <CheckCircle2 className="w-5 h-5 text-emerald-600" />
                 <span>Complete Obligation</span>
               </h3>
               <button
                 onClick={() => setShowEvidenceModal(false)}
-                className="text-stone-600 hover:text-stone-950 p-1"
+                className="text-stone-500 hover:text-stone-950 p-1 rounded-lg hover:bg-stone-100"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -2277,7 +2452,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
                   value={evidenceNote}
                   onChange={(e) => setEvidenceNote(e.target.value)}
                   placeholder="e.g. Sent report via email to client, confirmed received."
-                  className="w-full px-3 py-2 rounded-lg bg-stone-50 border border-stone-200 text-xs text-stone-900"
+                  className="w-full px-3 py-2 rounded-xl bg-stone-50 border border-stone-200 text-xs text-stone-900 focus:outline-none focus:border-orange-500"
                 />
               </div>
 
@@ -2290,7 +2465,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
                   value={evidenceUrl}
                   onChange={(e) => setEvidenceUrl(e.target.value)}
                   placeholder="https://..."
-                  className="w-full px-3 py-2 rounded-lg bg-stone-50 border border-stone-200 text-xs text-stone-900"
+                  className="w-full px-3 py-2 rounded-xl bg-stone-50 border border-stone-200 text-xs text-stone-900 focus:outline-none focus:border-orange-500"
                 />
               </div>
             </div>
@@ -2312,7 +2487,7 @@ export default function ObligationDetailPage({ params }: PageProps) {
                   )
                 }
                 disabled={updating}
-                className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-stone-950 text-xs font-semibold transition-all"
+                className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow transition-all"
               >
                 Confirm Completion
               </button>

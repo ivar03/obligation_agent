@@ -103,17 +103,17 @@ export default function MembersSettingsPage() {
   return (
     <div className="space-y-6">
       {/* Invite Box */}
-      <div className="bg-stone-100 border border-stone-200 rounded-2xl p-6 shadow-sm space-y-4">
+      <div className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm space-y-4">
         <div>
           <h2 className="text-sm font-bold text-stone-900 flex items-center gap-2">
-            <UserPlus className="w-4 h-4 text-blue-500" />
+            <UserPlus className="w-4 h-4 text-orange-600" />
             <span>Invite Team Member</span>
           </h2>
           <p className="text-xs text-stone-600 mt-0.5">Issue a single-use expirable invitation link with role-based access.</p>
         </div>
 
         {errorMsg && (
-          <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs flex items-center gap-2">
+          <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0" />
             <span>{errorMsg}</span>
           </div>
@@ -126,12 +126,12 @@ export default function MembersSettingsPage() {
             placeholder="colleague@company.com"
             value={inviteEmail}
             onChange={(e) => setInviteEmail(e.target.value)}
-            className="flex-1 bg-stone-50 border border-stone-200 rounded-xl px-3.5 py-2 text-stone-800 focus:outline-none focus:border-blue-500"
+            className="flex-1 bg-stone-50 border border-stone-200 rounded-xl px-3.5 py-2 text-stone-800 focus:outline-none focus:border-orange-500"
           />
           <select
             value={inviteRole}
             onChange={(e) => setInviteRole(e.target.value)}
-            className="bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-stone-800 focus:outline-none focus:border-blue-500"
+            className="bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-stone-800 focus:outline-none focus:border-orange-500"
           >
             <option value="MEMBER">Member (Read & Propose)</option>
             <option value="OPERATOR">Operator (Approve & Execute)</option>
@@ -140,27 +140,27 @@ export default function MembersSettingsPage() {
           <button
             type="submit"
             disabled={loading}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-stone-950 rounded-xl font-semibold shadow transition-all shrink-0"
+            className="px-4 py-2 bg-orange-600 hover:bg-orange-700 disabled:opacity-50 text-white rounded-xl font-semibold shadow transition-all shrink-0"
           >
             {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Send Invite"}
           </button>
         </form>
 
         {inviteSuccess && inviteSuccess.invitation_token && (
-          <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs space-y-2 animate-in fade-in">
-            <div className="font-semibold text-emerald-400">Invitation Token Generated!</div>
+          <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs space-y-2 animate-in fade-in">
+            <div className="font-semibold text-emerald-800">Invitation Token Generated!</div>
             <div className="flex items-center gap-2">
               <input
                 type="text"
                 readOnly
                 value={`${typeof window !== "undefined" ? window.location.origin : ""}/onboarding/accept?token=${inviteSuccess.invitation_token}`}
-                className="flex-1 bg-stone-50 border border-stone-200 rounded-lg px-2.5 py-1.5 text-stone-700 font-mono text-[11px]"
+                className="flex-1 bg-white border border-stone-200 rounded-lg px-2.5 py-1.5 text-stone-700 font-mono text-[11px]"
               />
               <button
                 onClick={() => handleCopyLink(inviteSuccess.invitation_token)}
-                className="px-3 py-1.5 bg-stone-200 hover:bg-stone-300 text-stone-800 rounded-lg font-medium flex items-center gap-1 shrink-0"
+                className="px-3 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-800 rounded-lg font-medium flex items-center gap-1 shrink-0 border border-stone-200"
               >
-                {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                 <span>{copied ? "Copied!" : "Copy Link"}</span>
               </button>
             </div>
@@ -169,16 +169,16 @@ export default function MembersSettingsPage() {
       </div>
 
       {/* Active Members Roster */}
-      <div className="bg-stone-100 border border-stone-200 rounded-2xl overflow-hidden shadow-sm">
+      <div className="bg-white border border-stone-200 rounded-2xl overflow-hidden shadow-sm">
         <div className="px-6 py-4 border-b border-stone-200 bg-stone-50/60 flex items-center justify-between">
           <div>
             <h3 className="text-sm font-bold text-stone-900 flex items-center gap-2">
-              <Users className="w-4 h-4 text-purple-400" />
+              <Users className="w-4 h-4 text-orange-600" />
               <span>Workspace Members</span>
             </h3>
             <p className="text-xs text-stone-600">Currently active members and operators in this workspace boundary.</p>
           </div>
-          <span className="text-xs font-semibold px-2 py-0.5 rounded bg-stone-200 text-stone-700">
+          <span className="text-xs font-semibold px-2 py-0.5 rounded bg-stone-100 border border-stone-200 text-stone-700">
             {members.length} Total
           </span>
         </div>
@@ -188,9 +188,9 @@ export default function MembersSettingsPage() {
             <div className="p-8 text-center text-stone-500">No members loaded.</div>
           ) : (
             members.map((m) => (
-              <div key={m.id} className="p-4 flex items-center justify-between hover:bg-stone-200/30 transition-colors">
+              <div key={m.id} className="p-4 flex items-center justify-between hover:bg-stone-50 transition-colors">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-blue-700 flex items-center justify-center text-stone-950 font-bold text-xs">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-orange-500 to-amber-600 flex items-center justify-center text-white font-bold text-xs shadow-sm">
                     {(m.display_name || m.email || "U").charAt(0).toUpperCase()}
                   </div>
                   <div>
@@ -202,12 +202,12 @@ export default function MembersSettingsPage() {
                   <span
                     className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                       m.role === "OWNER"
-                        ? "bg-purple-500/10 text-purple-400 border border-purple-500/20"
+                        ? "bg-orange-100 text-orange-800 border border-orange-200"
                         : m.role === "ADMIN"
-                        ? "bg-blue-500/10 text-blue-500 border border-blue-500/20"
+                        ? "bg-orange-50 text-orange-700 border border-orange-200"
                         : m.role === "OPERATOR"
-                        ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
-                        : "bg-stone-200 text-stone-600"
+                        ? "bg-amber-50 text-amber-700 border border-amber-200"
+                        : "bg-stone-100 text-stone-700 border border-stone-200"
                     }`}
                   >
                     {m.role}
@@ -221,13 +221,13 @@ export default function MembersSettingsPage() {
 
       {/* Pending Invitations */}
       {invitations.length > 0 && (
-        <div className="bg-stone-100 border border-stone-200 rounded-2xl overflow-hidden shadow-sm">
+        <div className="bg-white border border-stone-200 rounded-2xl overflow-hidden shadow-sm">
           <div className="px-6 py-4 border-b border-stone-200 bg-stone-50/60">
             <h3 className="text-sm font-bold text-stone-900">Pending & Historical Invitations</h3>
           </div>
           <div className="divide-y divide-stone-200/60 text-xs">
             {invitations.map((inv) => (
-              <div key={inv.id} className="p-4 flex items-center justify-between hover:bg-stone-200/30 transition-colors">
+              <div key={inv.id} className="p-4 flex items-center justify-between hover:bg-stone-50 transition-colors">
                 <div>
                   <div className="font-medium text-stone-800">{inv.invited_email}</div>
                   <div className="text-stone-500 text-[11px]">Role: {inv.role} • Expires: {new Date(inv.expires_at).toLocaleDateString()}</div>
@@ -236,10 +236,10 @@ export default function MembersSettingsPage() {
                   <span
                     className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                       inv.status === "PENDING"
-                        ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                        ? "bg-amber-50 text-amber-700 border border-amber-200"
                         : inv.status === "ACCEPTED"
-                        ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                        : "bg-stone-200 text-stone-500"
+                        ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                        : "bg-stone-100 text-stone-600 border border-stone-200"
                     }`}
                   >
                     {inv.status}

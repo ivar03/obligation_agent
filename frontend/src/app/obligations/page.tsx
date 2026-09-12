@@ -9,6 +9,10 @@ import {
   RefreshCw,
   Sparkles,
   Inbox,
+  AlertTriangle,
+  Clock,
+  ArrowRight,
+  Filter,
 } from "lucide-react";
 import { Obligation, ObligationStatus, ObligationType } from "@/lib/types/obligation";
 import { ObligationCard } from "@/components/obligations/ObligationCard";
@@ -19,6 +23,7 @@ function ObligationsContent() {
   const searchParams = useSearchParams();
   const initialType = (searchParams.get("type") as ObligationType) || undefined;
   const initialAtRisk = searchParams.get("at_risk") === "true";
+  const initialStatus = (searchParams.get("status") as ObligationStatus) || "ALL";
 
   const { toast } = useToast();
   const [obligations, setObligations] = useState<Obligation[]>([]);
@@ -27,7 +32,7 @@ function ObligationsContent() {
 
   // Filters
   const [typeFilter, setTypeFilter] = useState<ObligationType | "ALL">(initialType || "ALL");
-  const [statusFilter, setStatusFilter] = useState<ObligationStatus | "ALL">("ALL");
+  const [statusFilter, setStatusFilter] = useState<ObligationStatus | "ALL">(initialStatus);
   const [atRiskOnly, setAtRiskOnly] = useState<boolean>(initialAtRisk);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -60,14 +65,14 @@ function ObligationsContent() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-stone-950 flex items-center gap-2.5">
-            <Layers className="w-7 h-7 text-blue-500" />
-            <span>Obligation Ledger</span>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2.5">
+            <Layers className="w-6 h-6 text-orange-600" />
+            <span>Obligations Ledger</span>
           </h1>
-          <p className="text-sm text-stone-600 mt-1">
-            Complete reciprocal obligation database with multi-dimensional filtering.
+          <p className="text-xs text-slate-500 mt-1">
+            Complete reciprocal commitments database with real-time risk, causal dependencies, and evidence consensus.
           </p>
         </div>
 
@@ -78,42 +83,46 @@ function ObligationsContent() {
               fetchObligations();
             }}
             disabled={loading}
-            className="p-2 rounded-lg border border-stone-200 bg-stone-100/80 hover:bg-stone-200 text-stone-700 transition-colors"
+            className="p-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition-colors"
             title="Refresh"
           >
-            <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin text-blue-500" : ""}`} />
+            <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin text-orange-600" : ""}`} />
           </button>
           <Link
             href="/capture"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-stone-950 text-sm font-semibold transition-all shadow-md shadow-blue-600/20 active:scale-95"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold shadow-xs transition-colors"
           >
             <Sparkles className="w-4 h-4" />
-            <span>Capture Obligation</span>
+            <span>Analyze & Capture</span>
           </Link>
         </div>
       </div>
 
       {/* Filter Controls Bar */}
-      <div className="bg-stone-100/70 border border-stone-200 rounded-2xl p-4 shadow-md space-y-4">
+      <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs space-y-3">
         <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
-          {/* Direction Filter */}
-          <div className="flex items-center gap-1 p-1 bg-stone-50 border border-stone-200 rounded-xl">
+          {/* Quick Filter Chips */}
+          <div className="flex flex-wrap items-center gap-1.5 p-1 bg-slate-50 border border-slate-200 rounded-xl">
             <button
-              onClick={() => setTypeFilter("ALL")}
+              onClick={() => {
+                setTypeFilter("ALL");
+                setAtRiskOnly(false);
+                setStatusFilter("ALL");
+              }}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
-                typeFilter === "ALL"
-                  ? "bg-stone-200 text-stone-950 shadow-sm"
-                  : "text-stone-600 hover:text-stone-800"
+                typeFilter === "ALL" && !atRiskOnly && statusFilter === "ALL"
+                  ? "bg-white text-slate-900 shadow-xs border border-slate-200"
+                  : "text-slate-600 hover:text-slate-900"
               }`}
             >
-              All Types
+              All
             </button>
             <button
               onClick={() => setTypeFilter("OWED_BY_ME")}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
                 typeFilter === "OWED_BY_ME"
-                  ? "bg-blue-600/20 text-blue-600 border border-blue-500/30"
-                  : "text-stone-600 hover:text-stone-800"
+                  ? "bg-orange-50 text-orange-700 border border-orange-200"
+                  : "text-slate-600 hover:text-slate-900"
               }`}
             >
               You Owe
@@ -122,102 +131,117 @@ function ObligationsContent() {
               onClick={() => setTypeFilter("OWED_TO_ME")}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
                 typeFilter === "OWED_TO_ME"
-                  ? "bg-emerald-600/20 text-emerald-300 border border-emerald-500/30"
-                  : "text-stone-600 hover:text-stone-800"
+                  ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                  : "text-slate-600 hover:text-slate-900"
               }`}
             >
               Others Owe You
             </button>
+            <button
+              onClick={() => setAtRiskOnly(!atRiskOnly)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                atRiskOnly
+                  ? "bg-amber-50 text-amber-800 border border-amber-200"
+                  : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              At Risk Only
+            </button>
           </div>
 
-          {/* Status & Risk Filters */}
+          {/* Status Dropdown & Search */}
           <div className="flex flex-wrap items-center gap-3">
-            {/* Status Dropdown */}
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as ObligationStatus | "ALL")}
-              className="px-3 py-1.5 rounded-xl bg-stone-50 border border-stone-200 text-xs text-stone-800 focus:outline-none focus:border-blue-500"
+              className="px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 focus:outline-none focus:border-orange-400"
             >
               <option value="ALL">All Statuses</option>
-              <option value="CONFIRMED">Confirmed</option>
               <option value="IN_PROGRESS">In Progress</option>
-              <option value="COMPLETED">Completed</option>
-              <option value="OVERDUE">Overdue</option>
               <option value="BLOCKED">Blocked</option>
+              <option value="OVERDUE">Overdue</option>
+              <option value="CONFIRMED">Confirmed</option>
+              <option value="COMPLETED">Completed</option>
               <option value="CANCELLED">Cancelled</option>
             </select>
 
-            {/* At Risk Toggle */}
-            <button
-              onClick={() => setAtRiskOnly(!atRiskOnly)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-medium border transition-colors ${
-                atRiskOnly
-                  ? "bg-rose-500/20 text-rose-300 border-rose-500/40"
-                  : "bg-stone-50 border-stone-200 text-stone-600 hover:text-stone-800"
-              }`}
-            >
-              🔥 At Risk Only
-            </button>
-
             {/* Search Input */}
-            <div className="relative w-full sm:w-60">
-              <Search className="w-3.5 h-3.5 text-stone-600 absolute left-3 top-1/2 -translate-y-1/2" />
+            <div className="relative min-w-[220px]">
+              <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
                 type="text"
+                placeholder="Search action or owner..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search action or person..."
-                className="w-full pl-8 pr-3 py-1.5 rounded-xl bg-stone-50 border border-stone-200 text-xs text-stone-900 placeholder-stone-600 focus:outline-none focus:border-blue-500"
+                className="w-full pl-8 pr-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-orange-400"
               />
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Results Header */}
-      <div className="flex items-center justify-between text-xs text-stone-600">
-        <div>
-          Showing <span className="font-semibold text-stone-800">{obligations.length}</span> of{" "}
-          <span className="font-semibold text-stone-800">{total}</span> obligations
+        {/* Active Filters Summary */}
+        <div className="text-[11px] text-slate-500 flex items-center justify-between pt-1">
+          <span>
+            Showing <strong className="text-slate-800 font-semibold">{obligations.length}</strong> of{" "}
+            <strong className="text-slate-800 font-semibold">{total}</strong> commitments
+          </span>
+          {(typeFilter !== "ALL" || statusFilter !== "ALL" || atRiskOnly || searchTerm) && (
+            <button
+              onClick={() => {
+                setTypeFilter("ALL");
+                setStatusFilter("ALL");
+                setAtRiskOnly(false);
+                setSearchTerm("");
+              }}
+              className="text-orange-600 hover:text-orange-700 font-medium"
+            >
+              Clear filters
+            </button>
+          )}
         </div>
       </div>
 
       {/* Obligations Grid */}
       {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div
-              key={i}
-              className="h-44 rounded-xl bg-stone-100/40 border border-stone-200/60 animate-pulse"
-            />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-44 rounded-2xl bg-white border border-slate-100 p-6 animate-pulse" />
           ))}
         </div>
       ) : obligations.length === 0 ? (
-        <div className="p-12 rounded-2xl bg-stone-100/40 border border-dashed border-stone-200 text-center space-y-3">
-          <Inbox className="w-10 h-10 mx-auto text-stone-400" />
-          <div className="text-sm font-semibold text-stone-700">No obligations found</div>
-          <p className="text-xs text-stone-600 max-w-sm mx-auto">
-            Try adjusting your search query or filters, or capture a new obligation from a message.
-          </p>
-          <div className="pt-2">
+        /* Meaningful Empty State */
+        <div className="p-12 text-center bg-white rounded-3xl border border-slate-200 shadow-xs max-w-lg mx-auto space-y-4">
+          <div className="w-12 h-12 rounded-2xl bg-orange-50 border border-orange-200 flex items-center justify-center text-orange-600 mx-auto">
+            <Inbox className="w-6 h-6" />
+          </div>
+          <div>
+            <h3 className="text-base font-bold text-slate-900">No obligations found</h3>
+            <p className="text-xs text-slate-500 mt-1">
+              {searchTerm || typeFilter !== "ALL" || statusFilter !== "ALL" || atRiskOnly
+                ? "No obligations matched your active filters. Try clearing filters or changing your search terms."
+                : "No commitments have been registered in this workspace yet. Connect a workspace integration or capture your first obligation."}
+            </p>
+          </div>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 pt-2">
             <Link
               href="/capture"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-stone-950 text-xs font-semibold transition-colors"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold shadow-xs"
             >
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Capture Message</span>
+              <span>Capture Obligation</span>
+            </Link>
+            <Link
+              href="/demo"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-semibold"
+            >
+              <span>Explore Demo Data</span>
             </Link>
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {obligations.map((ob) => (
-            <ObligationCard
-              key={ob.id}
-              obligation={ob}
-              onStatusChanged={fetchObligations}
-              onDeleted={fetchObligations}
-            />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {obligations.map((obligation) => (
+            <ObligationCard key={obligation.id} obligation={obligation} />
           ))}
         </div>
       )}
@@ -229,9 +253,8 @@ export default function ObligationsPage() {
   return (
     <Suspense
       fallback={
-        <div className="space-y-6 animate-pulse">
-          <div className="h-8 w-48 bg-stone-100 rounded-lg" />
-          <div className="h-16 bg-stone-100 rounded-xl" />
+        <div className="p-8 text-center text-slate-400 text-xs animate-pulse">
+          Loading obligations ledger...
         </div>
       }
     >

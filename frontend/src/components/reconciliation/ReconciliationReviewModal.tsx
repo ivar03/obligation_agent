@@ -90,18 +90,18 @@ export const ReconciliationReviewModal: React.FC<ReconciliationReviewModalProps>
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
-      <div className="relative w-full max-w-2xl bg-stone-100 border border-stone-300/80 rounded-2xl shadow-2xl overflow-hidden text-stone-900 flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/40 backdrop-blur-sm animate-fadeIn">
+      <div className="relative w-full max-w-2xl bg-white border border-stone-200 rounded-2xl shadow-xl overflow-hidden text-stone-900 flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-stone-200 bg-stone-50/50">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-stone-200 bg-stone-50/60">
           <div className="flex items-center gap-3">
             <div
-              className={`p-2.5 rounded-xl ${
+              className={`p-2.5 rounded-xl border ${
                 reconciliation.status === "CONFLICTING"
-                  ? "bg-rose-500/10 text-rose-400 border border-rose-500/20"
+                  ? "bg-rose-50 text-rose-700 border-rose-200"
                   : reconciliation.status === "CONSISTENT"
-                  ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                  : "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                  ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                  : "bg-amber-50 text-amber-700 border-amber-200"
               }`}
             >
               {reconciliation.status === "CONFLICTING" ? (
@@ -113,17 +113,17 @@ export const ReconciliationReviewModal: React.FC<ReconciliationReviewModalProps>
               )}
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-stone-900">
+              <h2 className="text-base font-bold text-stone-900">
                 Cross-Provider Reconciliation Review
               </h2>
-              <p className="text-xs text-stone-600">
+              <p className="text-xs text-stone-500">
                 Authoritative Human Safety Gate • Obligation ID: {reconciliation.obligation_id.slice(0, 8)}...
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-stone-600 hover:text-stone-800 hover:bg-stone-200 rounded-lg transition-colors"
+            className="p-1.5 text-stone-400 hover:text-stone-700 hover:bg-stone-100 rounded-lg transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -132,12 +132,12 @@ export const ReconciliationReviewModal: React.FC<ReconciliationReviewModalProps>
         {/* Body Content */}
         <div className="p-6 overflow-y-auto space-y-5 flex-1 custom-scrollbar">
           {/* Obligation Summary Banner */}
-          <div className="p-4 bg-stone-50/60 rounded-xl border border-stone-200/80">
+          <div className="p-4 bg-stone-50 rounded-xl border border-stone-200">
             <div className="flex items-center justify-between mb-1.5">
-              <span className="text-xs font-medium text-blue-500 uppercase tracking-wider">
+              <span className="text-xs font-semibold text-orange-600 uppercase tracking-wider">
                 Target Obligation
               </span>
-              <span className="px-2 py-0.5 text-xs font-semibold rounded-md bg-stone-200 text-stone-700 border border-stone-300">
+              <span className="px-2 py-0.5 text-xs font-semibold rounded-md bg-stone-200/80 text-stone-700 border border-stone-300">
                 Status: {reconciliation.obligation_status || "ACTIVE"}
               </span>
             </div>
@@ -155,31 +155,31 @@ export const ReconciliationReviewModal: React.FC<ReconciliationReviewModalProps>
               </div>
               <div>
                 <span className="text-stone-500">Consistency:</span>{" "}
-                <span className="text-emerald-400 font-medium">{(reconciliation.consistency_score * 100).toFixed(0)}%</span>
+                <span className="text-emerald-700 font-medium">{(reconciliation.consistency_score * 100).toFixed(0)}%</span>
               </div>
               <div>
                 <span className="text-stone-500">Contradiction:</span>{" "}
-                <span className="text-rose-400 font-medium">{(reconciliation.contradiction_score * 100).toFixed(0)}%</span>
+                <span className="text-rose-700 font-medium">{(reconciliation.contradiction_score * 100).toFixed(0)}%</span>
               </div>
             </div>
           </div>
 
           {/* AI Explanation & Finding Highlights */}
-          <div className="p-4 bg-stone-200/30 rounded-xl border border-stone-200">
+          <div className="p-4 bg-stone-50 rounded-xl border border-stone-200">
             <h3 className="text-xs font-semibold text-stone-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+              <Sparkles className="w-3.5 h-3.5 text-orange-500" />
               Intelligence Analysis & Timeline Findings
             </h3>
             <ul className="space-y-1.5">
               {reconciliation.explanation && reconciliation.explanation.length > 0 ? (
                 reconciliation.explanation.map((exp, idx) => (
                   <li key={idx} className="text-xs text-stone-700 flex items-start gap-2">
-                    <span className="text-stone-500 font-mono mt-0.5">•</span>
+                    <span className="text-stone-400 font-mono mt-0.5">•</span>
                     <span>{exp}</span>
                   </li>
                 ))
               ) : (
-                <li className="text-xs text-stone-600">Multi-provider evidence evaluated. No unresolved conflicts.</li>
+                <li className="text-xs text-stone-500">Multi-provider evidence evaluated. No unresolved conflicts.</li>
               )}
             </ul>
           </div>
@@ -198,12 +198,12 @@ export const ReconciliationReviewModal: React.FC<ReconciliationReviewModalProps>
                     onClick={() => setSelectedAction("CONFIRM_COMPLETION")}
                     className={`p-3 text-left rounded-xl border transition-all ${
                       selectedAction === "CONFIRM_COMPLETION"
-                        ? "bg-emerald-500/15 border-emerald-500/50 text-emerald-300 ring-1 ring-emerald-500/30"
-                        : "bg-stone-200/40 border-stone-300/50 hover:bg-stone-200 hover:border-stone-400 text-stone-700"
+                        ? "bg-emerald-50 border-emerald-300 text-emerald-900 ring-1 ring-emerald-500/30"
+                        : "bg-white border-stone-200 hover:border-stone-300 text-stone-700"
                     }`}
                   >
-                    <div className="flex items-center gap-2 font-semibold text-xs mb-1">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                    <div className="flex items-center gap-2 font-semibold text-xs mb-1 text-emerald-700">
+                      <CheckCircle2 className="w-4 h-4" />
                       Confirm Completion
                     </div>
                     <p className="text-[11px] text-stone-600">
@@ -216,12 +216,12 @@ export const ReconciliationReviewModal: React.FC<ReconciliationReviewModalProps>
                     onClick={() => setSelectedAction("KEEP_OBLIGATION_ACTIVE")}
                     className={`p-3 text-left rounded-xl border transition-all ${
                       selectedAction === "KEEP_OBLIGATION_ACTIVE"
-                        ? "bg-amber-500/15 border-amber-500/50 text-amber-300 ring-1 ring-amber-500/30"
-                        : "bg-stone-200/40 border-stone-300/50 hover:bg-stone-200 hover:border-stone-400 text-stone-700"
+                        ? "bg-amber-50 border-amber-300 text-amber-900 ring-1 ring-amber-500/30"
+                        : "bg-white border-stone-200 hover:border-stone-300 text-stone-700"
                     }`}
                   >
-                    <div className="flex items-center gap-2 font-semibold text-xs mb-1">
-                      <Clock className="w-4 h-4 text-amber-400" />
+                    <div className="flex items-center gap-2 font-semibold text-xs mb-1 text-amber-700">
+                      <Clock className="w-4 h-4" />
                       Keep Active
                     </div>
                     <p className="text-[11px] text-stone-600">
@@ -234,12 +234,12 @@ export const ReconciliationReviewModal: React.FC<ReconciliationReviewModalProps>
                     onClick={() => setSelectedAction("MARK_AS_STALE")}
                     className={`p-3 text-left rounded-xl border transition-all ${
                       selectedAction === "MARK_AS_STALE"
-                        ? "bg-blue-500/15 border-blue-500/50 text-blue-600 ring-1 ring-blue-500/30"
-                        : "bg-stone-200/40 border-stone-300/50 hover:bg-stone-200 hover:border-stone-400 text-stone-700"
+                        ? "bg-orange-50 border-orange-300 text-orange-900 ring-1 ring-orange-500/30"
+                        : "bg-white border-stone-200 hover:border-stone-300 text-stone-700"
                     }`}
                   >
-                    <div className="flex items-center gap-2 font-semibold text-xs mb-1">
-                      <ShieldCheck className="w-4 h-4 text-blue-500" />
+                    <div className="flex items-center gap-2 font-semibold text-xs mb-1 text-orange-700">
+                      <ShieldCheck className="w-4 h-4" />
                       Mark Signal Stale
                     </div>
                     <p className="text-[11px] text-stone-600">
@@ -255,12 +255,12 @@ export const ReconciliationReviewModal: React.FC<ReconciliationReviewModalProps>
                   onClick={() => setSelectedAction("REOPEN_OBLIGATION")}
                   className={`p-3 text-left rounded-xl border transition-all ${
                     selectedAction === "REOPEN_OBLIGATION"
-                      ? "bg-rose-500/15 border-rose-500/50 text-rose-300 ring-1 ring-rose-500/30"
-                      : "bg-stone-200/40 border-stone-300/50 hover:bg-stone-200 hover:border-stone-400 text-stone-700"
+                      ? "bg-rose-50 border-rose-300 text-rose-900 ring-1 ring-rose-500/30"
+                      : "bg-white border-stone-200 hover:border-stone-300 text-stone-700"
                   }`}
                 >
-                  <div className="flex items-center gap-2 font-semibold text-xs mb-1">
-                    <RotateCcw className="w-4 h-4 text-rose-400" />
+                  <div className="flex items-center gap-2 font-semibold text-xs mb-1 text-rose-700">
+                    <RotateCcw className="w-4 h-4" />
                     Reopen Obligation
                   </div>
                   <p className="text-[11px] text-stone-600">
@@ -279,7 +279,7 @@ export const ReconciliationReviewModal: React.FC<ReconciliationReviewModalProps>
                 type="text"
                 value={operator}
                 onChange={(e) => setOperator(e.target.value)}
-                className="w-full px-3 py-2 bg-stone-50 border border-stone-300 rounded-lg text-xs text-stone-900 focus:outline-none focus:border-blue-600"
+                className="w-full px-3 py-2 bg-white border border-stone-200 rounded-lg text-xs text-stone-900 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/20"
                 placeholder="Your Name / Operator Role"
               />
             </div>
@@ -289,14 +289,14 @@ export const ReconciliationReviewModal: React.FC<ReconciliationReviewModalProps>
                 type="text"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                className="w-full px-3 py-2 bg-stone-50 border border-stone-300 rounded-lg text-xs text-stone-900 focus:outline-none focus:border-blue-600"
+                className="w-full px-3 py-2 bg-white border border-stone-200 rounded-lg text-xs text-stone-900 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/20"
                 placeholder="Optional audit justification note..."
               />
             </div>
           </div>
 
           {error && (
-            <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-xs text-rose-400 flex items-center gap-2">
+            <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 flex items-center gap-2">
               <AlertTriangle className="w-4 h-4 flex-shrink-0" />
               <span>{error}</span>
             </div>
@@ -304,12 +304,12 @@ export const ReconciliationReviewModal: React.FC<ReconciliationReviewModalProps>
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-stone-200 bg-stone-50/50">
+        <div className="flex items-center justify-between px-6 py-4 border-t border-stone-200 bg-stone-50/60">
           <button
             type="button"
             onClick={handleDismiss}
             disabled={isSubmitting}
-            className="px-3.5 py-2 text-xs font-medium text-stone-600 hover:text-stone-800 hover:bg-stone-200 rounded-lg transition-colors"
+            className="px-3.5 py-2 text-xs font-medium text-stone-600 hover:text-stone-900 hover:bg-stone-100 rounded-lg transition-colors"
           >
             Dismiss as Noise
           </button>
@@ -318,7 +318,7 @@ export const ReconciliationReviewModal: React.FC<ReconciliationReviewModalProps>
               type="button"
               onClick={onClose}
               disabled={isSubmitting}
-              className="px-4 py-2 text-xs font-medium text-stone-700 hover:bg-stone-200 rounded-lg transition-colors"
+              className="px-4 py-2 text-xs font-medium text-stone-700 hover:bg-stone-100 rounded-lg transition-colors"
             >
               Cancel
             </button>
@@ -326,7 +326,7 @@ export const ReconciliationReviewModal: React.FC<ReconciliationReviewModalProps>
               type="button"
               onClick={handleResolve}
               disabled={isSubmitting}
-              className="px-5 py-2 text-xs font-semibold text-stone-950 bg-blue-700 hover:bg-blue-600 active:bg-indigo-700 disabled:opacity-50 rounded-lg shadow-lg shadow-blue-700/20 transition-all flex items-center gap-1.5"
+              className="px-5 py-2 text-xs font-semibold text-white bg-orange-600 hover:bg-orange-700 active:bg-orange-800 disabled:opacity-50 rounded-lg shadow-sm transition-all flex items-center gap-1.5"
             >
               {isSubmitting ? "Executing..." : "Execute Decision"}
             </button>

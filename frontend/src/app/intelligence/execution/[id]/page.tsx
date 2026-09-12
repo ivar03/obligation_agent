@@ -92,7 +92,7 @@ export default function ExecutionDetailPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-stone-50 flex flex-col items-center justify-center text-stone-600">
-        <RefreshCw className="w-8 h-8 animate-spin mb-3 text-violet-400" />
+        <RefreshCw className="w-8 h-8 animate-spin mb-3 text-orange-600" />
         <p className="text-sm">Loading execution receipt and outcome provenance...</p>
       </div>
     );
@@ -101,13 +101,13 @@ export default function ExecutionDetailPage() {
   if (error && !execution) {
     return (
       <div className="min-h-screen bg-stone-50 text-stone-900 p-8">
-        <div className="max-w-2xl mx-auto bg-stone-100 border border-stone-200 rounded-xl p-6 text-center">
-          <AlertTriangle className="w-12 h-12 text-rose-400 mx-auto mb-3" />
+        <div className="max-w-2xl mx-auto bg-white border border-stone-200 rounded-2xl p-6 text-center shadow-sm">
+          <AlertTriangle className="w-12 h-12 text-rose-500 mx-auto mb-3" />
           <h2 className="text-lg font-bold text-stone-950 mb-2">Error Loading Execution Record</h2>
           <p className="text-sm text-stone-600 mb-4">{error}</p>
           <Link
             href="/intelligence"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-violet-600 hover:bg-violet-500 text-stone-950 rounded-lg text-sm transition"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg text-sm font-semibold transition shadow-sm"
           >
             <ArrowLeft className="w-4 h-4" /> Back to Intelligence Center
           </Link>
@@ -125,19 +125,19 @@ export default function ExecutionDetailPage() {
         <div className="flex items-center gap-3">
           <Link
             href="/intelligence"
-            className="p-2 rounded-lg bg-stone-100 border border-stone-200 text-stone-600 hover:text-stone-950 hover:bg-stone-200 transition"
+            className="p-2 rounded-lg bg-white border border-stone-200 text-stone-600 hover:text-stone-950 hover:bg-stone-50 transition shadow-xs"
           >
             <ArrowLeft className="w-4 h-4" />
           </Link>
           <div>
             <div className="text-xs font-mono uppercase tracking-wider text-stone-600 flex items-center gap-2">
-              <span>Phase 16 Controlled Execution</span>
+              <span>Controlled Execution</span>
               <span>•</span>
-              <span className="text-violet-400">{execution.provider.toUpperCase()} PROVIDER</span>
+              <span className="text-orange-600 font-semibold">{execution.provider.toUpperCase()} PROVIDER</span>
             </div>
             <h1 className="text-xl sm:text-2xl font-bold text-stone-950 tracking-tight flex items-center gap-2">
               Execution Record
-              <span className="text-xs font-mono px-2 py-0.5 rounded bg-stone-200 text-stone-700">
+              <span className="text-xs font-mono px-2 py-0.5 rounded bg-stone-100 border border-stone-200 text-stone-700">
                 {execution.id}
               </span>
             </h1>
@@ -149,7 +149,7 @@ export default function ExecutionDetailPage() {
             <button
               onClick={handleRetry}
               disabled={actionLoading}
-              className="px-3.5 py-1.5 bg-violet-600 hover:bg-violet-500 text-stone-950 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition shadow"
+              className="px-3.5 py-1.5 bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 transition shadow-sm"
             >
               <RotateCcw className="w-3.5 h-3.5" /> Retry Execution
             </button>
@@ -159,7 +159,7 @@ export default function ExecutionDetailPage() {
             <button
               onClick={() => setCancelModal(true)}
               disabled={actionLoading}
-              className="px-3 py-1.5 bg-stone-200 hover:bg-rose-900/40 text-rose-300 border border-stone-300 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition"
+              className="px-3 py-1.5 bg-white hover:bg-rose-50 text-rose-700 border border-stone-200 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition"
             >
               <XCircle className="w-3.5 h-3.5" /> Cancel
             </button>
@@ -167,7 +167,7 @@ export default function ExecutionDetailPage() {
 
           <button
             onClick={fetchExecution}
-            className="p-2 rounded-lg bg-stone-100 border border-stone-200 text-stone-600 hover:text-stone-950 transition"
+            className="p-2 rounded-lg bg-white border border-stone-200 text-stone-600 hover:text-stone-950 hover:bg-stone-50 transition shadow-xs"
             title="Refresh status"
           >
             <RefreshCw className="w-4 h-4" />
@@ -177,10 +177,10 @@ export default function ExecutionDetailPage() {
 
       <div className="max-w-5xl mx-auto space-y-6">
         {/* Safety Boundary Notice */}
-        <div className="bg-gradient-to-r from-violet-950/40 via-stone-100/60 to-indigo-950/40 border border-violet-500/30 rounded-xl p-4 flex items-start gap-3 shadow-lg">
-          <ShieldCheck className="w-5 h-5 text-violet-400 flex-shrink-0 mt-0.5" />
+        <div className="bg-orange-50/50 border border-orange-200 rounded-xl p-4 flex items-start gap-3 shadow-xs">
+          <ShieldCheck className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
           <div className="text-xs space-y-1">
-            <div className="font-bold text-violet-200 uppercase tracking-wider text-[11px]">
+            <div className="font-bold text-orange-900 uppercase tracking-wider text-[11px]">
               Human-Controlled Execution & Verification Invariant
             </div>
             <p className="text-stone-700 leading-relaxed">
@@ -190,7 +190,7 @@ export default function ExecutionDetailPage() {
         </div>
 
         {/* 10-Step Lifecycle State Banner */}
-        <div className="bg-stone-100/80 border border-stone-200 rounded-xl p-5 shadow-sm">
+        <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-sm">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
             <div>
               <span className="text-xs text-stone-600 uppercase tracking-wider block font-semibold">
@@ -199,27 +199,27 @@ export default function ExecutionDetailPage() {
               <div className="text-lg font-bold text-stone-950 flex items-center gap-2">
                 <span className={`w-2.5 h-2.5 rounded-full ${
                   execution.status === "RESOLVED"
-                    ? "bg-emerald-400"
+                    ? "bg-emerald-500"
                     : execution.status === "FAILED" || execution.status === "CANCELLED"
-                    ? "bg-rose-400"
+                    ? "bg-rose-500"
                     : execution.status === "OUTCOME_DETECTED"
-                    ? "bg-blue-500"
-                    : "bg-violet-400 animate-pulse"
+                    ? "bg-orange-500"
+                    : "bg-orange-500 animate-pulse"
                 }`} />
                 {execution.status}
               </div>
             </div>
 
             <div className="flex items-center gap-3 text-xs">
-              <div className="bg-stone-50/80 px-3 py-1.5 rounded-lg border border-stone-200">
+              <div className="bg-stone-50 px-3 py-1.5 rounded-lg border border-stone-200">
                 <span className="text-stone-500 block text-[10px]">Provider Ref</span>
-                <strong className="font-mono text-violet-300">{execution.provider_execution_ref || "None"}</strong>
+                <strong className="font-mono text-stone-900">{execution.provider_execution_ref || "None"}</strong>
               </div>
-              <div className="bg-stone-50/80 px-3 py-1.5 rounded-lg border border-stone-200">
+              <div className="bg-stone-50 px-3 py-1.5 rounded-lg border border-stone-200">
                 <span className="text-stone-500 block text-[10px]">Retries</span>
                 <strong className="text-stone-800">{execution.retry_count} / {execution.max_retries}</strong>
               </div>
-              <div className="bg-stone-50/80 px-3 py-1.5 rounded-lg border border-stone-200">
+              <div className="bg-stone-50 px-3 py-1.5 rounded-lg border border-stone-200">
                 <span className="text-stone-500 block text-[10px]">Outcome</span>
                 <strong className="text-stone-800">{execution.outcome || "PENDING"}</strong>
               </div>
@@ -230,36 +230,36 @@ export default function ExecutionDetailPage() {
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 pt-2 text-[11px] font-medium text-center">
             <div className={`p-2 rounded border ${
               ["AUTHORIZED", "QUEUED", "EXECUTING", "DELIVERED", "RESPONSE_PENDING", "OUTCOME_DETECTED", "RESOLVED"].includes(execution.status)
-                ? "bg-emerald-950/30 border-emerald-500/40 text-emerald-300"
-                : "bg-stone-50/50 border-stone-200 text-stone-500"
+                ? "bg-emerald-50 border-emerald-200 text-emerald-800"
+                : "bg-stone-50 border-stone-200 text-stone-500"
             }`}>
               1. Authorized
             </div>
             <div className={`p-2 rounded border ${
               ["EXECUTING", "DELIVERED", "RESPONSE_PENDING", "OUTCOME_DETECTED", "RESOLVED"].includes(execution.status)
-                ? "bg-emerald-950/30 border-emerald-500/40 text-emerald-300"
-                : "bg-stone-50/50 border-stone-200 text-stone-500"
+                ? "bg-emerald-50 border-emerald-200 text-emerald-800"
+                : "bg-stone-50 border-stone-200 text-stone-500"
             }`}>
               2. Dispatched
             </div>
             <div className={`p-2 rounded border ${
               ["DELIVERED", "RESPONSE_PENDING", "OUTCOME_DETECTED", "RESOLVED"].includes(execution.status)
-                ? "bg-emerald-950/30 border-emerald-500/40 text-emerald-300"
-                : "bg-stone-50/50 border-stone-200 text-stone-500"
+                ? "bg-emerald-50 border-emerald-200 text-emerald-800"
+                : "bg-stone-50 border-stone-200 text-stone-500"
             }`}>
               3. Delivered
             </div>
             <div className={`p-2 rounded border ${
               ["OUTCOME_DETECTED", "RESOLVED"].includes(execution.status)
-                ? "bg-indigo-950/30 border-blue-600/40 text-blue-600"
-                : "bg-stone-50/50 border-stone-200 text-stone-500"
+                ? "bg-orange-50 border-orange-200 text-orange-800 font-semibold"
+                : "bg-stone-50 border-stone-200 text-stone-500"
             }`}>
               4. Response Detected
             </div>
             <div className={`p-2 rounded border ${
               execution.status === "RESOLVED"
-                ? "bg-emerald-950/40 border-emerald-400 text-emerald-200 font-bold"
-                : "bg-stone-50/50 border-stone-200 text-stone-500"
+                ? "bg-emerald-50 border-emerald-300 text-emerald-800 font-bold"
+                : "bg-stone-50 border-stone-200 text-stone-500"
             }`}>
               5. Final Resolved
             </div>
@@ -269,18 +269,18 @@ export default function ExecutionDetailPage() {
         {/* 2-Column Grid: Receipt & Audit Provenance */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Left Column: Immutable Execution Receipt */}
-          <div className="bg-stone-100/80 border border-stone-200 rounded-xl p-5 shadow-sm space-y-4">
+          <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-sm space-y-4">
             <h2 className="text-xs font-semibold uppercase tracking-wider text-stone-600 flex items-center gap-2">
-              <FileCheck className="w-4 h-4 text-violet-400" /> Immutable Execution Receipt
+              <FileCheck className="w-4 h-4 text-orange-600" /> Immutable Execution Receipt
             </h2>
 
             <div className="space-y-2.5 text-xs">
-              <div className="bg-stone-50/70 p-3 rounded-lg border border-stone-200 space-y-1.5">
+              <div className="bg-stone-50 p-3 rounded-lg border border-stone-200 space-y-1.5 font-mono">
                 <div className="flex justify-between text-stone-600">
                   <span>Decision Plan</span>
                   <Link
                     href={`/intelligence/decisions/${execution.obligation_id}`}
-                    className="text-violet-400 hover:underline flex items-center gap-1 font-mono"
+                    className="text-orange-600 hover:text-orange-700 flex items-center gap-1 font-medium"
                   >
                     View Plan <ExternalLink className="w-3 h-3" />
                   </Link>
@@ -289,7 +289,7 @@ export default function ExecutionDetailPage() {
                   <span>Target Obligation</span>
                   <Link
                     href={`/obligations/${execution.obligation_id}`}
-                    className="text-violet-400 hover:underline flex items-center gap-1 font-mono"
+                    className="text-orange-600 hover:text-orange-700 flex items-center gap-1 font-medium"
                   >
                     {execution.obligation_id.slice(0, 12)}... <ExternalLink className="w-3 h-3" />
                   </Link>
@@ -312,18 +312,18 @@ export default function ExecutionDetailPage() {
                 </div>
                 <div className="flex justify-between text-stone-600">
                   <span>Delivery Status</span>
-                  <span className="px-2 py-0.5 rounded font-mono text-[10px] bg-stone-200 text-stone-800">
+                  <span className="px-2 py-0.5 rounded font-mono text-[10px] bg-stone-100 text-stone-800 border border-stone-200">
                     {execution.delivery_status || "PENDING"}
                   </span>
                 </div>
               </div>
 
               {/* Action Content */}
-              <div className="bg-stone-50/70 p-3 rounded-lg border border-stone-200 space-y-2">
+              <div className="bg-stone-50 p-3 rounded-lg border border-stone-200 space-y-2">
                 <span className="text-stone-500 uppercase text-[10px] font-bold block">
                   Dispatched Message Payload
                 </span>
-                <div className="p-2.5 bg-stone-100 rounded border border-stone-200 text-stone-800 font-mono text-xs leading-relaxed">
+                <div className="p-2.5 bg-white rounded border border-stone-200 text-stone-800 font-mono text-xs leading-relaxed">
                   {(execution.safe_request_metadata?.message_snippet as string) || "No message content recorded."}
                 </div>
                 <div className="text-[11px] text-stone-600">
@@ -334,42 +334,42 @@ export default function ExecutionDetailPage() {
           </div>
 
           {/* Right Column: Security & Cryptographic Hashes */}
-          <div className="bg-stone-100/80 border border-stone-200 rounded-xl p-5 shadow-sm space-y-4">
+          <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-sm space-y-4">
             <h2 className="text-xs font-semibold uppercase tracking-wider text-stone-600 flex items-center gap-2">
-              <Lock className="w-4 h-4 text-emerald-400" /> Cryptographic Integrity & Redaction
+              <Lock className="w-4 h-4 text-emerald-600" /> Cryptographic Integrity & Redaction
             </h2>
 
             <div className="space-y-3 text-xs">
-              <div className="bg-stone-50/70 p-3 rounded-lg border border-stone-200 space-y-2">
+              <div className="bg-stone-50 p-3 rounded-lg border border-stone-200 space-y-2">
                 <div>
                   <span className="text-stone-500 block text-[10px] uppercase font-bold">SHA-256 Idempotency Key</span>
-                  <code className="text-stone-700 font-mono text-[11px] break-all block bg-stone-100 p-1.5 rounded mt-1 border border-stone-200/80">
+                  <code className="text-stone-700 font-mono text-[11px] break-all block bg-white p-1.5 rounded mt-1 border border-stone-200">
                     {execution.idempotency_key}
                   </code>
                 </div>
                 <div>
                   <span className="text-stone-500 block text-[10px] uppercase font-bold">Payload Hash</span>
-                  <code className="text-stone-700 font-mono text-[11px] break-all block bg-stone-100 p-1.5 rounded mt-1 border border-stone-200/80">
+                  <code className="text-stone-700 font-mono text-[11px] break-all block bg-white p-1.5 rounded mt-1 border border-stone-200">
                     {execution.request_payload_hash}
                   </code>
                 </div>
               </div>
 
-              <div className="p-3 bg-emerald-950/20 border border-emerald-500/20 rounded-lg text-emerald-300 text-xs space-y-1">
-                <div className="font-semibold flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Credential Zero-Leakage Guarantee
+              <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-800 text-xs space-y-1">
+                <div className="font-semibold flex items-center gap-1.5 text-emerald-900">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Credential Zero-Leakage Guarantee
                 </div>
-                <p className="text-[11px] text-emerald-300/80">
+                <p className="text-[11px] text-emerald-700">
                   All API keys, bot tokens, and authentication secrets are redacted prior to payload persistence and receipt generation.
                 </p>
               </div>
 
               {execution.failure_reason && (
-                <div className="p-3 bg-rose-950/30 border border-rose-500/30 rounded-lg text-rose-300 text-xs space-y-1">
-                  <div className="font-semibold flex items-center gap-1.5">
-                    <AlertTriangle className="w-3.5 h-3.5 text-rose-400" /> Failure Reason ({execution.failure_code})
+                <div className="p-3 bg-rose-50 border border-rose-200 rounded-lg text-rose-800 text-xs space-y-1">
+                  <div className="font-semibold flex items-center gap-1.5 text-rose-900">
+                    <AlertTriangle className="w-3.5 h-3.5 text-rose-600" /> Failure Reason ({execution.failure_code})
                   </div>
-                  <p className="text-[11px] text-rose-200 font-mono">
+                  <p className="text-[11px] text-rose-700 font-mono">
                     {execution.failure_reason}
                   </p>
                 </div>
@@ -381,8 +381,8 @@ export default function ExecutionDetailPage() {
 
       {/* Cancel Modal */}
       {cancelModal && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-stone-100 border border-stone-200 rounded-xl p-6 max-w-md w-full shadow-2xl">
+        <div className="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white border border-stone-200 rounded-2xl p-6 max-w-md w-full shadow-2xl">
             <h3 className="text-base font-bold text-stone-950 mb-2">Cancel Execution</h3>
             <p className="text-xs text-stone-600 mb-4">
               Cancelling execution halts pending queue dispatch and marks the record CANCELLED.
@@ -397,14 +397,14 @@ export default function ExecutionDetailPage() {
             <div className="flex items-center justify-end gap-2">
               <button
                 onClick={() => setCancelModal(false)}
-                className="px-3 py-1.5 text-xs text-stone-600 hover:text-stone-800"
+                className="px-3.5 py-1.5 text-xs text-stone-600 hover:text-stone-800 transition"
               >
                 Dismiss
               </button>
               <button
                 onClick={handleCancel}
                 disabled={actionLoading}
-                className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-stone-950 font-medium text-xs rounded-lg transition"
+                className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-medium text-xs rounded-lg transition shadow-sm"
               >
                 Confirm Cancellation
               </button>

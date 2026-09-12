@@ -24,10 +24,10 @@ export default function IntegrationsSettingsPage() {
   return (
     <div className="space-y-6">
       {/* Slack Integration Card */}
-      <div className="bg-stone-100 border border-stone-200 rounded-2xl p-6 shadow-sm space-y-4">
+      <div className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm space-y-4">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#4A154B]/30 border border-[#4A154B]/50 flex items-center justify-center text-amber-300 font-bold">
+            <div className="w-10 h-10 rounded-xl bg-white border border-stone-200 shadow-xs flex items-center justify-center text-[#4A154B] font-bold">
               #
             </div>
             <div>
@@ -38,11 +38,11 @@ export default function IntegrationsSettingsPage() {
           <span
             className={`px-2.5 py-1 rounded-full text-xs font-semibold border flex items-center gap-1.5 ${
               slackConnected
-                ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                : "bg-stone-200 text-stone-600 border-stone-300"
+                ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                : "bg-stone-100 text-stone-600 border-stone-200"
             }`}
           >
-            {slackConnected ? <CheckCircle2 className="w-3.5 h-3.5" /> : null}
+            {slackConnected ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> : null}
             <span>{slackConnected ? "Connected" : "Not Connected"}</span>
           </span>
         </div>
@@ -50,20 +50,20 @@ export default function IntegrationsSettingsPage() {
         <div className="p-4 rounded-xl bg-stone-50/60 border border-stone-200/80 space-y-3 text-xs">
           <div className="flex items-center justify-between">
             <span className="text-stone-600 font-medium">Inbound Webhook Endpoint:</span>
-            <code className="bg-stone-100 px-2 py-0.5 rounded text-stone-700 font-mono text-[11px]">
+            <code className="bg-stone-100 px-2 py-0.5 rounded text-stone-700 font-mono text-[11px] border border-stone-200">
               /api/webhooks/slack/events
             </code>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-stone-600 font-medium">Signature Verification:</span>
-            <span className="text-emerald-400 font-semibold flex items-center gap-1">
-              <ShieldCheck className="w-3.5 h-3.5" /> HMAC-SHA256 (300s Tolerance)
+            <span className="text-emerald-700 font-semibold flex items-center gap-1">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> HMAC-SHA256 (300s Tolerance)
             </span>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-stone-600 font-medium">Credentials at Rest:</span>
-            <span className="text-purple-400 font-semibold flex items-center gap-1">
-              <Key className="w-3.5 h-3.5" /> Fernet AES-256 Symmetric
+            <span className="text-orange-700 font-semibold flex items-center gap-1">
+              <Key className="w-3.5 h-3.5 text-orange-600" /> Fernet AES-256 Symmetric
             </span>
           </div>
         </div>
@@ -71,7 +71,7 @@ export default function IntegrationsSettingsPage() {
         <div className="flex justify-end pt-2">
           <a
             href="/integrations"
-            className="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-stone-950 rounded-xl text-xs font-semibold shadow transition-colors"
+            className="inline-flex items-center gap-1.5 px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-semibold shadow transition-colors"
           >
             <RefreshCw className="w-3.5 h-3.5" />
             <span>Manage Integrations</span>

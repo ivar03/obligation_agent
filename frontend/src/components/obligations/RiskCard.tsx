@@ -29,36 +29,36 @@ export const RiskCard: React.FC<RiskCardProps> = ({ assessment, compact = false 
     switch (level) {
       case "CRITICAL":
         return {
-          border: "border-red-500/40 hover:border-red-500/80 shadow-red-950/20",
-          badge: "bg-red-500/10 text-red-400 border-red-500/30",
-          bar: "bg-gradient-to-r from-blue-500 to-red-500",
-          text: "text-red-400",
-          glow: "from-red-900/10 to-transparent",
+          border: "border-red-200 hover:border-red-300",
+          badge: "bg-red-50 text-red-700 border-red-200",
+          bar: "bg-red-500",
+          text: "text-red-700",
+          glow: "from-red-500/5 to-transparent",
         };
       case "HIGH":
         return {
-          border: "border-amber-500/40 hover:border-amber-500/80 shadow-amber-950/20",
-          badge: "bg-amber-500/10 text-amber-400 border-amber-500/30",
-          bar: "bg-gradient-to-r from-yellow-500 to-amber-500",
-          text: "text-amber-400",
-          glow: "from-amber-900/10 to-transparent",
+          border: "border-orange-200 hover:border-orange-300",
+          badge: "bg-orange-50 text-orange-700 border-orange-200",
+          bar: "bg-orange-500",
+          text: "text-orange-700",
+          glow: "from-orange-500/5 to-transparent",
         };
       case "MEDIUM":
         return {
-          border: "border-blue-500/40 hover:border-blue-500/80 shadow-blue-950/20",
-          badge: "bg-blue-500/10 text-blue-500 border-blue-500/30",
-          bar: "bg-blue-500",
-          text: "text-blue-500",
-          glow: "from-blue-900/10 to-transparent",
+          border: "border-amber-200 hover:border-amber-300",
+          badge: "bg-amber-50 text-amber-700 border-amber-200",
+          bar: "bg-amber-500",
+          text: "text-amber-700",
+          glow: "from-amber-500/5 to-transparent",
         };
       case "LOW":
       default:
         return {
-          border: "border-emerald-500/30 hover:border-emerald-500/60 shadow-emerald-950/20",
-          badge: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+          border: "border-emerald-200 hover:border-emerald-300",
+          badge: "bg-emerald-50 text-emerald-700 border-emerald-200",
           bar: "bg-emerald-500",
-          text: "text-emerald-400",
-          glow: "from-emerald-900/10 to-transparent",
+          text: "text-emerald-700",
+          glow: "from-emerald-500/5 to-transparent",
         };
     }
   };
@@ -84,27 +84,27 @@ export const RiskCard: React.FC<RiskCardProps> = ({ assessment, compact = false 
   const getActionBadge = (type: string) => {
     switch (type) {
       case "RESOLVE_DEPENDENCY":
-        return "bg-purple-950/60 text-purple-300 border-purple-800/50";
+        return "bg-orange-50 text-orange-700 border-orange-200";
       case "FOLLOW_UP_OWNER":
-        return "bg-indigo-950/60 text-blue-600 border-indigo-800/50";
+        return "bg-orange-50 text-orange-700 border-orange-200";
       case "START_WORK":
-        return "bg-amber-950/60 text-amber-300 border-amber-800/50";
+        return "bg-amber-50 text-amber-700 border-amber-200";
       case "REVIEW_EVIDENCE":
-        return "bg-cyan-950/60 text-cyan-300 border-cyan-800/50";
+        return "bg-stone-100 text-stone-700 border-stone-200";
       case "ASSIGN_OWNER":
-        return "bg-rose-950/60 text-rose-300 border-rose-800/50";
+        return "bg-rose-50 text-rose-700 border-rose-200";
       case "MONITOR_CONDITION":
-        return "bg-teal-950/60 text-teal-300 border-teal-800/50";
+        return "bg-stone-100 text-stone-700 border-stone-200";
       default:
-        return "bg-stone-200 text-stone-700 border-stone-300";
+        return "bg-stone-100 text-stone-700 border-stone-200";
     }
   };
 
   return (
     <div
-      className={`relative rounded-xl border bg-stone-100/90 backdrop-blur-md p-4 transition-all duration-200 hover:shadow-lg ${style.border}`}
+      className={`relative rounded-xl border bg-white p-4 transition-all duration-200 hover:shadow-md ${style.border}`}
     >
-      {/* Background radial gradient accent */}
+      {/* Background soft accent */}
       <div
         className={`pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-br ${style.glow}`}
       />
@@ -121,13 +121,13 @@ export const RiskCard: React.FC<RiskCardProps> = ({ assessment, compact = false 
             </span>
 
             {dependent_count > 0 && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-amber-500/10 text-amber-300 border border-amber-500/20">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-amber-50 text-amber-800 border border-amber-200">
                 ⚡ Blocks {dependent_count} {dependent_count === 1 ? "task" : "tasks"}
               </span>
             )}
           </div>
 
-          <span className="text-xs font-mono text-stone-600">
+          <span className="text-xs font-mono text-stone-500">
             {formatDeadline(deadline)}
           </span>
         </div>
@@ -136,7 +136,7 @@ export const RiskCard: React.FC<RiskCardProps> = ({ assessment, compact = false 
         <div>
           <Link
             href={`/obligations/${obligation_id}`}
-            className="group block text-sm font-semibold text-stone-900 hover:text-stone-950 transition-colors line-clamp-2"
+            className="group block text-sm font-semibold text-stone-900 hover:text-orange-600 transition-colors line-clamp-2"
           >
             <span className="group-hover:underline">{action}</span>
           </Link>
@@ -150,14 +150,14 @@ export const RiskCard: React.FC<RiskCardProps> = ({ assessment, compact = false 
 
         {/* Primary Reasons / Signals */}
         {!compact && reasons && reasons.length > 0 && (
-          <div className="space-y-1.5 rounded-lg bg-stone-50/60 p-2.5 border border-stone-200/80 text-xs">
+          <div className="space-y-1.5 rounded-lg bg-stone-50 p-2.5 border border-stone-200 text-xs">
             <div className="text-[11px] uppercase tracking-wider font-semibold text-stone-500">
               Risk Signals & Root Causes:
             </div>
             <ul className="space-y-1 text-stone-700">
               {reasons.slice(0, 3).map((r, i) => (
                 <li key={i} className="flex items-start gap-1.5">
-                  <span className="text-stone-500 mt-0.5">▪</span>
+                  <span className="text-stone-400 mt-0.5">▪</span>
                   <span>{r}</span>
                 </li>
               ))}
@@ -166,7 +166,7 @@ export const RiskCard: React.FC<RiskCardProps> = ({ assessment, compact = false 
         )}
 
         {/* Recommended Action Footer */}
-        <div className="pt-2 border-t border-stone-200 flex items-center justify-between gap-3">
+        <div className="pt-2 border-t border-stone-100 flex items-center justify-between gap-3">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1.5">
               <span
@@ -184,7 +184,7 @@ export const RiskCard: React.FC<RiskCardProps> = ({ assessment, compact = false 
 
           <Link
             href={`/obligations/${obligation_id}`}
-            className="shrink-0 px-3 py-1 text-xs font-medium rounded-lg bg-stone-200 hover:bg-stone-300 text-stone-800 hover:text-stone-950 transition-colors border border-stone-300/60"
+            className="shrink-0 px-3 py-1 text-xs font-medium rounded-lg bg-white hover:bg-stone-50 text-stone-700 hover:text-stone-900 transition-colors border border-stone-200 shadow-sm"
           >
             Inspect →
           </Link>

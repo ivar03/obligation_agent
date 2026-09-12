@@ -156,7 +156,7 @@ export default function InterventionDetailPage({
           {intervention.status === "APPROVED" && (
             <button
               onClick={handleExecuteMock}
-              className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-stone-950 text-xs font-bold transition-all shadow-md shadow-blue-600/20 active:scale-95 flex items-center gap-1.5"
+              className="px-4 py-2 rounded-xl bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold transition-all shadow active:scale-95 flex items-center gap-1.5"
             >
               <Send className="w-3.5 h-3.5" />
               <span>Execute Mock</span>
@@ -166,7 +166,7 @@ export default function InterventionDetailPage({
           {intervention.status !== "RESOLVED" && intervention.status !== "CANCELLED" && (
             <button
               onClick={() => setShowReviewModal(true)}
-              className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-50 text-xs font-bold transition-all shadow-md shadow-amber-500/20 active:scale-95 flex items-center gap-1.5"
+              className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold transition-all shadow active:scale-95 flex items-center gap-1.5"
             >
               <Sparkles className="w-3.5 h-3.5" />
               <span>Edit / Approve</span>
@@ -182,7 +182,7 @@ export default function InterventionDetailPage({
           {/* Rationale & Grounding Card */}
           <div className="bg-stone-100/80 border border-stone-200 rounded-2xl p-5 space-y-3 shadow-md">
             <h2 className="text-xs font-bold uppercase tracking-wider text-stone-600 flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-blue-500" />
+              <ShieldCheck className="w-4 h-4 text-orange-600" />
               <span>Intervention Rationale & Grounding</span>
             </h2>
             <p className="text-sm text-stone-800 leading-relaxed">{intervention.rationale}</p>
@@ -194,7 +194,7 @@ export default function InterventionDetailPage({
                 Beneficiary: <strong className="text-stone-950">{intervention.target_beneficiary}</strong>
               </span>
               <span>
-                Urgency: <strong className="text-amber-400">{intervention.urgency}</strong>
+                Urgency: <strong className="text-amber-600">{intervention.urgency}</strong>
               </span>
             </div>
           </div>
@@ -202,7 +202,7 @@ export default function InterventionDetailPage({
           {/* Message Comparison Card: Draft vs Approved */}
           <div className="bg-stone-100/80 border border-stone-200 rounded-2xl p-5 space-y-4 shadow-md">
             <h2 className="text-xs font-bold uppercase tracking-wider text-stone-600 flex items-center gap-2">
-              <MessageSquareText className="w-4 h-4 text-amber-400" />
+              <MessageSquareText className="w-4 h-4 text-orange-600" />
               <span>Message Draft & Human Versioning</span>
             </h2>
 
@@ -219,7 +219,7 @@ export default function InterventionDetailPage({
 
               {intervention.approved_message && intervention.approved_message !== intervention.message_draft && (
                 <div className="bg-stone-50 border border-emerald-500/30 rounded-xl p-4 space-y-1.5">
-                  <div className="flex items-center justify-between text-[11px] font-semibold text-emerald-400 uppercase tracking-wider">
+                  <div className="flex items-center justify-between text-[11px] font-semibold text-emerald-700 uppercase tracking-wider">
                     <span>Approved Final Message</span>
                     <span>Approved by {intervention.approved_by || "USER"}</span>
                   </div>
@@ -234,7 +234,7 @@ export default function InterventionDetailPage({
           {/* Outcome Recording Panel (If Executed or Awaiting Resolution) */}
           <div className="bg-stone-100/80 border border-stone-200 rounded-2xl p-5 space-y-4 shadow-md">
             <h2 className="text-xs font-bold uppercase tracking-wider text-stone-600 flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
               <span>Record Observed Outcome</span>
             </h2>
             <p className="text-xs text-stone-600">
@@ -247,14 +247,12 @@ export default function InterventionDetailPage({
                 <select
                   value={selectedOutcome}
                   onChange={(e) => setSelectedOutcome(e.target.value as InterventionOutcome)}
-                  className="w-full bg-stone-50 border border-stone-300 rounded-xl px-3 py-2 text-xs text-stone-800 focus:outline-none focus:border-blue-500"
+                  className="w-full bg-stone-50 border border-stone-300 rounded-xl px-3 py-2 text-xs text-stone-800 focus:outline-none focus:border-orange-500"
                 >
-                  <option value="ACKNOWLEDGED">Acknowledged (Owner responded/working on it)</option>
-                  <option value="PROGRESS_REPORTED">Progress Reported (Active updates shared)</option>
-                  <option value="COMPLETED">Completed (Deliverable fulfilled)</option>
-                  <option value="NO_RESPONSE">No Response (Timeout reached)</option>
-                  <option value="NEGATIVE_RESPONSE">Negative Response (Blocker/delay reported)</option>
-                  <option value="NOT_NEEDED">Not Needed (No longer required)</option>
+                  <option value="ACCEPTED">Target Accepted / Responded Positively</option>
+                  <option value="IGNORED">No Response / Ignored</option>
+                  <option value="REJECTED">Target Disputed / Rejected Deliverable</option>
+                  <option value="CONFIRMED_COMPLETED">Delivered / Confirmed Completed</option>
                 </select>
               </div>
 
@@ -265,7 +263,7 @@ export default function InterventionDetailPage({
                   value={outcomeNotes}
                   onChange={(e) => setOutcomeNotes(e.target.value)}
                   placeholder="e.g. Rahul promised numbers by 3 PM"
-                  className="w-full bg-stone-50 border border-stone-300 rounded-xl px-3 py-2 text-xs text-stone-800 focus:outline-none focus:border-blue-500"
+                  className="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-xs text-stone-800 focus:outline-none focus:border-orange-500"
                 />
               </div>
             </div>
@@ -275,7 +273,7 @@ export default function InterventionDetailPage({
                 type="button"
                 onClick={handleRecordOutcome}
                 disabled={recordingOutcome}
-                className="px-4 py-2 rounded-xl bg-stone-200 hover:bg-stone-300 text-stone-950 text-xs font-semibold transition-colors disabled:opacity-50 flex items-center gap-1.5"
+                className="px-4 py-2 rounded-xl bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold shadow transition-colors disabled:opacity-50 flex items-center gap-1.5"
               >
                 <Check className="w-3.5 h-3.5" />
                 <span>Record Outcome</span>
@@ -287,47 +285,27 @@ export default function InterventionDetailPage({
         {/* Right 1 Col: State, Linked Obligation, Immutable Audit Trail */}
         <div className="space-y-6">
           {/* Status & Execution Info */}
-          <div className="bg-stone-100/80 border border-stone-200 rounded-2xl p-5 space-y-3.5 shadow-md">
+          <div className="bg-white border border-stone-200 rounded-2xl p-5 space-y-3.5 shadow-sm">
             <h2 className="text-xs font-bold uppercase tracking-wider text-stone-600">Execution State</h2>
             <div className="space-y-2 text-xs">
-              <div className="flex justify-between py-1 border-b border-stone-200/80">
+              <div className="flex justify-between py-1 border-b border-stone-200">
                 <span className="text-stone-600">Status:</span>
-                <span className="font-semibold text-stone-950">{intervention.status}</span>
+                <span className="font-semibold text-stone-900">{intervention.status}</span>
               </div>
-              <div className="flex justify-between py-1 border-b border-stone-200/80">
+              <div className="flex justify-between py-1 border-b border-stone-200">
                 <span className="text-stone-600">Execution Mode:</span>
                 <span className="font-mono text-stone-700">{intervention.execution_mode}</span>
               </div>
               {intervention.execution_reference && (
-                <div className="flex justify-between py-1 border-b border-stone-200/80">
+                <div className="flex justify-between py-1 border-b border-stone-200">
                   <span className="text-stone-600">Reference:</span>
-                  <span className="font-mono text-blue-500">{intervention.execution_reference}</span>
+                  <span className="font-mono text-orange-600">{intervention.execution_reference}</span>
                 </div>
               )}
               {intervention.approved_at && (
-                <div className="flex justify-between py-1 border-b border-stone-200/80">
+                <div className="flex justify-between py-1 border-b border-stone-200">
                   <span className="text-stone-600">Approved:</span>
                   <span className="text-stone-700">{new Date(intervention.approved_at).toLocaleString()}</span>
-                </div>
-              )}
-              {intervention.executed_at && (
-                <div className="flex justify-between py-1 border-b border-stone-200/80">
-                  <span className="text-stone-600">Executed:</span>
-                  <span className="text-stone-700">{new Date(intervention.executed_at).toLocaleString()}</span>
-                </div>
-              )}
-              {intervention.scheduled_for && (
-                <div className="flex justify-between py-1 border-b border-stone-200/80">
-                  <span className="text-stone-600">Scheduled For:</span>
-                  <span className="text-purple-400 font-medium">
-                    {new Date(intervention.scheduled_for).toLocaleString()}
-                  </span>
-                </div>
-              )}
-              {intervention.outcome && (
-                <div className="flex justify-between py-1 border-b border-stone-200/80">
-                  <span className="text-stone-600">Outcome:</span>
-                  <span className="text-emerald-400 font-semibold">{intervention.outcome}</span>
                 </div>
               )}
             </div>
@@ -335,38 +313,38 @@ export default function InterventionDetailPage({
             <div className="pt-2">
               <Link
                 href={`/obligations/${intervention.obligation_id}`}
-                className="w-full px-3 py-2 rounded-xl bg-stone-50 hover:bg-stone-200 border border-stone-200 text-xs font-semibold text-stone-800 transition-colors flex items-center justify-center gap-1.5"
+                className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-stone-100 hover:bg-stone-200 text-stone-800 border border-stone-200 rounded-xl text-xs font-medium transition-colors"
               >
-                <Layers className="w-3.5 h-3.5 text-blue-500" />
+                <Layers className="w-3.5 h-3.5 text-orange-600" />
                 <span>Go to Linked Obligation</span>
               </Link>
             </div>
           </div>
 
           {/* Immutable Audit Trail Timeline */}
-          <div className="bg-stone-100/80 border border-stone-200 rounded-2xl p-5 space-y-4 shadow-md">
+          <div className="bg-white border border-stone-200 rounded-2xl p-5 space-y-4 shadow-sm">
             <h2 className="text-xs font-bold uppercase tracking-wider text-stone-600 flex items-center gap-2">
-              <History className="w-4 h-4 text-purple-400" />
+              <History className="w-4 h-4 text-orange-600" />
               <span>Immutable Audit Trail</span>
             </h2>
 
             <div className="relative pl-4 space-y-4 border-l border-stone-200">
               {(intervention.audit_trail || []).map((entry, idx) => (
                 <div key={idx} className="relative space-y-1">
-                  <div className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-blue-500 ring-4 ring-stone-100" />
+                  <div className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-orange-600 ring-4 ring-orange-100" />
                   <div className="flex items-center justify-between text-xs">
                     <span className="font-bold text-stone-800 uppercase tracking-wider">
                       {entry.event}
                     </span>
-                    <span className="text-[10px] text-stone-600">
+                    <span className="text-[10px] text-stone-500">
                       {new Date(entry.timestamp).toLocaleTimeString()}
                     </span>
                   </div>
                   <p className="text-[11px] text-stone-600">
-                    Actor: <strong className="text-stone-700">{entry.actor}</strong>
+                    Actor: <strong className="text-stone-800">{entry.actor}</strong>
                   </p>
                   {entry.details && Object.keys(entry.details).length > 0 && (
-                    <pre className="text-[10px] text-stone-600 bg-stone-50 p-2 rounded-lg border border-stone-200/80 overflow-x-auto">
+                    <pre className="text-[10px] text-stone-700 bg-stone-50 p-2 rounded-lg border border-stone-200 overflow-x-auto">
                       {JSON.stringify(entry.details, null, 2)}
                     </pre>
                   )}

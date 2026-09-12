@@ -1,26 +1,30 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f7f5f0;
-  --foreground: #24211d;
+  --background: #ffffff;
+  --foreground: #0f172a;
   --surface: #ffffff;
-  --surface-muted: #f1eee8;
-  --border: #e5dfd5;
-  --accent: #3566d4;
+  --surface-muted: #f8fafc;
+  --border: #e2e8f0;
+  --accent: #ea580c;
+  --accent-hover: #c2410c;
+  --accent-light: #fff7ed;
+  --accent-border: #fed7aa;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-geist-sans, Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  --font-mono: var(--font-geist-mono, monospace);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
 }
 
 * {
@@ -28,8 +32,8 @@ body {
 }
 
 ::selection {
-  background: #c9d8fb;
-  color: #163477;
+  background: #ffedd5;
+  color: #9a3412;
 }
 
 button, a, input, textarea, select {
@@ -37,65 +41,201 @@ button, a, input, textarea, select {
 }
 
 input:focus, textarea:focus, select:focus {
-  box-shadow: 0 0 0 3px rgba(53, 102, 212, 0.14);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.15);
+  border-color: #f97316;
 }
 
-/* Shared action language: calm navy primaries with semantic colors reserved for outcomes. */
-button.bg-blue-600, button.bg-blue-700,
-a.bg-blue-600, a.bg-blue-700,
-button.bg-violet-600, button.bg-purple-600, button.bg-cyan-600,
-a.bg-violet-600, a.bg-purple-600, a.bg-cyan-600,
-button[class*="from-violet-"], button[class*="from-purple-"],
-a[class*="from-violet-"], a[class*="from-purple-"] {
-  background-color: #234a84 !important;
-  background-image: none !important;
-  border-color: #234a84 !important;
-  color: #ffffff !important;
-  box-shadow: 0 4px 12px rgba(35, 74, 132, 0.16);
+/* Strategic Primary Orange Button Language */
+.btn-orange-primary {
+  background-color: #ea580c;
+  color: #ffffff;
+  border: 1px solid #ea580c;
+  box-shadow: 0 1px 3px rgba(234, 88, 12, 0.2), 0 1px 2px rgba(234, 88, 12, 0.12);
+  transition: all 0.15s ease-in-out;
 }
 
-button.bg-blue-600:hover, button.bg-blue-700:hover,
-a.bg-blue-600:hover, a.bg-blue-700:hover,
-button.bg-violet-600:hover, button.bg-purple-600:hover, button.bg-cyan-600:hover,
-a.bg-violet-600:hover, a.bg-purple-600:hover, a.bg-cyan-600:hover,
-button[class*="from-violet-"]:hover, button[class*="from-purple-"]:hover,
-a[class*="from-violet-"]:hover, a[class*="from-purple-"]:hover {
-  background-color: #193968 !important;
-  border-color: #193968 !important;
+.btn-orange-primary:hover {
+  background-color: #c2410c;
+  border-color: #c2410c;
+  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.25);
 }
 
-button.bg-emerald-600, a.bg-emerald-600 {
-  background-color: #267a62 !important;
-  border-color: #267a62 !important;
-  color: #ffffff !important;
-  box-shadow: 0 4px 12px rgba(38, 122, 98, 0.14);
+.btn-orange-primary:active {
+  transform: translateY(1px);
 }
 
-button.bg-emerald-600:hover, a.bg-emerald-600:hover {
-  background-color: #1f654f !important;
-  border-color: #1f654f !important;
+.btn-orange-secondary {
+  background-color: #fff7ed;
+  color: #c2410c;
+  border: 1px solid #fed7aa;
+  transition: all 0.15s ease-in-out;
 }
 
-button.bg-rose-600, a.bg-rose-600 {
-  background-color: #b33f50 !important;
-  border-color: #b33f50 !important;
-  color: #ffffff !important;
+.btn-orange-secondary:hover {
+  background-color: #ffedd5;
+  border-color: #fdba74;
 }
 
-button.bg-rose-600:hover, a.bg-rose-600:hover {
-  background-color: #933244 !important;
-  border-color: #933244 !important;
+/* Soft card surfaces */
+.card-subtle {
+  background: #ffffff;
+  border: 1px solid #f1f5f9;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
 }
 
-button.bg-amber-500, button.bg-amber-600,
-a.bg-amber-500, a.bg-amber-600 {
-  background-color: #9a6700 !important;
-  border-color: #9a6700 !important;
-  color: #ffffff !important;
+.card-hover {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-button.bg-amber-500:hover, button.bg-amber-600:hover,
-a.bg-amber-500:hover, a.bg-amber-600:hover {
-  background-color: #7d5300 !important;
-  border-color: #7d5300 !important;
+.card-hover:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.05), 0 8px 10px -6px rgba(15, 23, 42, 0.03);
+  transform: translateY(-2px);
 }
+
+/* Smooth custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ========================================================================= */
+/* ORANGE INTELLIGENCE GRID SYSTEM (3cm x 3cm ~ 113.4px)                    */
+/* ========================================================================= */
+
+.landing-grid-root {
+  --grid-size: 113.4px;
+  --grid-line-color: rgba(249, 115, 22, 0.16);
+  --grid-highlight-color: rgba(234, 88, 12, 0.65);
+  --mouse-x: 50vw;
+  --mouse-y: 35vh;
+  --parallax-x: 0px;
+  --parallax-y: 0px;
+}
+
+@media (max-width: 1024px) {
+  .landing-grid-root {
+    --grid-size: 104px;
+  }
+}
+
+@media (max-width: 640px) {
+  .landing-grid-root {
+    --grid-size: 88px;
+  }
+}
+
+/* Ambient keyframe animation for continuous imperceptible breathing */
+@keyframes gridAmbientDrift {
+  0% {
+    transform: translate3d(var(--parallax-x, 0px), var(--parallax-y, 0px), 0);
+  }
+  50% {
+    transform: translate3d(calc(var(--parallax-x, 0px) + 6px), calc(var(--parallax-y, 0px) + 5px), 0);
+  }
+  100% {
+    transform: translate3d(var(--parallax-x, 0px), var(--parallax-y, 0px), 0);
+  }
+}
+
+/* Outer screen border fade: Grid gets progressively lighter towards borders of screen */
+.landing-grid-container {
+  mask-image: radial-gradient(
+    ellipse 88% 84% at 50% 50%,
+    rgba(0, 0, 0, 1) 45%,
+    rgba(0, 0, 0, 0.75) 70%,
+    rgba(0, 0, 0, 0.2) 88%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  -webkit-mask-image: radial-gradient(
+    ellipse 88% 84% at 50% 50%,
+    rgba(0, 0, 0, 1) 45%,
+    rgba(0, 0, 0, 0.75) 70%,
+    rgba(0, 0, 0, 0.2) 88%,
+    rgba(0, 0, 0, 0) 100%
+  );
+}
+
+/* Layer 1: Base Grid - Clearly visible across the viewport */
+.landing-grid-base {
+  background-image:
+    linear-gradient(to right, var(--grid-line-color) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line-color) 1px, transparent 1px);
+  background-size: var(--grid-size) var(--grid-size);
+  animation: gridAmbientDrift 16s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Layer 2: Glowing Orange Grid Lines (ONLY the lines glow around cursor, cells remain transparent) */
+.landing-grid-highlight {
+  background-image:
+    linear-gradient(to right, rgba(234, 88, 12, 0.85) 1.5px, transparent 1.5px),
+    linear-gradient(to bottom, rgba(234, 88, 12, 0.85) 1.5px, transparent 1.5px);
+  background-size: var(--grid-size) var(--grid-size);
+  animation: gridAmbientDrift 16s ease-in-out infinite;
+  filter: drop-shadow(0 0 4px rgba(249, 115, 22, 0.75)) drop-shadow(0 0 8px rgba(234, 88, 12, 0.45));
+  mask-image: radial-gradient(
+    circle 320px at var(--mouse-x, 50vw) var(--mouse-y, 35vh),
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 0.6) 40%,
+    transparent 75%
+  );
+  -webkit-mask-image: radial-gradient(
+    circle 320px at var(--mouse-x, 50vw) var(--mouse-y, 35vh),
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 0.6) 40%,
+    transparent 75%
+  );
+  will-change: transform, mask-image;
+}
+
+/* Reduced-Motion Overrides */
+@media (prefers-reduced-motion: reduce) {
+  .landing-grid-base,
+  .landing-grid-highlight {
+    animation: none !important;
+    transform: none !important;
+  }
+  .landing-grid-highlight {
+    mask-image: none !important;
+    -webkit-mask-image: none !important;
+    opacity: 0.15 !important;
+  }
+}
+
+/* White text glow/halo for crisp readability over background grid lines */
+.text-readable-glow {
+  text-shadow:
+    0 0 10px rgba(255, 255, 255, 1),
+    0 0 20px rgba(255, 255, 255, 1),
+    0 0 35px rgba(255, 255, 255, 0.95),
+    0 0 50px rgba(255, 255, 255, 0.9),
+    0 1px 3px rgba(255, 255, 255, 1);
+}
+
+.text-readable-glow-subtle {
+  text-shadow:
+    0 0 8px rgba(255, 255, 255, 1),
+    0 0 16px rgba(255, 255, 255, 1),
+    0 0 28px rgba(255, 255, 255, 0.9),
+    0 1px 2px rgba(255, 255, 255, 1);
+}
+
+/* Premium translucent frosted glass surface */
+.translucent-card {
+  background-color: rgba(255, 255, 255, 0.84);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+

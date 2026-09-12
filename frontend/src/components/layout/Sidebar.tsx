@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
-  Sparkles,
   Layers,
   ShieldCheck,
   ArrowUpRight,
@@ -20,6 +19,7 @@ import {
   Plus,
   LogOut,
   User as UserIcon,
+  Sparkles,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
@@ -39,91 +39,52 @@ export const Sidebar: React.FC<SidebarProps> = ({ counts }) => {
   const navItems = [
     {
       name: "Dashboard",
-      href: "/",
+      href: "/dashboard",
       icon: LayoutDashboard,
-      active: pathname === "/" || pathname === "/dashboard",
+      active: pathname === "/dashboard" || pathname === "/",
     },
     {
-      name: "Capture & Analyze",
-      href: "/capture",
-      icon: Sparkles,
-      active: pathname === "/capture",
-      badge: "AI Review",
-    },
-    {
-      name: "All Obligations",
+      name: "Obligations",
       href: "/obligations",
       icon: Layers,
       active: pathname.startsWith("/obligations"),
+    },
+    {
+      name: "Intelligence",
+      href: "/intelligence",
+      icon: Brain,
+      active: pathname === "/intelligence" || (pathname.startsWith("/intelligence") && !pathname.startsWith("/intelligence/decisions")),
+      badge: "AI",
     },
     {
       name: "Reconciliation",
       href: "/reconciliation",
       icon: Scale,
       active: pathname.startsWith("/reconciliation"),
-      badge: "Phase 11",
-    },
-    {
-      name: "Operational Queues",
-      href: "/queues",
-      icon: Layers,
-      active: pathname.startsWith("/queues"),
-      badge: "Beta",
-    },
-    {
-      name: "Decision Center",
-      href: "/intelligence/decisions",
-      icon: Brain,
-      active: pathname.startsWith("/intelligence/decisions"),
-      badge: "Decisions",
-    },
-    {
-      name: "Intelligence & Predictions",
-      href: "/intelligence",
-      icon: Activity,
-      active: pathname === "/intelligence" || (pathname.startsWith("/intelligence") && !pathname.startsWith("/intelligence/decisions")),
-      badge: "Graph AI",
     },
     {
       name: "Activity Center",
       href: "/events",
       icon: Activity,
       active: pathname.startsWith("/events"),
-      badge: "Phase 7",
+    },
+    {
+      name: "Decision Center",
+      href: "/intelligence/decisions",
+      icon: Sparkles,
+      active: pathname.startsWith("/intelligence/decisions"),
     },
     {
       name: "Integrations",
       href: "/integrations",
       icon: Radio,
       active: pathname.startsWith("/integrations"),
-      badge: "Phase 8",
     },
     {
-      name: "Governance & Audit",
+      name: "Audit & Governance",
       href: "/audit",
       icon: ShieldCheck,
-      active: pathname === "/audit",
-      badge: "Phase 15",
-    },
-    {
-      name: "Operations & Observability",
-      href: "/operations",
-      icon: Activity,
-      active: pathname.startsWith("/operations"),
-      badge: "Phase 21",
-    },
-    {
-      name: "Workspace Settings",
-      href: "/settings/workspace",
-      icon: Building2,
-      active: pathname.startsWith("/settings"),
-    },
-
-    {
-      name: "Onboarding Wizard",
-      href: "/onboarding",
-      icon: Sparkles,
-      active: pathname.startsWith("/onboarding"),
+      active: pathname === "/audit" || pathname.startsWith("/operations/audit"),
     },
   ];
 
@@ -132,21 +93,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ counts }) => {
       name: "You Owe",
       href: "/obligations?type=OWED_BY_ME",
       icon: ArrowUpRight,
-      color: "text-blue-500",
+      color: "text-orange-600",
       count: counts?.youOwe,
     },
     {
       name: "Others Owe You",
       href: "/obligations?type=OWED_TO_ME",
       icon: ArrowDownLeft,
-      color: "text-emerald-400",
+      color: "text-emerald-600",
       count: counts?.othersOwe,
     },
     {
       name: "At Risk",
       href: "/obligations?at_risk=true",
       icon: AlertTriangle,
-      color: "text-rose-400",
+      color: "text-amber-600",
       count: counts?.atRisk,
     },
   ];
@@ -154,62 +115,60 @@ export const Sidebar: React.FC<SidebarProps> = ({ counts }) => {
   const getRoleBadgeClass = (role: string) => {
     switch (role) {
       case "OWNER":
-        return "bg-purple-500/10 text-purple-400 border-purple-500/30";
+        return "bg-orange-100 text-orange-800 border-orange-200";
       case "ADMIN":
-        return "bg-blue-500/10 text-blue-500 border-blue-500/30";
+        return "bg-slate-100 text-slate-800 border-slate-200";
       case "MEMBER":
-        return "bg-emerald-500/10 text-emerald-400 border-emerald-500/30";
-      case "VIEWER":
-        return "bg-amber-500/10 text-amber-400 border-amber-500/30";
+        return "bg-emerald-50 text-emerald-700 border-emerald-200";
       default:
-        return "bg-stone-200 text-stone-600 border-stone-300";
+        return "bg-slate-100 text-slate-600 border-slate-200";
     }
   };
 
   return (
-    <aside className="w-64 shrink-0 border-r border-stone-200 bg-stone-50 flex flex-col justify-between hidden md:flex min-h-screen select-none">
+    <aside className="w-64 shrink-0 border-r border-slate-200 bg-white flex flex-col justify-between hidden md:flex min-h-screen select-none">
       <div className="p-4 space-y-5">
         {/* Brand Header */}
-        <div className="flex items-center gap-3 px-2 py-1">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-700 via-blue-500 to-cyan-400 flex items-center justify-center shadow-lg shadow-blue-500/20 ring-1 ring-blue-100/20">
-            <ShieldCheck className="w-5 h-5 text-stone-950" />
+        <Link href="/" className="flex items-center gap-3 px-2 py-1 group">
+          <div className="w-9 h-9 rounded-xl bg-orange-600 flex items-center justify-center shadow-sm shadow-orange-500/20 group-hover:bg-orange-700 transition-colors">
+            <ShieldCheck className="w-5 h-5 text-white" />
           </div>
           <div>
-            <div className="text-sm font-bold tracking-tight text-stone-950 flex items-center gap-1.5">
-              Obligation<span className="text-blue-500">Agent</span>
+            <div className="text-sm font-bold tracking-tight text-slate-900 flex items-center gap-1">
+              Obligation<span className="text-orange-600">Agent</span>
             </div>
-            <div className="text-[11px] text-stone-600 font-medium">Reciprocal Commitment OS</div>
+            <div className="text-[10px] text-slate-600 font-medium">Commitment Intelligence</div>
           </div>
-        </div>
+        </Link>
 
-        {/* Phase 14: Workspace Switcher */}
+        {/* Workspace Switcher */}
         <div className="relative">
           <button
             onClick={() => setWsDropdownOpen(!wsDropdownOpen)}
-            className="w-full flex items-center justify-between p-2.5 rounded-lg bg-stone-100/80 hover:bg-stone-100 border border-stone-200/80 hover:border-stone-300 transition-all text-left group"
+            className="w-full flex items-center justify-between p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 transition-all text-left group"
           >
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-6 h-6 rounded bg-stone-200 flex items-center justify-center text-stone-600 group-hover:text-stone-800">
-                <Building2 className="w-3.5 h-3.5" />
+              <div className="w-7 h-7 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-600 group-hover:text-slate-900 shadow-xs">
+                <Building2 className="w-4 h-4" />
               </div>
               <div className="truncate">
-                <div className="text-xs font-semibold text-stone-800 truncate">
-                  {activeWorkspace?.name || "Select Workspace"}
+                <div className="text-xs font-semibold text-slate-800 truncate">
+                  {activeWorkspace?.name || "Acme Operations"}
                 </div>
-                <div className="text-[10px] text-stone-600 flex items-center gap-1">
-                  <span className={`px-1 rounded border text-[9px] font-mono font-medium ${getRoleBadgeClass(activeRole)}`}>
+                <div className="text-[10px] text-slate-600 flex items-center gap-1 mt-0.5">
+                  <span className={`px-1.5 py-0.2 rounded border text-[9px] font-mono font-medium ${getRoleBadgeClass(activeRole)}`}>
                     {activeRole}
                   </span>
                 </div>
               </div>
             </div>
-            <ChevronDown className="w-3.5 h-3.5 text-stone-500 group-hover:text-stone-700 shrink-0" />
+            <ChevronDown className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-600 shrink-0" />
           </button>
 
           {wsDropdownOpen && (
-            <div className="absolute left-0 right-0 top-full mt-1.5 bg-stone-100 border border-stone-200 rounded-lg shadow-2xl py-1 z-50 text-xs divide-y divide-stone-200/60">
+            <div className="absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-200 rounded-xl shadow-xl py-1 z-50 text-xs divide-y divide-slate-100">
               <div className="max-h-48 overflow-y-auto">
-                <div className="px-3 py-1.5 text-[10px] font-semibold text-stone-600 uppercase tracking-wider">
+                <div className="px-3 py-1.5 text-[10px] font-semibold text-slate-600 uppercase tracking-wider">
                   Workspaces
                 </div>
                 {workspaces.map((ws) => (
@@ -219,13 +178,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ counts }) => {
                       switchWorkspace(ws.id);
                       setWsDropdownOpen(false);
                     }}
-                    className={`w-full px-3 py-2 text-left flex items-center justify-between hover:bg-stone-200/60 transition-colors ${
-                      ws.id === activeWorkspace?.id ? "bg-blue-600/10 text-blue-500 font-medium" : "text-stone-700"
+                    className={`w-full px-3 py-2 text-left flex items-center justify-between hover:bg-slate-50 transition-colors ${
+                      ws.id === activeWorkspace?.id ? "bg-orange-50/70 text-orange-700 font-semibold" : "text-slate-700"
                     }`}
                   >
                     <span className="truncate">{ws.name}</span>
                     {ws.role && (
-                      <span className="text-[9px] px-1 py-0.5 rounded bg-stone-200 text-stone-600 border border-stone-300/50">
+                      <span className="text-[9px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">
                         {ws.role}
                       </span>
                     )}
@@ -234,9 +193,17 @@ export const Sidebar: React.FC<SidebarProps> = ({ counts }) => {
               </div>
               <div className="p-1">
                 <Link
+                  href="/demo"
+                  onClick={() => setWsDropdownOpen(false)}
+                  className="w-full px-2.5 py-1.5 text-left text-orange-600 hover:bg-orange-50 rounded-lg flex items-center gap-2 font-medium"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Demo Workspace (Acme)</span>
+                </Link>
+                <Link
                   href="/login"
                   onClick={() => setWsDropdownOpen(false)}
-                  className="w-full px-2.5 py-1.5 text-left text-stone-600 hover:text-stone-800 hover:bg-stone-200/40 rounded flex items-center gap-2"
+                  className="w-full px-2.5 py-1.5 text-left text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg flex items-center gap-2"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Switch Account / Sign In</span>
@@ -248,7 +215,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ counts }) => {
 
         {/* Primary Navigation */}
         <nav className="space-y-1">
-          <div className="px-2 py-1 text-[11px] font-semibold text-stone-600 uppercase tracking-wider">
+          <div className="px-2 py-1 text-[10px] font-semibold text-slate-600 uppercase tracking-wider">
             Workspace
           </div>
           {navItems.map((item) => {
@@ -257,18 +224,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ counts }) => {
               <Link
                 key={item.name}
                 href={item.href}
-                className={`flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                className={`flex items-center justify-between px-3 py-2.2 rounded-xl text-xs font-medium transition-all ${
                   item.active
-                    ? "bg-stone-200/80 text-stone-950 font-semibold shadow-sm border border-stone-300/50"
-                    : "text-stone-600 hover:text-stone-800 hover:bg-stone-100/60"
+                    ? "bg-orange-50 text-orange-700 font-semibold border border-orange-200/80 shadow-xs"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <Icon className={`w-4 h-4 ${item.active ? "text-blue-500" : "text-stone-600"}`} />
+                  <Icon className={`w-4 h-4 ${item.active ? "text-orange-600" : "text-slate-600"}`} />
                   <span>{item.name}</span>
                 </div>
                 {item.badge && (
-                  <span className="px-1.5 py-0.5 text-[10px] font-semibold bg-blue-500/10 text-blue-500 border border-blue-500/20 rounded">
+                  <span className="px-1.5 py-0.5 text-[9px] font-bold bg-orange-100 text-orange-700 border border-orange-200 rounded-md">
                     {item.badge}
                   </span>
                 )}
@@ -277,9 +244,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ counts }) => {
           })}
         </nav>
 
-        {/* Obligation Ledgers / Quick Filter */}
-        <div className="space-y-1 pt-2">
-          <div className="px-2 py-1 text-[11px] font-semibold text-stone-600 uppercase tracking-wider">
+        {/* Quick Feeds */}
+        <div className="space-y-1 pt-1">
+          <div className="px-2 py-1 text-[10px] font-semibold text-slate-600 uppercase tracking-wider">
             Obligation Feeds
           </div>
           {quickFilters.map((filter) => {
@@ -288,14 +255,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ counts }) => {
               <Link
                 key={filter.name}
                 href={filter.href}
-                className="flex items-center justify-between px-3 py-2 rounded-lg text-sm text-stone-600 hover:text-stone-800 hover:bg-stone-100/60 transition-colors"
+                className="flex items-center justify-between px-3 py-2 rounded-xl text-xs text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors"
               >
                 <div className="flex items-center gap-3">
                   <Icon className={`w-4 h-4 ${filter.color}`} />
                   <span>{filter.name}</span>
                 </div>
                 {filter.count !== undefined && filter.count > 0 && (
-                  <span className="px-2 py-0.5 text-xs rounded-full bg-stone-200/80 text-stone-700 border border-stone-300/50">
+                  <span className="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-slate-100 text-slate-700 border border-slate-200">
                     {filter.count}
                   </span>
                 )}
@@ -305,23 +272,23 @@ export const Sidebar: React.FC<SidebarProps> = ({ counts }) => {
         </div>
       </div>
 
-      {/* Phase 14: User Profile & Identity Footer */}
-      <div className="p-3 border-t border-stone-200/80 space-y-2">
+      {/* User Profile & Identity Footer */}
+      <div className="p-3 border-t border-slate-200 space-y-2">
         {user ? (
-          <div className="flex items-center justify-between p-2 rounded-lg bg-stone-100/60 border border-stone-200/80">
+          <div className="flex items-center justify-between p-2 rounded-xl bg-slate-50 border border-slate-200">
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-blue-600 to-blue-700 flex items-center justify-center text-stone-950 text-xs font-bold">
+              <div className="w-8 h-8 rounded-lg bg-orange-100 border border-orange-200 flex items-center justify-center text-orange-700 text-xs font-bold shrink-0">
                 {user.display_name?.charAt(0).toUpperCase() || "U"}
               </div>
               <div className="truncate">
-                <div className="text-xs font-medium text-stone-800 truncate">{user.display_name}</div>
-                <div className="text-[10px] text-stone-600 truncate">{user.email}</div>
+                <div className="text-xs font-semibold text-slate-800 truncate">{user.display_name}</div>
+                <div className="text-[10px] text-slate-600 truncate">{user.email}</div>
               </div>
             </div>
             <button
               onClick={() => logout()}
               title="Sign Out"
-              className="p-1.5 rounded hover:bg-stone-200 text-stone-600 hover:text-rose-400 transition-colors shrink-0"
+              className="p-1.5 rounded-lg hover:bg-slate-200 text-slate-400 hover:text-rose-600 transition-colors shrink-0"
             >
               <LogOut className="w-3.5 h-3.5" />
             </button>
@@ -329,7 +296,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ counts }) => {
         ) : (
           <Link
             href="/login"
-            className="flex items-center justify-center gap-2 w-full py-2 px-3 rounded-lg bg-blue-600 hover:bg-blue-500 text-stone-950 text-xs font-semibold shadow transition-colors"
+            className="flex items-center justify-center gap-2 w-full py-2 px-3 rounded-xl bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold shadow-xs transition-colors"
           >
             <UserIcon className="w-3.5 h-3.5" />
             <span>Sign In / Register</span>

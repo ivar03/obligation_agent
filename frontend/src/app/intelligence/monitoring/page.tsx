@@ -166,13 +166,13 @@ export default function MonitoringCenterPage() {
   const getSeverityBadge = (sev: string) => {
     switch (sev) {
       case "CRITICAL":
-        return "bg-rose-950 border-rose-500/40 text-rose-300";
+        return "bg-rose-50 border-rose-200 text-rose-700";
       case "HIGH":
-        return "bg-amber-950 border-amber-500/40 text-amber-300";
+        return "bg-amber-50 border-amber-200 text-amber-700";
       case "WARNING":
-        return "bg-yellow-950 border-yellow-500/40 text-yellow-300";
+        return "bg-amber-50 border-amber-200 text-amber-700";
       default:
-        return "bg-stone-100 border-stone-300 text-stone-700";
+        return "bg-stone-100 border-stone-200 text-stone-700";
     }
   };
 
@@ -181,9 +181,9 @@ export default function MonitoringCenterPage() {
       {/* Header */}
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-stone-200 pb-6 mb-6">
         <div>
-          <div className="flex items-center gap-2 text-violet-400 font-mono text-xs tracking-wider uppercase mb-1">
+          <div className="flex items-center gap-2 text-orange-600 font-semibold text-xs tracking-wider uppercase mb-1">
             <Activity className="w-4 h-4" />
-            Phase 17 Continuous Monitoring & Reliability
+            Continuous Monitoring & Reliability
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold text-stone-950 tracking-tight">
             Continuous Monitoring & Escalation Center
@@ -197,7 +197,7 @@ export default function MonitoringCenterPage() {
           <button
             onClick={handleTriggerCycle}
             disabled={cycleRunning}
-            className="px-4 py-2 bg-gradient-to-r from-violet-600 to-blue-700 hover:from-violet-500 hover:to-blue-600 text-stone-950 font-semibold text-xs rounded-lg transition shadow-lg shadow-violet-950/40 flex items-center gap-2"
+            className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-semibold text-xs rounded-lg transition shadow-sm flex items-center gap-2 disabled:opacity-50"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${cycleRunning ? "animate-spin" : ""}`} />
             Run Monitoring Cycle
@@ -205,7 +205,7 @@ export default function MonitoringCenterPage() {
 
           <button
             onClick={() => setShowCreateModal(true)}
-            className="px-3.5 py-2 bg-stone-100 border border-stone-300 hover:bg-stone-200 text-stone-800 text-xs font-semibold rounded-lg transition flex items-center gap-1.5"
+            className="px-3.5 py-2 bg-white border border-stone-200 hover:bg-stone-50 text-stone-800 text-xs font-semibold rounded-lg transition flex items-center gap-1.5 shadow-xs"
           >
             <Plus className="w-3.5 h-3.5" />
             New Watch
@@ -215,10 +215,10 @@ export default function MonitoringCenterPage() {
 
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Safety Invariant Notice */}
-        <div className="bg-gradient-to-r from-violet-950/30 via-stone-100/60 to-indigo-950/30 border border-violet-500/30 rounded-xl p-4 flex items-start gap-3 shadow-md">
-          <Lock className="w-5 h-5 text-violet-400 flex-shrink-0 mt-0.5" />
+        <div className="bg-orange-50/50 border border-orange-200 rounded-xl p-4 flex items-start gap-3 shadow-xs">
+          <Lock className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
           <div className="text-xs space-y-0.5">
-            <div className="font-bold text-violet-200 uppercase tracking-wider text-[11px]">
+            <div className="font-bold text-orange-900 uppercase tracking-wider text-[11px]">
               Observational Monitoring & Escalation Invariant
             </div>
             <p className="text-stone-700 leading-relaxed">
@@ -228,9 +228,9 @@ export default function MonitoringCenterPage() {
         </div>
 
         {feedback && (
-          <div className="p-3 bg-indigo-950/40 border border-blue-600/30 rounded-lg text-blue-700 text-xs flex items-center justify-between">
+          <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg text-orange-800 text-xs flex items-center justify-between">
             <span>{feedback}</span>
-            <button onClick={() => setFeedback(null)} className="text-blue-500 hover:text-stone-950">
+            <button onClick={() => setFeedback(null)} className="text-orange-600 hover:text-stone-950">
               <X className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -238,27 +238,27 @@ export default function MonitoringCenterPage() {
 
         {/* Metric Health Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          <div className="bg-stone-100/80 border border-stone-200 rounded-xl p-4 shadow-sm">
+          <div className="bg-white border border-stone-200 rounded-xl p-4 shadow-sm">
             <span className="text-[10px] uppercase font-bold text-stone-600 block mb-1">Active Watches</span>
             <div className="text-2xl font-bold text-stone-950">{summary?.active_watches_count ?? watches.length}</div>
           </div>
-          <div className="bg-stone-100/80 border border-stone-200 rounded-xl p-4 shadow-sm">
-            <span className="text-[10px] uppercase font-bold text-rose-400 block mb-1">Critical Conditions</span>
-            <div className="text-2xl font-bold text-rose-400">{summary?.critical_events_count ?? 0}</div>
+          <div className="bg-white border border-stone-200 rounded-xl p-4 shadow-sm">
+            <span className="text-[10px] uppercase font-bold text-rose-500 block mb-1">Critical Conditions</span>
+            <div className="text-2xl font-bold text-rose-600">{summary?.critical_events_count ?? 0}</div>
           </div>
-          <div className="bg-stone-100/80 border border-stone-200 rounded-xl p-4 shadow-sm">
-            <span className="text-[10px] uppercase font-bold text-amber-400 block mb-1">Open Escalations</span>
-            <div className="text-2xl font-bold text-amber-300">{summary?.open_escalations_count ?? escalations.filter(e => e.status === "OPEN").length}</div>
+          <div className="bg-white border border-stone-200 rounded-xl p-4 shadow-sm">
+            <span className="text-[10px] uppercase font-bold text-amber-600 block mb-1">Open Escalations</span>
+            <div className="text-2xl font-bold text-amber-600">{summary?.open_escalations_count ?? escalations.filter(e => e.status === "OPEN").length}</div>
           </div>
-          <div className="bg-stone-100/80 border border-stone-200 rounded-xl p-4 shadow-sm">
-            <span className="text-[10px] uppercase font-bold text-stone-600 block mb-1">Deadline Breaches</span>
-            <div className="text-2xl font-bold text-stone-800">{summary?.deadline_breaches_count ?? 0}</div>
+          <div className="bg-white border border-stone-200 rounded-xl p-4 shadow-sm">
+            <span className="text-[10px] uppercase font-bold text-emerald-600 block mb-1">Healthy Watches</span>
+            <div className="text-2xl font-bold text-emerald-600">{summary?.active_watches_count ?? watches.filter(w => w.status === "ACTIVE").length}</div>
           </div>
-          <div className="bg-stone-100/80 border border-stone-200 rounded-xl p-4 shadow-sm">
-            <span className="text-[10px] uppercase font-bold text-stone-600 block mb-1">Execution Failures</span>
+          <div className="bg-white border border-stone-200 rounded-xl p-4 shadow-sm">
+            <span className="text-[10px] uppercase font-bold text-stone-600 block mb-1">Failed Executions</span>
             <div className="text-2xl font-bold text-stone-800">{summary?.execution_failures_count ?? 0}</div>
           </div>
-          <div className="bg-stone-100/80 border border-stone-200 rounded-xl p-4 shadow-sm">
+          <div className="bg-white border border-stone-200 rounded-xl p-4 shadow-sm">
             <span className="text-[10px] uppercase font-bold text-stone-600 block mb-1">Stale Decision Plans</span>
             <div className="text-2xl font-bold text-stone-800">{summary?.stale_decision_plans_count ?? 0}</div>
           </div>
@@ -271,7 +271,7 @@ export default function MonitoringCenterPage() {
               onClick={() => setActiveTab("ESCALATIONS")}
               className={`px-4 py-2.5 text-xs font-semibold border-b-2 transition flex items-center gap-1.5 ${
                 activeTab === "ESCALATIONS"
-                  ? "border-violet-500 text-violet-300"
+                  ? "border-orange-500 text-orange-600"
                   : "border-transparent text-stone-600 hover:text-stone-800"
               }`}
             >
@@ -283,7 +283,7 @@ export default function MonitoringCenterPage() {
               onClick={() => setActiveTab("EVENTS")}
               className={`px-4 py-2.5 text-xs font-semibold border-b-2 transition flex items-center gap-1.5 ${
                 activeTab === "EVENTS"
-                  ? "border-violet-500 text-violet-300"
+                  ? "border-orange-500 text-orange-600"
                   : "border-transparent text-stone-600 hover:text-stone-800"
               }`}
             >
@@ -295,7 +295,7 @@ export default function MonitoringCenterPage() {
               onClick={() => setActiveTab("WATCHES")}
               className={`px-4 py-2.5 text-xs font-semibold border-b-2 transition flex items-center gap-1.5 ${
                 activeTab === "WATCHES"
-                  ? "border-violet-500 text-violet-300"
+                  ? "border-orange-500 text-orange-600"
                   : "border-transparent text-stone-600 hover:text-stone-800"
               }`}
             >
@@ -307,7 +307,7 @@ export default function MonitoringCenterPage() {
               onClick={() => setActiveTab("RUNS")}
               className={`px-4 py-2.5 text-xs font-semibold border-b-2 transition flex items-center gap-1.5 ${
                 activeTab === "RUNS"
-                  ? "border-violet-500 text-violet-300"
+                  ? "border-orange-500 text-orange-600"
                   : "border-transparent text-stone-600 hover:text-stone-800"
               }`}
             >
@@ -321,15 +321,15 @@ export default function MonitoringCenterPage() {
         {activeTab === "ESCALATIONS" && (
           <div className="space-y-3">
             {escalations.length === 0 ? (
-              <div className="text-center py-12 bg-stone-100/40 rounded-xl border border-stone-200 text-stone-600 text-xs">
-                <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto mb-2" />
+              <div className="text-center py-12 bg-white rounded-xl border border-stone-200 text-stone-600 text-xs shadow-sm">
+                <CheckCircle2 className="w-8 h-8 text-emerald-600 mx-auto mb-2" />
                 No active escalations. The commitment ecosystem is operating within expected thresholds.
               </div>
             ) : (
               escalations.map((esc) => (
                 <div
                   key={esc.id}
-                  className="bg-stone-100/80 border border-stone-200 rounded-xl p-5 shadow-sm space-y-3"
+                  className="bg-white border border-stone-200 rounded-xl p-5 shadow-sm space-y-3"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
@@ -349,19 +349,19 @@ export default function MonitoringCenterPage() {
                         <>
                           <button
                             onClick={() => handleAcknowledgeEscalation(esc.id)}
-                            className="px-2.5 py-1 bg-stone-200 hover:bg-stone-300 text-stone-700 text-xs font-semibold rounded transition"
+                            className="px-2.5 py-1 bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold rounded border border-stone-200 transition"
                           >
                             Acknowledge
                           </button>
                           <button
                             onClick={() => handleResolveEscalation(esc.id)}
-                            className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-stone-950 text-xs font-semibold rounded transition"
+                            className="px-2.5 py-1 bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold rounded transition shadow-sm"
                           >
                             Resolve
                           </button>
                           <button
                             onClick={() => handleDismissEscalation(esc.id)}
-                            className="px-2.5 py-1 bg-stone-100 hover:bg-rose-950 text-rose-300 border border-stone-200 text-xs font-semibold rounded transition"
+                            className="px-2.5 py-1 bg-white hover:bg-rose-50 text-rose-700 border border-stone-200 text-xs font-semibold rounded transition"
                           >
                             Dismiss
                           </button>
@@ -370,12 +370,12 @@ export default function MonitoringCenterPage() {
                       {esc.status === "ACKNOWLEDGED" && (
                         <button
                           onClick={() => handleResolveEscalation(esc.id)}
-                          className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-stone-950 text-xs font-semibold rounded transition"
+                          className="px-2.5 py-1 bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold rounded transition shadow-sm"
                         >
                           Mark Resolved
                         </button>
                       )}
-                      <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-stone-200 text-stone-700">
+                      <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-stone-100 text-stone-700 border border-stone-200">
                         {esc.status}
                       </span>
                     </div>
@@ -385,10 +385,10 @@ export default function MonitoringCenterPage() {
                     {esc.reason}
                   </p>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs bg-stone-50/70 p-3 rounded-lg border border-stone-200/80">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs bg-stone-50 p-3 rounded-lg border border-stone-200">
                     <div>
                       <span className="text-stone-500 block text-[10px] uppercase font-bold">Recommended Next Step</span>
-                      <strong className="text-violet-300">{esc.recommended_next_step}</strong>
+                      <strong className="text-stone-900 font-semibold">{esc.recommended_next_step}</strong>
                     </div>
                     <div>
                       <span className="text-stone-500 block text-[10px] uppercase font-bold">Affected Dependents</span>
@@ -399,7 +399,7 @@ export default function MonitoringCenterPage() {
                       {esc.decision_plan_id ? (
                         <Link
                           href={`/intelligence/decisions/${esc.target_id}`}
-                          className="text-violet-400 hover:underline flex items-center gap-1 font-mono text-xs"
+                          className="text-orange-600 hover:text-orange-700 font-medium flex items-center gap-1 text-xs"
                         >
                           View Decision Plan <ExternalLink className="w-3 h-3" />
                         </Link>
@@ -418,14 +418,14 @@ export default function MonitoringCenterPage() {
         {activeTab === "EVENTS" && (
           <div className="space-y-2.5">
             {events.length === 0 ? (
-              <div className="text-center py-12 bg-stone-100/40 rounded-xl border border-stone-200 text-stone-600 text-xs">
+              <div className="text-center py-12 bg-white rounded-xl border border-stone-200 text-stone-600 text-xs shadow-sm">
                 No recent condition events detected.
               </div>
             ) : (
               events.map((ev) => (
                 <div
                   key={ev.id}
-                  className="bg-stone-100/80 border border-stone-200 rounded-lg p-4 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                  className="bg-white border border-stone-200 rounded-lg p-4 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs"
                 >
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
@@ -458,14 +458,14 @@ export default function MonitoringCenterPage() {
 
         {/* Tab 3: Watch Manager */}
         {activeTab === "WATCHES" && (
-          <div className="bg-stone-100/80 border border-stone-200 rounded-xl overflow-hidden">
+          <div className="bg-white border border-stone-200 rounded-xl overflow-hidden shadow-sm">
             <div className="p-4 border-b border-stone-200 flex items-center justify-between">
               <h2 className="text-xs font-semibold uppercase tracking-wider text-stone-600">
                 Monitored Targets ({watches.length})
               </h2>
               <button
                 onClick={() => setShowCreateModal(true)}
-                className="px-3 py-1.5 bg-violet-600 hover:bg-violet-500 text-stone-950 text-xs font-semibold rounded-lg transition flex items-center gap-1"
+                className="px-3 py-1.5 bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold rounded-lg transition flex items-center gap-1 shadow-sm"
               >
                 <Plus className="w-3.5 h-3.5" /> Add Target Watch
               </button>
@@ -473,33 +473,26 @@ export default function MonitoringCenterPage() {
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs text-stone-700">
-                <thead className="bg-stone-50/80 text-stone-500 uppercase text-[10px]">
+                <thead className="bg-stone-50 text-stone-500 uppercase text-[10px]">
                   <tr>
                     <th className="p-3">Watch Type</th>
                     <th className="p-3">Target</th>
                     <th className="p-3">Status</th>
                     <th className="p-3">Last Evaluated</th>
-                    <th className="p-3">Triggers</th>
+                    <th className="p-3">Trigger Count</th>
                     <th className="p-3 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-stone-200/60">
+                <tbody className="divide-y divide-stone-100">
                   {watches.map((w) => (
-                    <tr key={w.id} className="hover:bg-stone-100/50">
-                      <td className="p-3 font-mono text-violet-300 font-semibold">{w.watch_type}</td>
+                    <tr key={w.id} className="hover:bg-stone-50 transition">
+                      <td className="p-3 font-semibold text-stone-900">{w.watch_type}</td>
+                      <td className="p-3 font-mono text-stone-600">{w.target_type}: {w.target_id.slice(0, 12)}...</td>
                       <td className="p-3">
-                        <Link
-                          href={`/obligations/${w.target_id}`}
-                          className="hover:text-violet-400 font-mono text-stone-800 flex items-center gap-1"
-                        >
-                          {w.target_type}: {w.target_id.slice(0, 14)}...
-                        </Link>
-                      </td>
-                      <td className="p-3">
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-mono ${
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-semibold ${
                           w.status === "ACTIVE"
-                            ? "bg-emerald-950 text-emerald-300 border border-emerald-500/30"
-                            : "bg-stone-200 text-stone-600"
+                            ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                            : "bg-stone-100 text-stone-600 border border-stone-200"
                         }`}>
                           {w.status}
                         </span>
@@ -513,7 +506,7 @@ export default function MonitoringCenterPage() {
                           {w.status === "ACTIVE" ? (
                             <button
                               onClick={() => handlePauseWatch(w.id)}
-                              className="p-1 rounded bg-stone-200 hover:bg-stone-300 text-stone-700"
+                              className="p-1 rounded bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-200"
                               title="Pause watch"
                             >
                               <Pause className="w-3.5 h-3.5" />
@@ -521,7 +514,7 @@ export default function MonitoringCenterPage() {
                           ) : (
                             <button
                               onClick={() => handleResumeWatch(w.id)}
-                              className="p-1 rounded bg-emerald-900/60 hover:bg-emerald-900 text-emerald-300"
+                              className="p-1 rounded bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200"
                               title="Resume watch"
                             >
                               <Play className="w-3.5 h-3.5" />
@@ -529,7 +522,7 @@ export default function MonitoringCenterPage() {
                           )}
                           <button
                             onClick={() => handleDeleteWatch(w.id)}
-                            className="p-1 rounded bg-stone-200 hover:bg-rose-950 text-rose-300"
+                            className="p-1 rounded bg-white hover:bg-rose-50 text-rose-600 border border-stone-200"
                             title="Delete watch"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -546,7 +539,7 @@ export default function MonitoringCenterPage() {
 
         {/* Tab 4: Monitoring Runs */}
         {activeTab === "RUNS" && (
-          <div className="bg-stone-100/80 border border-stone-200 rounded-xl overflow-hidden">
+          <div className="bg-white border border-stone-200 rounded-xl overflow-hidden shadow-sm">
             <div className="p-4 border-b border-stone-200">
               <h2 className="text-xs font-semibold uppercase tracking-wider text-stone-600">
                 Evaluation Pass History ({runs.length})
@@ -554,7 +547,7 @@ export default function MonitoringCenterPage() {
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs text-stone-700">
-                <thead className="bg-stone-50/80 text-stone-500 uppercase text-[10px]">
+                <thead className="bg-stone-50 text-stone-500 uppercase text-[10px]">
                   <tr>
                     <th className="p-3">Run ID</th>
                     <th className="p-3">Started At</th>
@@ -564,21 +557,21 @@ export default function MonitoringCenterPage() {
                     <th className="p-3">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-stone-200/60">
+                <tbody className="divide-y divide-stone-100">
                   {runs.map((r) => (
-                    <tr key={r.id} className="hover:bg-stone-100/50">
+                    <tr key={r.id} className="hover:bg-stone-50 transition">
                       <td className="p-3 font-mono text-stone-600">{r.id.slice(0, 8)}...</td>
                       <td className="p-3">{new Date(r.started_at).toLocaleString()}</td>
                       <td className="p-3 font-mono">{r.watches_evaluated}</td>
                       <td className="p-3 font-mono">{r.events_created}</td>
                       <td className="p-3 font-mono">{r.escalations_created}</td>
                       <td className="p-3">
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-mono ${
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-semibold border ${
                           r.status === "COMPLETED"
-                            ? "bg-emerald-950 text-emerald-300"
+                            ? "bg-emerald-50 text-emerald-700 border-emerald-200"
                             : r.status === "PARTIAL"
-                            ? "bg-amber-950 text-amber-300"
-                            : "bg-rose-950 text-rose-300"
+                            ? "bg-amber-50 text-amber-700 border-amber-200"
+                            : "bg-rose-50 text-rose-700 border-rose-200"
                         }`}>
                           {r.status}
                         </span>
@@ -594,13 +587,13 @@ export default function MonitoringCenterPage() {
 
       {/* Create Watch Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-stone-100 border border-stone-200 rounded-xl p-6 max-w-md w-full shadow-2xl space-y-4">
+        <div className="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white border border-stone-200 rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4">
             <div className="flex items-center justify-between border-b border-stone-200 pb-3">
               <h3 className="text-base font-bold text-stone-950">Create Target Monitoring Watch</h3>
               <button
                 onClick={() => setShowCreateModal(false)}
-                className="p-1 rounded text-stone-600 hover:text-stone-950"
+                className="p-1 rounded text-stone-400 hover:text-stone-700 transition"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -612,7 +605,7 @@ export default function MonitoringCenterPage() {
                 <select
                   value={newWatchType}
                   onChange={(e) => setNewWatchType(e.target.value as WatchType)}
-                  className="w-full bg-stone-50 border border-stone-200 rounded px-3 py-2 text-stone-800 outline-none font-mono"
+                  className="w-full bg-stone-50 border border-stone-200 rounded px-3 py-2 text-stone-800 outline-none font-mono focus:ring-2 focus:ring-orange-500"
                 >
                   <option value="DEADLINE">DEADLINE (Approaching / Breached)</option>
                   <option value="RISK">RISK (Classification & Shifts)</option>
@@ -630,7 +623,7 @@ export default function MonitoringCenterPage() {
                 <select
                   value={newTargetType}
                   onChange={(e) => setNewTargetType(e.target.value as TargetType)}
-                  className="w-full bg-stone-50 border border-stone-200 rounded px-3 py-2 text-stone-800 outline-none font-mono"
+                  className="w-full bg-stone-50 border border-stone-200 rounded px-3 py-2 text-stone-800 outline-none font-mono focus:ring-2 focus:ring-orange-500"
                 >
                   <option value="OBLIGATION">OBLIGATION</option>
                   <option value="EXECUTION">EXECUTION</option>
@@ -645,7 +638,7 @@ export default function MonitoringCenterPage() {
                   value={newTargetId}
                   onChange={(e) => setNewTargetId(e.target.value)}
                   placeholder="Enter Obligation or Target ID..."
-                  className="w-full bg-stone-50 border border-stone-200 rounded px-3 py-2 text-stone-800 outline-none font-mono"
+                  className="w-full bg-stone-50 border border-stone-200 rounded px-3 py-2 text-stone-800 outline-none font-mono focus:ring-2 focus:ring-orange-500"
                 />
               </div>
             </div>
@@ -653,13 +646,13 @@ export default function MonitoringCenterPage() {
             <div className="flex items-center justify-end gap-2 pt-2 border-t border-stone-200">
               <button
                 onClick={() => setShowCreateModal(false)}
-                className="px-3.5 py-1.5 text-xs text-stone-600 hover:text-stone-800"
+                className="px-3.5 py-1.5 text-xs text-stone-600 hover:text-stone-800 transition"
               >
                 Cancel
               </button>
               <button
                 onClick={handleCreateWatch}
-                className="px-4 py-2 bg-violet-600 hover:bg-violet-500 text-stone-950 text-xs font-semibold rounded-lg transition"
+                className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold rounded-lg transition shadow-sm"
               >
                 Create Watch
               </button>

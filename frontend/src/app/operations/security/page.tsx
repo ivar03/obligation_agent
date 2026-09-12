@@ -100,7 +100,7 @@ export default function SecurityControlCenter() {
           </button>
           <Link
             href="/operations/audit"
-            className="px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-stone-950 text-xs font-medium flex items-center gap-1.5 transition-colors shadow-lg shadow-cyan-950/40"
+            className="px-3 py-1.5 rounded-lg bg-orange-600 hover:bg-orange-700 text-white text-xs font-medium flex items-center gap-1.5 transition-colors shadow-sm"
           >
             <Lock className="w-3.5 h-3.5" />
             Immutable Audit Trail
@@ -165,12 +165,12 @@ export default function SecurityControlCenter() {
         <div className="rounded-xl border border-stone-200/80 bg-stone-100/40 p-5 backdrop-blur-sm">
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium text-stone-600">Secrets Scrubbed & Encrypted</span>
-            <span className="p-2 rounded-lg bg-cyan-500/10 text-cyan-400">
+            <span className="p-2 rounded-lg bg-orange-500/10 text-orange-600">
               <Key className="w-4 h-4" />
             </span>
           </div>
           <div className="mt-4 flex items-baseline gap-2">
-            <span className="text-2xl font-bold text-cyan-400 tracking-tight">
+            <span className="text-2xl font-bold text-orange-600 tracking-tight">
               {data.secrets_scrubbed_count}
             </span>
           </div>
@@ -181,9 +181,9 @@ export default function SecurityControlCenter() {
       </div>
 
       {/* Trust Hierarchy Architecture Card */}
-      <div className="rounded-xl border border-stone-200/80 bg-stone-100/30 p-6">
+      <div className="rounded-xl border border-stone-200 bg-white p-6 shadow-sm">
         <h2 className="text-sm font-semibold text-stone-800 mb-2 flex items-center gap-2">
-          <Lock className="w-4 h-4 text-cyan-400" />
+          <Lock className="w-4 h-4 text-orange-600" />
           Enforced 4-Tier Security Trust Hierarchy
         </h2>
         <p className="text-xs text-stone-600 mb-6">
@@ -191,23 +191,23 @@ export default function SecurityControlCenter() {
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="p-4 rounded-lg bg-stone-50/80 border border-stone-200">
-            <span className="text-[10px] font-bold text-cyan-400 uppercase tracking-wider">Tier 1 • Absolute</span>
+          <div className="p-4 rounded-lg bg-stone-50 border border-stone-200">
+            <span className="text-[10px] font-bold text-orange-600 uppercase tracking-wider">Tier 1 • Absolute</span>
             <h4 className="text-xs font-semibold text-stone-800 mt-1">System Instructions</h4>
             <p className="text-[11px] text-stone-600 mt-1">Hardcoded Python logic, status machine state constraints, cryptographic verification.</p>
           </div>
-          <div className="p-4 rounded-lg bg-stone-50/80 border border-stone-200">
-            <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">Tier 2 • Authoritative</span>
+          <div className="p-4 rounded-lg bg-stone-50 border border-stone-200">
+            <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Tier 2 • Authoritative</span>
             <h4 className="text-xs font-semibold text-stone-800 mt-1">Verified Facts</h4>
             <p className="text-[11px] text-stone-600 mt-1">Confirmed obligations, signed database records, human approval audit entries.</p>
           </div>
-          <div className="p-4 rounded-lg bg-stone-50/80 border border-stone-200">
-            <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider">Tier 3 • Restricted</span>
+          <div className="p-4 rounded-lg bg-stone-50 border border-stone-200">
+            <span className="text-[10px] font-bold text-amber-600 uppercase tracking-wider">Tier 3 • Restricted</span>
             <h4 className="text-xs font-semibold text-stone-800 mt-1">Authenticated Users</h4>
             <p className="text-[11px] text-stone-600 mt-1">Subject to strict server-side RBAC (Viewer, Member, Operator, Admin, Owner).</p>
           </div>
-          <div className="p-4 rounded-lg bg-stone-50/80 border border-stone-200">
-            <span className="text-[10px] font-bold text-rose-400 uppercase tracking-wider">Tier 4 • Untrusted</span>
+          <div className="p-4 rounded-lg bg-stone-50 border border-stone-200">
+            <span className="text-[10px] font-bold text-rose-500 uppercase tracking-wider">Tier 4 • Untrusted</span>
             <h4 className="text-xs font-semibold text-stone-800 mt-1">External Ingress</h4>
             <p className="text-[11px] text-stone-600 mt-1">Slack text, emails, LLM interpretations, uploaded CSVs. Held in zero-authority quarantine.</p>
           </div>
@@ -216,73 +216,73 @@ export default function SecurityControlCenter() {
 
       {/* Security Alerts and Policy Enforcement */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="rounded-xl border border-stone-200/80 bg-stone-100/30 p-6">
+        <div className="rounded-xl border border-stone-200 bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-semibold text-stone-800 flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 text-amber-400" />
+              <AlertTriangle className="w-4 h-4 text-amber-500" />
               Active Security Surveillance Rules
             </h3>
             <Link
               href="/operations/incidents"
-              className="text-xs text-cyan-400 hover:text-cyan-300 inline-flex items-center gap-1 font-medium"
+              className="text-xs text-orange-600 hover:text-orange-700 inline-flex items-center gap-1 font-medium"
             >
               View Alert Triage <ArrowUpRight className="w-3.5 h-3.5" />
             </Link>
           </div>
 
           <div className="space-y-3">
-            <div className="p-3 rounded-lg bg-stone-50/60 border border-stone-200/60 flex items-center justify-between">
+            <div className="p-3 rounded-lg bg-stone-50 border border-stone-200 flex items-center justify-between">
               <div>
                 <div className="text-xs font-medium text-stone-800">DLQ_BACKLOG_DETECTED</div>
                 <div className="text-[11px] text-stone-600">Dead letter queue monitoring for poisoned events</div>
               </div>
-              <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                 ACTIVE
               </span>
             </div>
 
-            <div className="p-3 rounded-lg bg-stone-50/60 border border-stone-200/60 flex items-center justify-between">
+            <div className="p-3 rounded-lg bg-stone-50 border border-stone-200 flex items-center justify-between">
               <div>
                 <div className="text-xs font-medium text-stone-800">PROMPT_INJECTION_DETECTED</div>
                 <div className="text-[11px] text-stone-600">Adversarial jailbreak heuristics screening LLM inputs</div>
               </div>
-              <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                 ACTIVE
               </span>
             </div>
 
-            <div className="p-3 rounded-lg bg-stone-50/60 border border-stone-200/60 flex items-center justify-between">
+            <div className="p-3 rounded-lg bg-stone-50 border border-stone-200 flex items-center justify-between">
               <div>
                 <div className="text-xs font-medium text-stone-800">CROSS_TENANT_ACCESS_ATTEMPT</div>
                 <div className="text-[11px] text-stone-600">Real-time isolation breach & foreign ID probe detection</div>
               </div>
-              <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                 ACTIVE
               </span>
             </div>
           </div>
         </div>
 
-        <div className="rounded-xl border border-stone-200/80 bg-stone-100/30 p-6">
+        <div className="rounded-xl border border-stone-200 bg-white p-6 shadow-sm">
           <h3 className="text-sm font-semibold text-stone-800 mb-4 flex items-center gap-2">
-            <FileCode className="w-4 h-4 text-cyan-400" />
+            <FileCode className="w-4 h-4 text-orange-600" />
             Security Baseline & Cryptographic Standards
           </h3>
 
           <div className="space-y-3 text-xs text-stone-700">
-            <div className="flex justify-between py-1.5 border-b border-stone-200/60">
+            <div className="flex justify-between py-1.5 border-b border-stone-200">
               <span className="text-stone-600">Operational Audit Tamper Detection:</span>
-              <span className="font-mono text-cyan-400 font-medium">SHA-256 Hash Chained</span>
+              <span className="font-mono text-emerald-700 font-medium">SHA-256 Hash Chained</span>
             </div>
-            <div className="flex justify-between py-1.5 border-b border-stone-200/60">
+            <div className="flex justify-between py-1.5 border-b border-stone-200">
               <span className="text-stone-600">Provider Token Encryption:</span>
-              <span className="font-mono text-emerald-400 font-medium">AES-128 / Fernet Symmetric</span>
+              <span className="font-mono text-emerald-700 font-medium">AES-128 / Fernet Symmetric</span>
             </div>
-            <div className="flex justify-between py-1.5 border-b border-stone-200/60">
+            <div className="flex justify-between py-1.5 border-b border-stone-200">
               <span className="text-stone-600">Password Hashing Algorithm:</span>
               <span className="font-mono text-stone-800 font-medium">PBKDF2-HMAC-SHA256 (100k iter)</span>
             </div>
-            <div className="flex justify-between py-1.5 border-b border-stone-200/60">
+            <div className="flex justify-between py-1.5 border-b border-stone-200">
               <span className="text-stone-600">Webhook Authentication:</span>
               <span className="font-mono text-stone-800 font-medium">HMAC-SHA256 (Slack v0 / GitHub)</span>
             </div>

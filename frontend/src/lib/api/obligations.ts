@@ -655,6 +655,10 @@ export const reconciliationApi = {
     });
   },
 
+  get: async (id: string): Promise<ReconciliationRecord> => {
+    return reconciliationApi.getById(id);
+  },
+
   getByObligationId: async (obligationId: string): Promise<ReconciliationRecord | null> => {
     return apiClient(`/api/obligations/${obligationId}/reconciliation`, {
       method: "GET",
@@ -1584,6 +1588,18 @@ export const opsApi = {
       method: "POST",
       body: JSON.stringify(payload),
     });
+  },
+
+  listAlerts: async <T = Record<string, unknown>>(params?: { limit?: number; status?: string }): Promise<T[]> => {
+    return opsApi.getAlerts<T>(undefined, params?.status);
+  },
+
+  acknowledgeAlert: async (alertId: string, reason?: string) => {
+    return opsApi.actionAlert(alertId, { action: "ACKNOWLEDGE", reason });
+  },
+
+  resolveAlert: async (alertId: string, reason?: string) => {
+    return opsApi.actionAlert(alertId, { action: "RESOLVE", reason });
   },
 
   getTrace: async <T = Record<string, unknown>>(traceId: string, workspaceId?: string): Promise<T> => {

@@ -131,13 +131,13 @@ export default function OperationalQueuesPage() {
   };
 
   const tabs: TabConfig[] = [
-    { id: "action", label: "Action Queue", icon: AlertTriangle, color: "text-amber-400" },
-    { id: "evidence", label: "Evidence Review", icon: FileCheck, color: "text-blue-500" },
-    { id: "decisions", label: "Decision Queue", icon: Brain, color: "text-purple-400" },
-    { id: "executions", label: "Execution Queue", icon: Zap, color: "text-cyan-400" },
-    { id: "inbox", label: "Event Processing", icon: Inbox, color: "text-blue-500" },
-    { id: "dead_letter", label: "Dead Letter Queue", icon: AlertOctagon, color: "text-rose-400" },
-    { id: "activity", label: "Activity Feed", icon: Activity, color: "text-emerald-400" },
+    { id: "action", label: "Action Queue", icon: AlertTriangle, color: "text-amber-500" },
+    { id: "evidence", label: "Evidence Review", icon: FileCheck, color: "text-stone-600" },
+    { id: "decisions", label: "Decision Queue", icon: Brain, color: "text-orange-600" },
+    { id: "executions", label: "Execution Queue", icon: Zap, color: "text-orange-600" },
+    { id: "inbox", label: "Event Processing", icon: Inbox, color: "text-stone-600" },
+    { id: "dead_letter", label: "Dead Letter Queue", icon: AlertOctagon, color: "text-rose-500" },
+    { id: "activity", label: "Activity Feed", icon: Activity, color: "text-emerald-600" },
   ];
 
   return (
@@ -145,7 +145,7 @@ export default function OperationalQueuesPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold text-stone-900 flex items-center gap-2">
-            <Layers className="w-5 h-5 text-blue-500" />
+            <Layers className="w-5 h-5 text-orange-600" />
             <span>Operational Queues</span>
           </h1>
           <p className="text-xs text-stone-600 mt-1">
@@ -154,7 +154,7 @@ export default function OperationalQueuesPage() {
         </div>
         <button
           onClick={() => fetchQueue(activeTab)}
-          className="p-2 bg-stone-100 border border-stone-200 rounded-xl text-stone-600 hover:text-stone-800 hover:bg-stone-200 text-xs flex items-center gap-1.5 transition-colors"
+          className="p-2 bg-white border border-stone-200 rounded-xl text-stone-600 hover:text-stone-900 hover:bg-stone-50 text-xs flex items-center gap-1.5 transition-colors shadow-sm"
           title="Refresh Queue"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
@@ -163,9 +163,9 @@ export default function OperationalQueuesPage() {
       </div>
 
       {feedbackMsg && (
-        <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs rounded-xl flex items-center justify-between">
+        <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs rounded-xl flex items-center justify-between">
           <span>{feedbackMsg}</span>
-          <button onClick={() => setFeedbackMsg(null)} className="text-emerald-400 hover:text-emerald-200">
+          <button onClick={() => setFeedbackMsg(null)} className="text-emerald-600 hover:text-emerald-800">
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
@@ -182,14 +182,14 @@ export default function OperationalQueuesPage() {
               onClick={() => setActiveTab(t.id)}
               className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all shrink-0 ${
                 isSelected
-                  ? "bg-stone-200 text-stone-900 border border-stone-300 shadow-sm"
+                  ? "bg-orange-50 text-orange-700 border border-orange-200 shadow-sm"
                   : "text-stone-600 hover:text-stone-800 hover:bg-stone-100"
               }`}
             >
-              <Icon className={`w-3.5 h-3.5 ${t.color}`} />
+              <Icon className={`w-3.5 h-3.5 ${isSelected ? "text-orange-600" : t.color}`} />
               <span>{t.label}</span>
               {isSelected && (
-                <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-stone-300 text-stone-700 font-mono">
+                <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-orange-100 text-orange-800 font-mono">
                   {totalCount}
                 </span>
               )}
@@ -199,15 +199,15 @@ export default function OperationalQueuesPage() {
       </div>
 
       {/* Queue Items Table */}
-      <div className="bg-stone-100 border border-stone-200 rounded-2xl overflow-hidden shadow-sm">
+      <div className="bg-white border border-stone-200 rounded-2xl overflow-hidden shadow-sm">
         {loading ? (
           <div className="py-16 flex flex-col items-center justify-center gap-2 text-stone-500 text-xs">
-            <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
+            <Loader2 className="w-5 h-5 animate-spin text-orange-600" />
             <span>Loading queue items...</span>
           </div>
         ) : items.length === 0 ? (
           <div className="py-16 text-center text-stone-500 text-xs">
-            <CheckCircle2 className="w-8 h-8 text-emerald-400/50 mx-auto mb-2" />
+            <CheckCircle2 className="w-8 h-8 text-emerald-500 mx-auto mb-2" />
             <div className="font-semibold text-stone-700">Queue is Clear</div>
             <p className="text-[11px] mt-1">No items currently requiring attention in this operational stream.</p>
           </div>
@@ -216,17 +216,17 @@ export default function OperationalQueuesPage() {
             {/* ACTION QUEUE */}
             {activeTab === "action" &&
               items.map((item) => (
-                <div key={item.id} className="p-4 flex items-center justify-between hover:bg-stone-200/30 transition-colors">
+                <div key={item.id} className="p-4 flex items-center justify-between hover:bg-stone-50 transition-colors">
                   <div className="space-y-1 max-w-xl">
                     <div className="flex items-center gap-2">
                       <span className="font-semibold text-stone-800">{item.action}</span>
                       <span
                         className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                           item.is_overdue
-                            ? "bg-rose-500/10 text-rose-400 border border-rose-500/20"
+                            ? "bg-rose-50 text-rose-700 border border-rose-200"
                             : item.is_blocked
-                            ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
-                            : "bg-blue-500/10 text-blue-500 border border-blue-500/20"
+                            ? "bg-amber-50 text-amber-700 border border-amber-200"
+                            : "bg-orange-50 text-orange-700 border border-orange-200"
                         }`}
                       >
                         {item.status}
@@ -240,7 +240,7 @@ export default function OperationalQueuesPage() {
                   {item.url && (
                     <Link
                       href={item.url}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-stone-950 rounded-lg font-medium text-xs shadow transition-colors shrink-0"
+                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium text-xs shadow transition-colors shrink-0"
                     >
                       <span>View & Resolve</span>
                       <ArrowUpRight className="w-3.5 h-3.5" />
@@ -252,7 +252,7 @@ export default function OperationalQueuesPage() {
             {/* EVIDENCE REVIEW QUEUE */}
             {activeTab === "evidence" &&
               items.map((item) => (
-                <div key={item.id} className="p-4 flex items-center justify-between hover:bg-stone-200/30 transition-colors">
+                <div key={item.id} className="p-4 flex items-center justify-between hover:bg-stone-50 transition-colors">
                   <div className="space-y-1 max-w-xl">
                     <div className="font-semibold text-stone-800">{item.content}</div>
                     <div className="text-stone-600 text-[11px]">
@@ -263,7 +263,7 @@ export default function OperationalQueuesPage() {
                   {item.url && (
                     <Link
                       href={item.url}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-stone-950 rounded-lg font-medium text-xs shadow transition-colors shrink-0"
+                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium text-xs shadow transition-colors shrink-0"
                     >
                       <span>Review Evidence</span>
                       <ArrowUpRight className="w-3.5 h-3.5" />
@@ -275,11 +275,11 @@ export default function OperationalQueuesPage() {
             {/* DECISION QUEUE */}
             {activeTab === "decisions" &&
               items.map((item) => (
-                <div key={item.id} className="p-4 flex items-center justify-between hover:bg-stone-200/30 transition-colors">
+                <div key={item.id} className="p-4 flex items-center justify-between hover:bg-stone-50 transition-colors">
                   <div className="space-y-1 max-w-xl">
                     <div className="flex items-center gap-2">
                       <span className="font-semibold text-stone-800">{item.primary_objective}</span>
-                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-orange-50 text-orange-700 border border-orange-200">
                         {item.status}
                       </span>
                     </div>
@@ -292,7 +292,7 @@ export default function OperationalQueuesPage() {
                   {item.url && (
                     <Link
                       href={item.url}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-purple-600 hover:bg-purple-500 text-stone-950 rounded-lg font-medium text-xs shadow transition-colors shrink-0"
+                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium text-xs shadow transition-colors shrink-0"
                     >
                       <span>Authorize Plan</span>
                       <ArrowUpRight className="w-3.5 h-3.5" />
@@ -304,11 +304,11 @@ export default function OperationalQueuesPage() {
             {/* EXECUTION QUEUE */}
             {activeTab === "executions" &&
               items.map((item) => (
-                <div key={item.id} className="p-4 flex items-center justify-between hover:bg-stone-200/30 transition-colors">
+                <div key={item.id} className="p-4 flex items-center justify-between hover:bg-stone-50 transition-colors">
                   <div className="space-y-1 max-w-xl">
                     <div className="flex items-center gap-2">
                       <span className="font-semibold text-stone-800">Execution #{item.id.slice(0, 8)}</span>
-                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-stone-100 text-stone-700 border border-stone-200">
                         {item.status}
                       </span>
                     </div>
@@ -320,7 +320,7 @@ export default function OperationalQueuesPage() {
                   {item.url && (
                     <Link
                       href={item.url}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-stone-200 hover:bg-stone-300 text-stone-800 rounded-lg font-medium text-xs transition-colors shrink-0"
+                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-800 border border-stone-200 rounded-lg font-medium text-xs transition-colors shrink-0"
                     >
                       <span>Inspect</span>
                       <ArrowUpRight className="w-3.5 h-3.5" />
@@ -332,20 +332,20 @@ export default function OperationalQueuesPage() {
             {/* EVENT PROCESSING INBOX QUEUE */}
             {activeTab === "inbox" &&
               items.map((item) => (
-                <div key={item.id} className="p-4 flex items-center justify-between hover:bg-stone-200/30 transition-colors">
+                <div key={item.id} className="p-4 flex items-center justify-between hover:bg-stone-50 transition-colors">
                   <div className="space-y-1 max-w-xl">
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-stone-800 uppercase text-[11px] px-1.5 py-0.5 bg-stone-200 border border-stone-300 rounded">
+                      <span className="font-bold text-stone-800 uppercase text-[11px] px-1.5 py-0.5 bg-stone-100 border border-stone-200 rounded">
                         {item.provider}
                       </span>
                       <span className="font-mono text-stone-700">{item.id.slice(0, 14)}...</span>
                       <span
                         className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                           item.status === "PROCESSING"
-                            ? "bg-blue-600/10 text-blue-500 border border-blue-600/20 animate-pulse"
+                            ? "bg-orange-50 text-orange-700 border border-orange-200 animate-pulse"
                             : item.status === "RETRY_SCHEDULED"
-                            ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
-                            : "bg-blue-500/10 text-blue-500 border border-blue-500/20"
+                            ? "bg-amber-50 text-amber-700 border border-amber-200"
+                            : "bg-stone-100 text-stone-700 border border-stone-200"
                         }`}
                       >
                         {item.status}
@@ -359,7 +359,7 @@ export default function OperationalQueuesPage() {
                   </div>
                   <button
                     onClick={() => setSelectedEvent(item)}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-stone-200 hover:bg-stone-300 text-stone-800 rounded-lg font-medium text-xs transition-colors shrink-0"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-800 border border-stone-200 rounded-lg font-medium text-xs transition-colors shrink-0"
                   >
                     <Eye className="w-3.5 h-3.5 text-stone-600" />
                     <span>Inspect</span>
@@ -370,18 +370,18 @@ export default function OperationalQueuesPage() {
             {/* DEAD LETTER QUEUE (DLQ) */}
             {activeTab === "dead_letter" &&
               items.map((item) => (
-                <div key={item.id} className="p-4 flex items-center justify-between hover:bg-stone-200/30 transition-colors">
+                <div key={item.id} className="p-4 flex items-center justify-between hover:bg-stone-50 transition-colors">
                   <div className="space-y-1 max-w-xl">
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-rose-300 uppercase text-[11px] px-1.5 py-0.5 bg-rose-500/10 border border-rose-500/20 rounded">
+                      <span className="font-bold text-rose-700 uppercase text-[11px] px-1.5 py-0.5 bg-rose-50 border border-rose-200 rounded">
                         {item.provider}
                       </span>
                       <span className="font-mono text-stone-700">{item.id.slice(0, 14)}...</span>
-                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
                         DEAD_LETTER
                       </span>
                     </div>
-                    <p className="text-rose-400 text-[11px] font-mono truncate max-w-lg">
+                    <p className="text-rose-600 text-[11px] font-mono truncate max-w-lg">
                       Error: {item.last_error || "Max retry attempts exhausted."}
                     </p>
                     <div className="text-stone-500 text-[10px]">
@@ -392,7 +392,7 @@ export default function OperationalQueuesPage() {
                     <button
                       onClick={() => handleRetryDLQ(item.id)}
                       disabled={actionLoading === item.id}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-700 hover:bg-blue-600 text-stone-950 rounded-lg font-medium text-xs shadow transition-colors disabled:opacity-50"
+                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium text-xs shadow transition-colors disabled:opacity-50"
                     >
                       <RotateCcw className={`w-3.5 h-3.5 ${actionLoading === item.id ? "animate-spin" : ""}`} />
                       <span>Retry</span>
@@ -400,14 +400,14 @@ export default function OperationalQueuesPage() {
                     <button
                       onClick={() => handleDiscardDLQ(item.id)}
                       disabled={actionLoading === item.id}
-                      className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-stone-200 hover:bg-rose-900/40 text-stone-700 hover:text-rose-300 border border-stone-300 rounded-lg text-xs transition-colors disabled:opacity-50"
+                      className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-white hover:bg-rose-50 text-stone-700 hover:text-rose-700 border border-stone-200 rounded-lg text-xs transition-colors disabled:opacity-50"
                       title="Discard Event Permanently"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
                     <button
                       onClick={() => setSelectedEvent(item)}
-                      className="p-1.5 bg-stone-200 hover:bg-stone-300 text-stone-600 hover:text-stone-800 rounded-lg text-xs transition-colors"
+                      className="p-1.5 bg-stone-100 hover:bg-stone-200 text-stone-600 hover:text-stone-800 rounded-lg text-xs transition-colors border border-stone-200"
                       title="Inspect Metadata"
                     >
                       <Eye className="w-3.5 h-3.5" />
@@ -419,7 +419,7 @@ export default function OperationalQueuesPage() {
             {/* ACTIVITY FEED */}
             {activeTab === "activity" &&
               items.map((item) => (
-                <div key={item.id} className="p-4 flex items-start justify-between hover:bg-stone-200/30 transition-colors">
+                <div key={item.id} className="p-4 flex items-start justify-between hover:bg-stone-50 transition-colors">
                   <div className="space-y-1 max-w-2xl">
                     <div className="flex items-center gap-2">
                       <span className="font-semibold text-stone-800">[{item.provider?.toUpperCase() || "EVENT"}]</span>
@@ -433,7 +433,7 @@ export default function OperationalQueuesPage() {
                   {item.correlated_obligation_id && (
                     <Link
                       href={`/obligations/${item.correlated_obligation_id}`}
-                      className="text-blue-500 hover:text-blue-600 text-xs font-medium shrink-0 ml-4"
+                      className="text-orange-600 hover:text-orange-700 text-xs font-medium shrink-0 ml-4"
                     >
                       View Obligation &rarr;
                     </Link>
@@ -446,29 +446,29 @@ export default function OperationalQueuesPage() {
 
       {/* Event Details Drawer/Modal */}
       {selectedEvent && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-stone-100 border border-stone-200 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-150">
+        <div className="fixed inset-0 z-50 bg-stone-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white border border-stone-200 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-150">
             <div className="p-4 border-b border-stone-200 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Inbox className="w-4 h-4 text-blue-500" />
+                <Inbox className="w-4 h-4 text-orange-600" />
                 <h3 className="font-bold text-stone-900 text-sm">Event Inbox Inspector</h3>
                 <span className="text-xs font-mono text-stone-500">#{selectedEvent.id.slice(0, 12)}</span>
               </div>
               <button
                 onClick={() => setSelectedEvent(null)}
-                className="p-1 text-stone-600 hover:text-stone-800 rounded-lg hover:bg-stone-200"
+                className="p-1 text-stone-500 hover:text-stone-800 rounded-lg hover:bg-stone-100 transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
             <div className="p-5 space-y-4 text-xs">
               <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 bg-stone-50/60 border border-stone-200/80 rounded-xl space-y-1">
+                <div className="p-3 bg-stone-50 border border-stone-200 rounded-xl space-y-1">
                   <div className="text-[10px] text-stone-500 font-semibold uppercase tracking-wider">Provider & Stream</div>
                   <div className="text-stone-800 font-medium">{selectedEvent.provider?.toUpperCase()}</div>
                   <div className="font-mono text-stone-600 text-[11px] truncate">{selectedEvent.stream_key}</div>
                 </div>
-                <div className="p-3 bg-stone-50/60 border border-stone-200/80 rounded-xl space-y-1">
+                <div className="p-3 bg-stone-50 border border-stone-200 rounded-xl space-y-1">
                   <div className="text-[10px] text-stone-500 font-semibold uppercase tracking-wider">Processing Status</div>
                   <div className="text-stone-800 font-medium flex items-center gap-1.5">
                     <span className="font-bold">{selectedEvent.status}</span>
@@ -481,33 +481,33 @@ export default function OperationalQueuesPage() {
               </div>
 
               {selectedEvent.last_error && (
-                <div className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl space-y-1">
-                  <div className="text-[10px] text-rose-400 font-semibold uppercase">Last Processing Error</div>
-                  <pre className="text-rose-300 font-mono text-[11px] whitespace-pre-wrap">{selectedEvent.last_error}</pre>
+                <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl space-y-1">
+                  <div className="text-[10px] text-rose-700 font-semibold uppercase">Last Processing Error</div>
+                  <pre className="text-rose-800 font-mono text-[11px] whitespace-pre-wrap">{selectedEvent.last_error}</pre>
                 </div>
               )}
 
               <div className="space-y-1.5">
                 <div className="text-[10px] text-stone-500 font-semibold uppercase tracking-wider">Safe Sanitized Metadata</div>
-                <pre className="p-3 bg-stone-50/80 border border-stone-200 rounded-xl text-stone-700 font-mono text-[11px] overflow-x-auto max-h-48">
+                <pre className="p-3 bg-stone-50 border border-stone-200 rounded-xl text-stone-800 font-mono text-[11px] overflow-x-auto max-h-48">
                   {JSON.stringify(selectedEvent.payload_metadata || {}, null, 2)}
                 </pre>
               </div>
             </div>
-            <div className="p-4 border-t border-stone-200 flex items-center justify-end gap-2 bg-stone-50/40">
+            <div className="p-4 border-t border-stone-200 flex items-center justify-end gap-2 bg-stone-50/60">
               {selectedEvent.status === "DEAD_LETTER" && (
                 <>
                   <button
                     onClick={() => handleDiscardDLQ(selectedEvent.id)}
                     disabled={actionLoading === selectedEvent.id}
-                    className="px-3 py-1.5 bg-stone-200 hover:bg-rose-900/40 text-stone-700 hover:text-rose-300 border border-stone-300 rounded-lg text-xs font-medium transition-colors"
+                    className="px-3 py-1.5 bg-white hover:bg-rose-50 text-stone-700 hover:text-rose-700 border border-stone-200 rounded-lg text-xs font-medium transition-colors"
                   >
                     Discard Permanently
                   </button>
                   <button
                     onClick={() => handleRetryDLQ(selectedEvent.id)}
                     disabled={actionLoading === selectedEvent.id}
-                    className="px-4 py-1.5 bg-blue-700 hover:bg-blue-600 text-stone-950 rounded-lg text-xs font-medium shadow transition-colors"
+                    className="px-4 py-1.5 bg-orange-600 hover:bg-orange-700 text-white rounded-lg text-xs font-semibold shadow transition-colors"
                   >
                     Re-Queue for Processing
                   </button>
@@ -515,7 +515,7 @@ export default function OperationalQueuesPage() {
               )}
               <button
                 onClick={() => setSelectedEvent(null)}
-                className="px-4 py-1.5 bg-stone-200 hover:bg-stone-300 text-stone-700 rounded-lg text-xs font-medium transition-colors"
+                className="px-4 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-200 rounded-lg text-xs font-medium transition-colors"
               >
                 Close
               </button>

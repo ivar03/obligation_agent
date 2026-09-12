@@ -192,9 +192,9 @@ export default function IntelligencePage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-200 pb-6">
         <div>
-          <div className="flex items-center gap-2 text-blue-500 font-semibold text-xs tracking-wider uppercase">
-            <Brain className="w-4 h-4" />
-            Phase 14 Root-Cause Analysis & Resolution Planning
+          <div className="flex items-center gap-2 text-orange-600 font-semibold text-xs tracking-wider uppercase">
+            <Brain className="w-4 h-4 text-orange-600" />
+            Root-Cause Analysis & Resolution Planning
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold text-stone-900 mt-1">
             Obligation Intelligence & Graph Reasoning
@@ -216,12 +216,12 @@ export default function IntelligencePage() {
 
       {/* Top Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-stone-100/60 border border-stone-200 rounded-xl p-5 shadow-sm">
+        <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-stone-600 uppercase tracking-wider">
               Active Forecasts
             </span>
-            <Layers className="w-4 h-4 text-blue-500" />
+            <Layers className="w-4 h-4 text-orange-600" />
           </div>
           <div className="text-3xl font-bold text-stone-900 font-mono mt-2">
             {overview?.active_obligations_evaluated ?? 0}
@@ -229,40 +229,40 @@ export default function IntelligencePage() {
           <div className="text-xs text-stone-500 mt-1">Obligations actively monitored</div>
         </div>
 
-        <div className="bg-stone-100/60 border border-stone-200 rounded-xl p-5 shadow-sm">
+        <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-rose-400 uppercase tracking-wider">
+            <span className="text-xs font-semibold text-rose-700 uppercase tracking-wider">
               Systemic Bottlenecks
             </span>
-            <Network className="w-4 h-4 text-rose-400" />
+            <Network className="w-4 h-4 text-rose-600" />
           </div>
-          <div className="text-3xl font-bold text-rose-400 font-mono mt-2">
+          <div className="text-3xl font-bold text-rose-600 font-mono mt-2">
             {bottlenecks?.total_bottlenecks ?? 0}
           </div>
           <div className="text-xs text-stone-500 mt-1">Structural dependency choke points</div>
         </div>
 
-        <div className="bg-stone-100/60 border border-stone-200 rounded-xl p-5 shadow-sm">
+        <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-amber-400 uppercase tracking-wider">
+            <span className="text-xs font-semibold text-amber-700 uppercase tracking-wider">
               Risk Concentrations
             </span>
-            <Compass className="w-4 h-4 text-amber-400" />
+            <Compass className="w-4 h-4 text-amber-600" />
           </div>
-          <div className="text-3xl font-bold text-amber-400 font-mono mt-2">
+          <div className="text-3xl font-bold text-amber-600 font-mono mt-2">
             {riskConcentrations?.total_concentrations ?? 0}
           </div>
           <div className="text-xs text-stone-500 mt-1">Multi-owner impact clusters</div>
         </div>
 
-        <div className="bg-stone-100/60 border border-stone-200 rounded-xl p-5 shadow-sm">
+        <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-emerald-400 uppercase tracking-wider">
+            <span className="text-xs font-semibold text-emerald-700 uppercase tracking-wider">
               Intervention Needed
             </span>
-            <ShieldCheck className="w-4 h-4 text-emerald-400" />
+            <ShieldCheck className="w-4 h-4 text-emerald-600" />
           </div>
-          <div className="text-3xl font-bold text-emerald-400 font-mono mt-2">
+          <div className="text-3xl font-bold text-emerald-600 font-mono mt-2">
             {overview?.likely_to_require_intervention_count ?? 0}
           </div>
           <div className="text-xs text-stone-500 mt-1">Follow-up likelihood &ge; 50%</div>
@@ -274,11 +274,10 @@ export default function IntelligencePage() {
         <div className="flex space-x-2 min-w-max">
           <button
             onClick={() => setActiveTab("FORECASTS")}
-            className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${
-              activeTab === "FORECASTS"
-                ? "border-blue-600 text-blue-500"
+            className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${activeTab === "FORECASTS"
+                ? "border-orange-600 text-orange-600 font-semibold"
                 : "border-transparent text-stone-600 hover:text-stone-800"
-            }`}
+              }`}
           >
             <Brain className="w-4 h-4" />
             Active Forecasts ({overview?.predictions.length ?? 0})
@@ -286,23 +285,21 @@ export default function IntelligencePage() {
 
           <button
             onClick={() => setActiveTab("ROOT_CAUSE")}
-            className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${
-              activeTab === "ROOT_CAUSE"
-                ? "border-blue-600 text-blue-500"
+            className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${activeTab === "ROOT_CAUSE"
+                ? "border-orange-600 text-orange-600 font-semibold"
                 : "border-transparent text-stone-600 hover:text-stone-800"
-            }`}
+              }`}
           >
             <GitBranch className="w-4 h-4" />
-            Root Cause & Impact (Phase 14)
+            Root Cause & Impact
           </button>
 
           <button
             onClick={() => setActiveTab("PATTERNS")}
-            className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${
-              activeTab === "PATTERNS"
-                ? "border-blue-600 text-blue-500"
+            className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${activeTab === "PATTERNS"
+                ? "border-orange-600 text-orange-600 font-semibold"
                 : "border-transparent text-stone-600 hover:text-stone-800"
-            }`}
+              }`}
           >
             <BarChart3 className="w-4 h-4" />
             Historical Patterns
@@ -310,11 +307,10 @@ export default function IntelligencePage() {
 
           <button
             onClick={() => setActiveTab("OWNERS")}
-            className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${
-              activeTab === "OWNERS"
-                ? "border-blue-600 text-blue-500"
+            className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${activeTab === "OWNERS"
+                ? "border-orange-600 text-orange-600 font-semibold"
                 : "border-transparent text-stone-600 hover:text-stone-800"
-            }`}
+              }`}
           >
             <Users className="w-4 h-4" />
             Owner Analytics ({owners.length})
@@ -322,11 +318,10 @@ export default function IntelligencePage() {
 
           <button
             onClick={() => setActiveTab("CALIBRATION")}
-            className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${
-              activeTab === "CALIBRATION"
-                ? "border-blue-600 text-blue-500"
+            className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${activeTab === "CALIBRATION"
+                ? "border-orange-600 text-orange-600 font-semibold"
                 : "border-transparent text-stone-600 hover:text-stone-800"
-            }`}
+              }`}
           >
             <Sliders className="w-4 h-4" />
             Model Calibration
@@ -334,11 +329,10 @@ export default function IntelligencePage() {
 
           <button
             onClick={() => setActiveTab("ADAPTIVE")}
-            className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${
-              activeTab === "ADAPTIVE"
-                ? "border-blue-600 text-blue-500"
+            className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${activeTab === "ADAPTIVE"
+                ? "border-orange-600 text-orange-600 font-semibold"
                 : "border-transparent text-stone-600 hover:text-stone-800"
-            }`}
+              }`}
           >
             <Sparkles className="w-4 h-4" />
             Adaptive Intelligence
@@ -346,25 +340,23 @@ export default function IntelligencePage() {
 
           <button
             onClick={() => setActiveTab("MEMORY")}
-            className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${
-              activeTab === "MEMORY"
-                ? "border-blue-600 text-blue-500"
+            className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${activeTab === "MEMORY"
+                ? "border-orange-500 text-orange-600"
                 : "border-transparent text-stone-600 hover:text-stone-800"
-            }`}
+              }`}
           >
-            <Brain className="w-4 h-4 text-purple-400" />
+            <Brain className="w-4 h-4 text-orange-600" />
             Organizational Memory
           </button>
 
           <button
             onClick={() => setActiveTab("LLM")}
-            className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${
-              activeTab === "LLM"
-                ? "border-cyan-500 text-cyan-400"
+            className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${activeTab === "LLM"
+                ? "border-orange-500 text-orange-600"
                 : "border-transparent text-stone-600 hover:text-stone-800"
-            }`}
+              }`}
           >
-            <Sparkles className="w-4 h-4 text-cyan-400" />
+            <Sparkles className="w-4 h-4 text-orange-600" />
             LLM Intelligence
           </button>
         </div>
@@ -380,7 +372,7 @@ export default function IntelligencePage() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <h3 className="text-base font-bold text-stone-900 flex items-center gap-2">
-                  <Crosshair className="w-4 h-4 text-blue-500" />
+                  <Crosshair className="w-4 h-4 text-orange-600" />
                   <span>Select Obligation for Causal Deep Dive</span>
                 </h3>
                 <p className="text-xs text-stone-600">
@@ -393,7 +385,7 @@ export default function IntelligencePage() {
                   <select
                     value={selectedObligationId}
                     onChange={(e) => setSelectedObligationId(e.target.value)}
-                    className="w-full bg-stone-50 border border-stone-300 rounded-lg px-3 py-2 text-sm text-stone-900 focus:outline-none focus:border-blue-600"
+                    className="w-full bg-stone-50 border border-stone-300 rounded-lg px-3 py-2 text-sm text-stone-900 focus:outline-none focus:border-orange-500"
                   >
                     {overview.predictions.map((p) => (
                       <option key={p.obligation_id} value={p.obligation_id}>
@@ -417,24 +409,23 @@ export default function IntelligencePage() {
               <div className="bg-stone-100/60 border border-stone-200 rounded-2xl p-6 shadow-sm space-y-6">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-stone-200/80 pb-4">
                   <div>
-                    <span className="text-[11px] font-mono text-blue-500 uppercase tracking-wider">
+                    <span className="text-[11px] font-mono text-orange-600 uppercase tracking-wider">
                       Causal Attribution Engine
                     </span>
                     <h2 className="text-lg font-bold text-stone-900 flex items-center gap-2 mt-0.5">
-                      <Brain className="w-5 h-5 text-blue-500" />
+                      <Brain className="w-5 h-5 text-orange-600" />
                       <span>Why is this commitment at risk?</span>
                     </h2>
                   </div>
 
                   <div className="flex items-center gap-2">
                     <span
-                      className={`px-2.5 py-1 rounded-full text-xs font-bold font-mono border ${
-                        rootCauseData.confidence_level === "HIGH"
-                          ? "bg-emerald-950/60 text-emerald-300 border-emerald-500/30"
+                      className={`px-2.5 py-1 rounded-full text-xs font-bold font-mono border ${rootCauseData.confidence_level === "HIGH"
+                          ? "bg-emerald-50 text-emerald-700 border-emerald-200"
                           : rootCauseData.confidence_level === "MEDIUM"
-                          ? "bg-amber-950/60 text-amber-300 border-amber-500/30"
-                          : "bg-stone-200 text-stone-600 border-stone-300"
-                      }`}
+                            ? "bg-amber-50 text-amber-700 border-amber-200"
+                            : "bg-stone-200 text-stone-600 border-stone-300"
+                        }`}
                     >
                       Confidence: {Math.round(rootCauseData.confidence * 100)}% (
                       {rootCauseData.confidence_level})
@@ -443,9 +434,9 @@ export default function IntelligencePage() {
                 </div>
 
                 {/* Primary Cause Hero Card */}
-                <div className="p-5 bg-indigo-950/20 border border-blue-600/30 rounded-xl space-y-3">
-                  <div className="text-xs font-semibold text-blue-500 uppercase tracking-wider flex items-center gap-1.5">
-                    <Zap className="w-3.5 h-3.5" />
+                <div className="p-5 bg-white border border-stone-200 rounded-xl space-y-3 shadow-xs">
+                  <div className="text-xs font-semibold text-orange-600 uppercase tracking-wider flex items-center gap-1.5">
+                    <Zap className="w-3.5 h-3.5 text-orange-600" />
                     <span>Primary Root Cause & Explanation</span>
                   </div>
                   <div className="text-base font-bold text-stone-900">
@@ -456,15 +447,15 @@ export default function IntelligencePage() {
                   </p>
 
                   {rootCauseData.dependency_path && rootCauseData.dependency_path.length > 1 && (
-                    <div className="pt-2 border-t border-blue-600/20 flex items-center gap-2 text-xs font-mono text-blue-600">
+                    <div className="pt-2 border-t border-stone-200 flex items-center gap-2 text-xs font-mono text-orange-600">
                       <span className="text-stone-600 font-sans">Causal Path:</span>
                       {rootCauseData.dependency_path.map((nodeId, idx) => (
                         <React.Fragment key={idx}>
-                          <span className="px-2 py-0.5 bg-stone-100 rounded border border-stone-300 text-[11px]">
+                          <span className="px-2 py-0.5 bg-stone-50 rounded border border-stone-200 text-[11px] text-stone-800">
                             {nodeId.substring(0, 8)}...
                           </span>
                           {idx < rootCauseData.dependency_path.length - 1 && (
-                            <ArrowRight className="w-3 h-3 text-blue-500" />
+                            <ArrowRight className="w-3 h-3 text-orange-600" />
                           )}
                         </React.Fragment>
                       ))}
@@ -477,7 +468,7 @@ export default function IntelligencePage() {
                   {/* Upstream & Direct Causes */}
                   <div className="p-4 bg-stone-50/60 rounded-xl border border-stone-200 space-y-3">
                     <h4 className="text-xs font-bold text-stone-800 uppercase tracking-wider flex items-center gap-2">
-                      <AlertTriangle className="w-4 h-4 text-rose-400" />
+                      <AlertTriangle className="w-4 h-4 text-rose-600" />
                       <span>Direct & Upstream Causes ({rootCauseData.direct_causes.length + rootCauseData.upstream_causes.length})</span>
                     </h4>
 
@@ -491,7 +482,7 @@ export default function IntelligencePage() {
                             className="p-2.5 bg-stone-100/80 rounded-lg border border-stone-200/80 text-xs space-y-1"
                           >
                             <div className="flex items-center justify-between">
-                              <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-rose-950/60 text-rose-300 border border-rose-500/30">
+                              <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-rose-50 text-rose-700 border border-rose-200">
                                 {c.factor_type}
                               </span>
                               <span className="text-stone-600 text-[11px]">
@@ -508,7 +499,7 @@ export default function IntelligencePage() {
                   {/* Contributing Factors & Uncertainties */}
                   <div className="p-4 bg-stone-50/60 rounded-xl border border-stone-200 space-y-3">
                     <h4 className="text-xs font-bold text-stone-800 uppercase tracking-wider flex items-center gap-2">
-                      <HelpCircle className="w-4 h-4 text-amber-400" />
+                      <HelpCircle className="w-4 h-4 text-amber-600" />
                       <span>Contributing Factors & Context ({rootCauseData.contributing_factors.length})</span>
                     </h4>
 
@@ -521,7 +512,7 @@ export default function IntelligencePage() {
                             key={i}
                             className="p-2.5 bg-stone-100/80 rounded-lg border border-stone-200/80 text-xs space-y-1"
                           >
-                            <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-950/60 text-amber-300 border border-amber-500/30">
+                            <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-50 text-amber-700 border border-amber-200">
                               CONTRIBUTING_FACTOR
                             </span>
                             <div className="text-stone-800">{cf.description}</div>
@@ -537,11 +528,11 @@ export default function IntelligencePage() {
               {impactData && (
                 <div className="bg-stone-100/60 border border-stone-200 rounded-2xl p-6 shadow-sm space-y-6">
                   <div>
-                    <span className="text-[11px] font-mono text-blue-500 uppercase tracking-wider">
+                    <span className="text-[11px] font-mono text-orange-600 uppercase tracking-wider">
                       Blast Radius Assessment
                     </span>
                     <h3 className="text-base font-bold text-stone-900 flex items-center gap-2 mt-0.5">
-                      <Compass className="w-4 h-4 text-blue-500" />
+                      <Compass className="w-4 h-4 text-orange-600" />
                       <span>Downstream Blast Radius & Impact Score</span>
                     </h3>
                   </div>
@@ -549,7 +540,7 @@ export default function IntelligencePage() {
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                     <div className="p-4 bg-stone-50/60 rounded-xl border border-stone-200">
                       <div className="text-xs text-stone-600">Impact Score</div>
-                      <div className="text-2xl font-bold font-mono text-blue-500 mt-1">
+                      <div className="text-2xl font-bold font-mono text-stone-900 mt-1">
                         {impactData.impact_score.toFixed(2)}
                       </div>
                       <div className="text-[10px] text-stone-500 uppercase">{impactData.impact_level} Impact</div>
@@ -609,11 +600,11 @@ export default function IntelligencePage() {
               {criticalPathData && criticalPathData.path_details && criticalPathData.path_details.length > 0 && (
                 <div className="bg-stone-100/60 border border-stone-200 rounded-2xl p-6 shadow-sm space-y-4">
                   <div>
-                    <span className="text-[11px] font-mono text-blue-500 uppercase tracking-wider">
+                    <span className="text-[11px] font-mono text-orange-600 uppercase tracking-wider">
                       DAG Dependency Chain
                     </span>
                     <h3 className="text-base font-bold text-stone-900 flex items-center gap-2 mt-0.5">
-                      <Route className="w-4 h-4 text-blue-500" />
+                      <Route className="w-4 h-4 text-orange-600" />
                       <span>Critical Path Visualizer (Length: {criticalPathData.critical_path_length})</span>
                     </h3>
                   </div>
@@ -626,11 +617,10 @@ export default function IntelligencePage() {
                     {criticalPathData.path_details.map((node, idx) => (
                       <div
                         key={node.obligation_id}
-                        className={`p-4 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
-                          node.is_root_blocker
-                            ? "bg-rose-950/20 border-rose-500/40"
+                        className={`p-4 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${node.is_root_blocker
+                            ? "bg-rose-50/70 border-rose-200"
                             : "bg-stone-50/60 border-stone-200"
-                        }`}
+                          }`}
                       >
                         <div className="flex items-center gap-3">
                           <div className="w-7 h-7 rounded-full bg-stone-200 border border-stone-300 flex items-center justify-center text-xs font-mono font-bold text-stone-800">
@@ -640,7 +630,7 @@ export default function IntelligencePage() {
                             <div className="flex items-center gap-2">
                               <span className="text-sm font-bold text-stone-900">{node.action}</span>
                               {node.is_root_blocker && (
-                                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-rose-950 text-rose-300 border border-rose-500/40">
+                                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-rose-50 text-rose-700 border border-rose-200">
                                   ROOT BLOCKER
                                 </span>
                               )}
@@ -667,18 +657,18 @@ export default function IntelligencePage() {
               {resolutionPlan && (
                 <div className="bg-stone-100/60 border border-stone-200 rounded-2xl p-6 shadow-sm space-y-6">
                   <div>
-                    <span className="text-[11px] font-mono text-blue-500 uppercase tracking-wider">
+                    <span className="text-[11px] font-mono text-orange-600 uppercase tracking-wider">
                       Upstream-First Action Planner
                     </span>
                     <h3 className="text-base font-bold text-stone-900 flex items-center gap-2 mt-0.5">
-                      <Play className="w-4 h-4 text-emerald-400" />
+                      <Play className="w-4 h-4 text-orange-600" />
                       <span>Highest-Leverage Resolution Recommendation</span>
                     </h3>
                   </div>
 
-                  <div className="p-5 bg-emerald-950/20 border border-emerald-500/30 rounded-xl space-y-3">
+                  <div className="p-5 bg-orange-50 border border-orange-200 rounded-xl space-y-3">
                     <div className="flex flex-wrap items-center justify-between gap-2">
-                      <span className="px-2.5 py-1 rounded text-xs font-mono font-bold bg-emerald-950 text-emerald-300 border border-emerald-500/40">
+                      <span className="px-2.5 py-1 rounded text-xs font-mono font-bold bg-white text-orange-800 border border-orange-200">
                         STRATEGY: {resolutionPlan.strategy}
                       </span>
                       <span className="text-xs text-stone-600 font-mono">
@@ -694,7 +684,7 @@ export default function IntelligencePage() {
                       {resolutionPlan.rationale}
                     </p>
 
-                    <div className="pt-2 border-t border-emerald-500/20 text-xs text-emerald-300 font-medium">
+                    <div className="pt-2 border-t border-orange-200 text-xs text-orange-800 font-medium">
                       Expected Impact: {resolutionPlan.expected_impact}
                     </div>
                   </div>
@@ -704,7 +694,7 @@ export default function IntelligencePage() {
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                       <div>
                         <div className="text-sm font-bold text-stone-900 flex items-center gap-2">
-                          <Play className="w-4 h-4 text-blue-500" />
+                          <Play className="w-4 h-4 text-orange-600" />
                           <span>Counterfactual Resolution Simulator</span>
                         </div>
                         <div className="text-xs text-stone-600 mt-0.5">
@@ -716,7 +706,7 @@ export default function IntelligencePage() {
                         <select
                           value={simAction}
                           onChange={(e) => setSimAction(e.target.value as SimulationActionType)}
-                          className="bg-stone-100 border border-stone-300 rounded-lg px-3 py-1.5 text-xs text-stone-800 focus:outline-none focus:border-blue-600 font-mono"
+                          className="bg-stone-100 border border-stone-300 rounded-lg px-3 py-1.5 text-xs text-stone-800 focus:outline-none focus:border-orange-500 font-mono"
                         >
                           <option value="COMPLETE_OBLIGATION">Simulate: Complete Obligation</option>
                           <option value="RESOLVE_BLOCKER">Simulate: Resolve Blocker</option>
@@ -728,7 +718,7 @@ export default function IntelligencePage() {
                         <button
                           onClick={runSimulation}
                           disabled={simulating}
-                          className="px-4 py-1.5 bg-blue-700 hover:bg-blue-600 text-stone-950 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5"
+                          className="px-4 py-1.5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-semibold transition-colors flex items-center gap-1.5 shadow"
                         >
                           <Play className={`w-3.5 h-3.5 ${simulating ? "animate-spin" : ""}`} />
                           Simulate
@@ -738,9 +728,9 @@ export default function IntelligencePage() {
 
                     {/* Simulation Result Output */}
                     {simulationResult && (
-                      <div className="p-4 bg-indigo-950/30 border border-blue-600/40 rounded-xl space-y-3 animate-in fade-in duration-200">
+                      <div className="p-4 bg-orange-50/40 border border-orange-200 rounded-xl space-y-3 animate-in fade-in duration-200">
                         {/* Simulation Marker Banner */}
-                        <div className="px-3 py-1.5 bg-amber-950/60 border border-amber-500/40 rounded-lg text-[11px] font-mono font-bold text-amber-300 text-center tracking-wider uppercase">
+                        <div className="px-3 py-1.5 bg-amber-50 border border-amber-200 rounded-lg text-[11px] font-mono font-bold text-amber-800 text-center tracking-wider uppercase">
                           ⚠️ SIMULATION — NO CHANGES HAVE BEEN MADE TO LIVE DATABASE
                         </div>
 
@@ -751,14 +741,14 @@ export default function IntelligencePage() {
                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
                           <div className="p-2.5 bg-stone-50 rounded-lg border border-stone-200">
                             <div className="text-[10px] text-stone-600">Projected Status</div>
-                            <div className="text-sm font-bold font-mono text-emerald-400 mt-0.5">
+                            <div className="text-sm font-bold font-mono text-emerald-600 mt-0.5">
                               {String(simulationResult.projected_state.status)}
                             </div>
                           </div>
 
                           <div className="p-2.5 bg-stone-50 rounded-lg border border-stone-200">
                             <div className="text-[10px] text-stone-600">Risk Delta (Δ)</div>
-                            <div className="text-sm font-bold font-mono text-blue-500 mt-0.5">
+                            <div className="text-sm font-bold font-mono text-orange-600 mt-0.5">
                               {simulationResult.risk_delta < 0
                                 ? `${Math.round(simulationResult.risk_delta * 100)}%`
                                 : "0%"}
@@ -776,13 +766,13 @@ export default function IntelligencePage() {
                         {simulationResult.unblocked_obligations.length > 0 && (
                           <div className="space-y-1.5 pt-2">
                             <div className="text-[11px] font-semibold text-stone-700">Projected Cascading Unblocks:</div>
-                            {simulationResult.unblocked_obligations.map((unb: { action?: string; owner?: string; [key: string]: unknown }, idx) => (
+                            {simulationResult.unblocked_obligations.map((unb: { action?: string; owner?: string;[key: string]: unknown }, idx) => (
                               <div
                                 key={idx}
                                 className="px-2.5 py-1.5 bg-stone-50 rounded border border-stone-200 flex items-center justify-between text-[11px]"
                               >
                                 <span className="text-stone-800">{unb.action} ({unb.owner})</span>
-                                <span className="text-emerald-400 font-mono">UNBLOCKED → CONFIRMED</span>
+                                <span className="text-emerald-600 font-mono">UNBLOCKED → CONFIRMED</span>
                               </div>
                             ))}
                           </div>
@@ -797,11 +787,11 @@ export default function IntelligencePage() {
               {bottlenecks && bottlenecks.bottlenecks.length > 0 && (
                 <div className="bg-stone-100/60 border border-stone-200 rounded-2xl p-6 shadow-sm space-y-4">
                   <div>
-                    <span className="text-[11px] font-mono text-blue-500 uppercase tracking-wider">
+                    <span className="text-[11px] font-mono text-orange-600 uppercase tracking-wider">
                       Systemic Graph Health
                     </span>
                     <h3 className="text-base font-bold text-stone-900 flex items-center gap-2 mt-0.5">
-                      <Network className="w-4 h-4 text-rose-400" />
+                      <Network className="w-4 h-4 text-rose-600" />
                       <span>Organizational Bottlenecks & Risk Concentration Points</span>
                     </h3>
                   </div>
@@ -824,7 +814,7 @@ export default function IntelligencePage() {
 
                         <div className="flex items-center gap-3 font-mono self-end sm:self-auto">
                           <span className="text-stone-600">{b.downstream_dependents_count} dependents</span>
-                          <span className="px-2 py-0.5 rounded bg-rose-950/60 text-rose-300 border border-rose-500/30 font-bold">
+                          <span className="px-2 py-0.5 rounded bg-rose-50 text-rose-700 border border-rose-200 font-bold">
                             Score: {b.bottleneck_score.toFixed(2)}
                           </span>
                         </div>
@@ -855,11 +845,10 @@ export default function IntelligencePage() {
                   <button
                     key={mode}
                     onClick={() => setFilterRisk(mode)}
-                    className={`px-3 py-1.5 rounded-md font-medium transition-colors ${
-                      filterRisk === mode
-                        ? "bg-blue-700 text-stone-950 shadow-sm"
+                    className={`px-3 py-1.5 rounded-md font-medium transition-colors ${filterRisk === mode
+                        ? "bg-orange-600 text-white shadow-sm font-semibold"
                         : "text-stone-600 hover:text-stone-800"
-                    }`}
+                      }`}
                   >
                     {mode}
                   </button>
@@ -900,21 +889,21 @@ export default function IntelligencePage() {
                 {patterns.total_historical_snapshots}
               </div>
             </div>
-            <div className="bg-stone-100/60 border border-stone-200 rounded-xl p-4">
+            <div className="bg-white border border-stone-200 rounded-xl p-4 shadow-xs">
               <div className="text-xs text-stone-600">Overall Completion Rate</div>
-              <div className="text-2xl font-bold font-mono text-emerald-400 mt-1">
+              <div className="text-2xl font-bold font-mono text-emerald-600 mt-1">
                 {Math.round(patterns.completion_rate * 100)}%
               </div>
             </div>
-            <div className="bg-stone-100/60 border border-stone-200 rounded-xl p-4">
+            <div className="bg-white border border-stone-200 rounded-xl p-4 shadow-xs">
               <div className="text-xs text-stone-600">On-Time Completion Rate</div>
-              <div className="text-2xl font-bold font-mono text-blue-500 mt-1">
+              <div className="text-2xl font-bold font-mono text-stone-900 mt-1">
                 {Math.round(patterns.on_time_completion_rate * 100)}%
               </div>
             </div>
-            <div className="bg-stone-100/60 border border-stone-200 rounded-xl p-4">
+            <div className="bg-white border border-stone-200 rounded-xl p-4 shadow-xs">
               <div className="text-xs text-stone-600">Average Historical Delay</div>
-              <div className="text-2xl font-bold font-mono text-amber-400 mt-1">
+              <div className="text-2xl font-bold font-mono text-amber-600 mt-1">
                 {patterns.avg_delay_hours.toFixed(1)}h
               </div>
             </div>
@@ -929,7 +918,7 @@ export default function IntelligencePage() {
             {owners.map((owner) => (
               <div
                 key={owner.owner}
-                className="bg-stone-100/60 border border-stone-200 rounded-2xl p-6 shadow-sm space-y-4"
+                className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm space-y-4"
               >
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-bold text-stone-900">{owner.owner}</span>
@@ -940,13 +929,13 @@ export default function IntelligencePage() {
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <div className="p-2 bg-stone-50 rounded">
                     <div className="text-stone-600">On-Time Rate</div>
-                    <div className="font-mono font-bold text-emerald-400">
+                    <div className="font-mono font-bold text-emerald-600">
                       {Math.round(owner.on_time_rate * 100)}%
                     </div>
                   </div>
                   <div className="p-2 bg-stone-50 rounded">
                     <div className="text-stone-600">Avg Delay</div>
-                    <div className="font-mono font-bold text-amber-400">
+                    <div className="font-mono font-bold text-amber-600">
                       {owner.avg_delay_hours.toFixed(1)}h
                     </div>
                   </div>
@@ -960,18 +949,18 @@ export default function IntelligencePage() {
       {/* CALIBRATION TAB */}
       {activeTab === "CALIBRATION" && evaluation && (
         <div className="space-y-6">
-          <div className="bg-stone-100/60 border border-stone-200 rounded-2xl p-6 shadow-sm space-y-4">
+          <div className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm space-y-4">
             <h3 className="text-base font-bold text-stone-900">Model Evaluation Metrics</h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="p-4 bg-stone-50 rounded-xl border border-stone-200">
                 <div className="text-xs text-stone-600">Brier Calibration Score</div>
-                <div className="text-2xl font-bold font-mono text-blue-500 mt-1">
+                <div className="text-2xl font-bold font-mono text-orange-600 mt-1">
                   {evaluation.brier_score != null ? evaluation.brier_score.toFixed(3) : "—"}
                 </div>
               </div>
               <div className="p-4 bg-stone-50 rounded-xl border border-stone-200">
                 <div className="text-xs text-stone-600">High Risk Precision</div>
-                <div className="text-2xl font-bold font-mono text-emerald-400 mt-1">
+                <div className="text-2xl font-bold font-mono text-emerald-600 mt-1">
                   {evaluation.high_risk_precision != null
                     ? `${Math.round(evaluation.high_risk_precision * 100)}%`
                     : "—"}
@@ -979,7 +968,7 @@ export default function IntelligencePage() {
               </div>
               <div className="p-4 bg-stone-50 rounded-xl border border-stone-200">
                 <div className="text-xs text-stone-600">Overdue Recall</div>
-                <div className="text-2xl font-bold font-mono text-amber-400 mt-1">
+                <div className="text-2xl font-bold font-mono text-amber-600 mt-1">
                   {evaluation.overdue_recall != null
                     ? `${Math.round(evaluation.overdue_recall * 100)}%`
                     : "—"}
@@ -993,9 +982,9 @@ export default function IntelligencePage() {
       {/* ADAPTIVE TAB */}
       {activeTab === "ADAPTIVE" && (
         <div className="space-y-6">
-          <div className="bg-stone-100/60 border border-stone-200 rounded-2xl p-6 shadow-sm space-y-4">
+          <div className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm space-y-4">
             <h3 className="text-base font-bold text-stone-900 flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-blue-500" />
+              <Sparkles className="w-4 h-4 text-orange-600" />
               <span>Learned Feature Effectiveness</span>
             </h3>
             <div className="space-y-2">
@@ -1005,7 +994,7 @@ export default function IntelligencePage() {
                   className="p-3 bg-stone-50 rounded-lg border border-stone-200 flex items-center justify-between text-xs"
                 >
                   <span className="font-mono text-stone-700">{f.feature}</span>
-                  <span className="font-mono font-bold text-blue-500">
+                  <span className="font-mono font-bold text-orange-600">
                     Reliability: {f.reliability_score.toFixed(2)} | Contribution: {f.average_contribution > 0 ? `+${f.average_contribution.toFixed(2)}` : f.average_contribution.toFixed(2)}
                   </span>
                 </div>
@@ -1023,7 +1012,7 @@ export default function IntelligencePage() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <h3 className="text-base font-bold text-stone-900 flex items-center gap-2">
-                  <Brain className="w-4 h-4 text-purple-400" />
+                  <Brain className="w-4 h-4 text-orange-600" />
                   <span>Organizational Memory & Historical Knowledge Base</span>
                 </h3>
                 <p className="text-xs text-stone-600 mt-1">
@@ -1037,13 +1026,13 @@ export default function IntelligencePage() {
                   placeholder="Search deliverables, actions..."
                   value={memorySearchQuery}
                   onChange={(e) => setMemorySearchQuery(e.target.value)}
-                  className="bg-stone-50 border border-stone-200 rounded-lg px-3 py-1.5 text-xs text-stone-800 focus:border-purple-500 outline-none w-56"
+                  className="bg-stone-50 border border-stone-200 rounded-lg px-3 py-1.5 text-xs text-stone-800 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none w-56"
                 />
 
                 <select
                   value={memoryTypeFilter}
                   onChange={(e) => setMemoryTypeFilter(e.target.value)}
-                  className="bg-stone-50 border border-stone-200 rounded-lg px-3 py-1.5 text-xs text-stone-700 focus:border-purple-500 outline-none"
+                  className="bg-stone-50 border border-stone-200 rounded-lg px-3 py-1.5 text-xs text-stone-700 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none"
                 >
                   <option value="">All Types</option>
                   <option value="OBLIGATION_OUTCOME">Obligation Outcome</option>
@@ -1055,7 +1044,7 @@ export default function IntelligencePage() {
                 <button
                   onClick={fetchMemories}
                   disabled={memoryLoading}
-                  className="p-2 bg-stone-200 hover:bg-stone-300 rounded-lg text-stone-700 transition"
+                  className="p-2 bg-stone-100 border border-stone-200 hover:bg-stone-200 rounded-lg text-stone-700 transition"
                   title="Refresh Memories"
                 >
                   <RefreshCw className={`w-3.5 h-3.5 ${memoryLoading ? "animate-spin" : ""}`} />
@@ -1066,14 +1055,14 @@ export default function IntelligencePage() {
             {/* Workspace Wide Patterns Strip */}
             {workspacePatterns.length > 0 && (
               <div className="pt-3 border-t border-stone-200/80">
-                <div className="text-[11px] font-semibold text-purple-400 uppercase tracking-wider mb-2">
+                <div className="text-[11px] font-semibold text-orange-600 uppercase tracking-wider mb-2">
                   Established Workspace Patterns
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {workspacePatterns.map((p, idx) => (
                     <div
                       key={idx}
-                      className="p-3 bg-purple-950/20 border border-purple-800/30 rounded-lg flex items-center justify-between text-xs"
+                      className="p-3 bg-white border border-stone-200 rounded-lg flex items-center justify-between text-xs shadow-xs"
                     >
                       <div>
                         <div className="font-medium text-stone-800">{p.description}</div>
@@ -1081,7 +1070,7 @@ export default function IntelligencePage() {
                           Observations: {p.observation_count} • Confidence: {Math.round(p.confidence * 100)}%
                         </div>
                       </div>
-                      <span className="text-[10px] uppercase font-bold px-2 py-0.5 bg-purple-500/20 text-purple-300 rounded border border-purple-500/30">
+                      <span className="text-[10px] uppercase font-bold px-2 py-0.5 bg-orange-50 text-orange-700 rounded border border-orange-200">
                         {p.maturity.replace("_", " ")}
                       </span>
                     </div>
@@ -1119,13 +1108,12 @@ export default function IntelligencePage() {
                           </span>
                           {item.memory.outcome && (
                             <span
-                              className={`text-[10px] font-bold px-2 py-0.5 rounded border ${
-                                item.memory.outcome.includes("ON_TIME")
-                                  ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
+                              className={`text-[10px] font-bold px-2 py-0.5 rounded border ${item.memory.outcome.includes("ON_TIME")
+                                  ? "bg-emerald-50 text-emerald-700 border-emerald-200"
                                   : item.memory.outcome.includes("LATE")
-                                  ? "bg-amber-500/10 text-amber-400 border-amber-500/30"
-                                  : "bg-stone-300/20 text-stone-600 border-stone-300/40"
-                              }`}
+                                    ? "bg-amber-50 text-amber-700 border-amber-200"
+                                    : "bg-stone-100 text-stone-700 border-stone-200"
+                                }`}
                             >
                               {item.memory.outcome}
                             </span>
@@ -1139,7 +1127,7 @@ export default function IntelligencePage() {
                       <div className="text-right shrink-0 text-xs text-stone-500">
                         <div>{new Date(item.memory.observed_at).toLocaleDateString()}</div>
                         {item.memory.owner_id && (
-                          <div className="text-[11px] text-blue-500 font-medium mt-0.5">
+                          <div className="text-[11px] text-stone-700 font-medium mt-0.5">
                             Owner: {item.memory.owner_id}
                           </div>
                         )}

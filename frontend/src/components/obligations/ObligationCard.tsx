@@ -39,11 +39,11 @@ export const ObligationCard: React.FC<ObligationCardProps> = ({
   // Relationship description
   const relationshipText = isOwedByMe ? (
     <span>
-      You owe <span className="font-semibold text-blue-600">{obligation.beneficiary}</span>
+      You owe <span className="font-semibold text-orange-600">{obligation.beneficiary}</span>
     </span>
   ) : (
     <span>
-      <span className="font-semibold text-emerald-300">{obligation.owner}</span> owes You
+      <span className="font-semibold text-emerald-700">{obligation.owner}</span> owes You
     </span>
   );
 
@@ -115,12 +115,12 @@ export const ObligationCard: React.FC<ObligationCardProps> = ({
 
   return (
     <div
-      className={`relative group bg-stone-100/70 hover:bg-stone-100 border rounded-xl p-5 transition-all duration-200 shadow-sm hover:shadow-md ${
+      className={`relative group border rounded-xl p-5 transition-all duration-200 shadow-sm hover:shadow-md ${
         isBlocked
-          ? "border-rose-500/50 hover:border-rose-500/70 bg-rose-950/20"
+          ? "border-red-200 bg-red-50/30 hover:bg-red-50/50"
           : obligation.is_at_risk
-          ? "border-rose-500/40 hover:border-rose-500/60 bg-rose-950/10"
-          : "border-stone-200 hover:border-stone-300"
+          ? "border-orange-200 bg-orange-50/20 hover:bg-orange-50/40"
+          : "border-stone-200 bg-white hover:bg-stone-50/50 hover:border-stone-300"
       }`}
     >
       {/* Top row: Relationship & Status badges */}
@@ -128,7 +128,7 @@ export const ObligationCard: React.FC<ObligationCardProps> = ({
         <div className="flex items-center gap-2 text-xs font-medium text-stone-600">
           <span
             className={`w-2 h-2 rounded-full ${
-              isOwedByMe ? "bg-blue-500" : "bg-emerald-400"
+              isOwedByMe ? "bg-orange-500" : "bg-emerald-500"
             }`}
           />
           {relationshipText}
@@ -136,13 +136,13 @@ export const ObligationCard: React.FC<ObligationCardProps> = ({
 
         <div className="flex items-center gap-2 shrink-0">
           {isBlocked ? (
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/40 animate-pulse">
-              <Ban className="w-3 h-3" />
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-red-50 text-red-700 border border-red-200">
+              <Ban className="w-3 h-3 text-red-500" />
               Blocked
             </span>
           ) : obligation.is_at_risk ? (
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/30 animate-pulse">
-              <ShieldAlert className="w-3 h-3" />
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-orange-50 text-orange-700 border border-orange-200">
+              <ShieldAlert className="w-3 h-3 text-orange-500" />
               At Risk
             </span>
           ) : null}
@@ -154,7 +154,7 @@ export const ObligationCard: React.FC<ObligationCardProps> = ({
       <div className="mb-3">
         <Link
           href={`/obligations/${obligation.id}`}
-          className="text-base font-semibold text-stone-900 hover:text-blue-500 transition-colors line-clamp-2 inline-flex items-baseline gap-1"
+          className="text-base font-semibold text-stone-900 hover:text-orange-600 transition-colors line-clamp-2 inline-flex items-baseline gap-1"
         >
           <span>{obligation.action}</span>
           <ArrowRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
@@ -163,36 +163,36 @@ export const ObligationCard: React.FC<ObligationCardProps> = ({
 
       {/* Blocker Callout if Blocked */}
       {isBlocked && blockerSummary && (
-        <div className="mb-3 px-3 py-2 rounded-lg bg-rose-950/40 border border-rose-500/30 text-xs text-rose-300 flex items-center gap-2">
-          <Ban className="w-3.5 h-3.5 shrink-0 text-rose-400" />
+        <div className="mb-3 px-3 py-2 rounded-lg bg-red-50 border border-red-200 text-xs text-red-700 flex items-center gap-2">
+          <Ban className="w-3.5 h-3.5 shrink-0 text-red-500" />
           <span className="font-medium truncate">{blockerSummary}</span>
         </div>
       )}
 
       {/* Next Action Callout if available */}
       {obligation.next_action && !isBlocked && (
-        <div className="mb-3.5 px-3 py-2 rounded-lg bg-stone-50/70 border border-stone-200/80 text-xs">
-          <span className="text-stone-600 font-medium">Next Step: </span>
-          <span className="text-stone-800">{obligation.next_action}</span>
+        <div className="mb-3.5 px-3 py-2 rounded-lg bg-stone-50 border border-stone-200 text-xs">
+          <span className="text-stone-500 font-medium">Next Step: </span>
+          <span className="text-stone-800 font-medium">{obligation.next_action}</span>
         </div>
       )}
 
       {/* Conditions pill if present */}
       {obligation.conditions && (
-        <div className="mb-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs">
-          <AlertCircle className="w-3 h-3 shrink-0" />
+        <div className="mb-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-amber-50 border border-amber-200 text-amber-800 text-xs">
+          <AlertCircle className="w-3 h-3 shrink-0 text-amber-600" />
           <span className="font-medium">Condition:</span>
           <span className="truncate max-w-xs">{String(obligation.conditions)}</span>
         </div>
       )}
 
       {/* Metadata footer */}
-      <div className="pt-3 border-t border-stone-200/60 flex flex-wrap items-center justify-between gap-3 text-xs text-stone-600">
+      <div className="pt-3 border-t border-stone-100 flex flex-wrap items-center justify-between gap-3 text-xs text-stone-500">
         <div className="flex items-center gap-3">
           {/* Deadline */}
           <div
             className={`flex items-center gap-1.5 ${
-              isOverdue ? "text-rose-400 font-semibold" : "text-stone-600"
+              isOverdue ? "text-rose-700 font-semibold" : "text-stone-500"
             }`}
           >
             <Clock className="w-3.5 h-3.5" />
@@ -201,7 +201,7 @@ export const ObligationCard: React.FC<ObligationCardProps> = ({
 
           {/* Evidence count */}
           {obligation.evidence && obligation.evidence.length > 0 && (
-            <div className="flex items-center gap-1 text-emerald-400 font-medium" title="Evidence attached">
+            <div className="flex items-center gap-1 text-emerald-700 font-medium" title="Evidence attached">
               <FileCheck className="w-3.5 h-3.5" />
               <span>{obligation.evidence.length} evidence</span>
             </div>
@@ -219,7 +219,7 @@ export const ObligationCard: React.FC<ObligationCardProps> = ({
             <button
               onClick={() => handleStatusTransition("IN_PROGRESS")}
               disabled={updating}
-              className="px-2.5 py-1 rounded bg-stone-200 hover:bg-stone-300 text-stone-800 text-xs font-medium transition-colors"
+              className="px-2.5 py-1 rounded bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-200 text-xs font-medium transition-colors"
             >
               Start
             </button>
@@ -229,7 +229,7 @@ export const ObligationCard: React.FC<ObligationCardProps> = ({
             <button
               onClick={() => handleStatusTransition("COMPLETED")}
               disabled={updating}
-              className="px-2.5 py-1 rounded bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 text-xs font-medium transition-colors inline-flex items-center gap-1"
+              className="px-2.5 py-1 rounded bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs font-medium transition-colors inline-flex items-center gap-1"
             >
               <Check className="w-3 h-3" />
               Complete
@@ -238,7 +238,7 @@ export const ObligationCard: React.FC<ObligationCardProps> = ({
 
           <Link
             href={`/obligations/${obligation.id}`}
-            className="p-1 rounded text-stone-600 hover:text-stone-900 hover:bg-stone-200 transition-colors"
+            className="p-1 rounded text-stone-500 hover:text-stone-900 hover:bg-stone-100 transition-colors"
             title="View Details"
           >
             <ExternalLink className="w-3.5 h-3.5" />
@@ -247,7 +247,7 @@ export const ObligationCard: React.FC<ObligationCardProps> = ({
           <button
             onClick={handleDelete}
             disabled={updating}
-            className="p-1 rounded text-stone-600 hover:text-rose-400 hover:bg-rose-950/20 transition-colors"
+            className="p-1 rounded text-stone-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
             title="Delete Obligation"
           >
             <Trash2 className="w-3.5 h-3.5" />

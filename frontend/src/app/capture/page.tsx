@@ -255,7 +255,7 @@ export default function CapturePage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-stone-950 flex items-center gap-2.5">
-            <Sparkles className="w-7 h-7 text-blue-500" />
+            <Sparkles className="w-7 h-7 text-orange-600" />
             <span>AI Obligation & Event Intelligence</span>
           </h1>
           <p className="text-sm text-stone-600 mt-1">
@@ -269,7 +269,7 @@ export default function CapturePage() {
             onClick={() => setMode("extraction")}
             className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
               mode === "extraction"
-                ? "bg-blue-600/20 text-blue-600 border border-blue-500/30"
+                ? "bg-orange-50 text-orange-700 border border-orange-200 shadow-sm"
                 : "text-stone-600 hover:text-stone-800"
             }`}
           >
@@ -279,7 +279,7 @@ export default function CapturePage() {
             onClick={() => setMode("event_simulator")}
             className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
               mode === "event_simulator"
-                ? "bg-emerald-600/20 text-emerald-300 border border-emerald-500/30"
+                ? "bg-orange-50 text-orange-700 border border-orange-200 shadow-sm"
                 : "text-stone-600 hover:text-stone-800"
             }`}
           >
@@ -307,7 +307,7 @@ export default function CapturePage() {
                   }}
                   className="p-2.5 rounded-xl bg-stone-100/80 border border-stone-200 hover:border-stone-300 hover:bg-stone-200 text-left transition-all text-xs space-y-0.5 group"
                 >
-                  <div className="font-semibold text-stone-800 group-hover:text-blue-500 transition-colors">
+                  <div className="font-semibold text-stone-800 group-hover:text-orange-600 transition-colors">
                     {sc.label}
                   </div>
                   <div className="text-[11px] text-stone-600 line-clamp-1">{sc.text}</div>
@@ -331,7 +331,7 @@ export default function CapturePage() {
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 placeholder="Paste an email, Slack message, or commitment snippet..."
-                className="w-full px-4 py-3 rounded-xl bg-stone-50 border border-stone-200 text-sm text-stone-900 placeholder-stone-500 focus:outline-none focus:border-blue-500 transition-colors resize-y font-normal"
+                className="w-full px-4 py-3 rounded-xl bg-stone-50 border border-stone-200 text-sm text-stone-900 placeholder-stone-500 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-colors resize-y font-normal"
                 required
               />
             </div>
@@ -344,7 +344,7 @@ export default function CapturePage() {
                 className="w-full px-4 py-2.5 flex items-center justify-between text-xs font-medium text-stone-600 hover:text-stone-800 transition-colors"
               >
                 <div className="flex items-center gap-2">
-                  <Settings2 className="w-3.5 h-3.5 text-blue-500" />
+                  <Settings2 className="w-3.5 h-3.5 text-orange-600" />
                   <span>Advanced Context & Reference Timestamp</span>
                 </div>
                 {showContextPanel ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
@@ -393,7 +393,7 @@ export default function CapturePage() {
               <button
                 type="submit"
                 disabled={analyzing || !inputMessage.trim()}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-stone-950 text-xs font-semibold transition-all shadow-md shadow-blue-600/20 active:scale-95 disabled:opacity-50"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold transition-all shadow-sm active:scale-95 disabled:opacity-50"
               >
                 <Sparkles className={`w-4 h-4 ${analyzing ? "animate-spin" : ""}`} />
                 <span>{analyzing ? "Reasoning..." : "Analyze & Extract Obligation"}</span>
@@ -528,7 +528,7 @@ export default function CapturePage() {
                   type="checkbox"
                   checked={hasAttachment}
                   onChange={(e) => setHasAttachment(e.target.checked)}
-                  className="rounded border-stone-200 text-blue-600"
+                  className="rounded border-stone-200 text-orange-600 focus:ring-orange-500"
                 />
                 <span>Includes Attachment</span>
               </label>
@@ -569,12 +569,12 @@ export default function CapturePage() {
 
           {/* Ingestion Success Banner */}
           {eventIngestionResult && (
-            <div className="bg-emerald-950/30 border border-emerald-500/40 rounded-2xl p-5 shadow-xl space-y-2 animate-in fade-in">
-              <div className="flex items-center gap-2 text-emerald-300 font-bold text-sm">
-                <FileCheck className="w-5 h-5 text-emerald-400" />
+            <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-5 shadow-sm space-y-2 animate-in fade-in">
+              <div className="flex items-center gap-2 text-emerald-900 font-bold text-sm">
+                <FileCheck className="w-5 h-5 text-emerald-600" />
                 <span>Event Ingested Successfully</span>
               </div>
-              <p className="text-xs text-stone-700">
+              <p className="text-xs text-emerald-800">
                 Created {eventIngestionResult.evidence_records.length} suggested evidence record(s).
                 View and confirm completion directly on the obligation page or below.
               </p>
@@ -583,13 +583,13 @@ export default function CapturePage() {
 
           {/* Event Analysis Results */}
           {eventAnalysis && (
-            <div className="bg-stone-100/80 border border-stone-200 rounded-2xl p-6 shadow-xl space-y-4 animate-in fade-in">
+            <div className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm space-y-4 animate-in fade-in">
               <div className="flex items-center justify-between pb-3 border-b border-stone-200">
                 <div className="flex items-center gap-2">
-                  <Activity className="w-4 h-4 text-emerald-400" />
+                  <Activity className="w-4 h-4 text-emerald-600" />
                   <h3 className="text-sm font-bold text-stone-950">Event Correlation Results</h3>
                 </div>
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-500/20 text-blue-600 border border-blue-500/30">
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-orange-50 text-orange-700 border border-orange-200">
                   Role: {eventAnalysis.semantic_role}
                 </span>
               </div>
@@ -607,7 +607,7 @@ export default function CapturePage() {
                       key={match.obligation_id}
                       className={`p-4 rounded-xl border space-y-2.5 ${
                         match.is_completion_candidate
-                          ? "bg-emerald-950/20 border-emerald-500/40"
+                          ? "bg-emerald-50/60 border-emerald-300"
                           : "bg-stone-50 border-stone-200"
                       }`}
                     >
@@ -622,9 +622,9 @@ export default function CapturePage() {
                           <span
                             className={`font-bold ${
                               match.correlation_confidence >= 0.80
-                                ? "text-emerald-400"
+                                ? "text-emerald-700"
                                 : match.correlation_confidence >= 0.60
-                                ? "text-amber-400"
+                                ? "text-amber-700"
                                 : "text-stone-600"
                             }`}
                           >
@@ -632,7 +632,7 @@ export default function CapturePage() {
                           </span>
                           <Link
                             href={`/obligations/${match.obligation_id}`}
-                            className="inline-flex items-center gap-1 text-blue-500 hover:underline font-semibold"
+                            className="inline-flex items-center gap-1 text-orange-600 hover:text-orange-700 hover:underline font-semibold"
                           >
                             <span>Open Obligation</span>
                             <ArrowRight className="w-3 h-3" />

@@ -65,35 +65,35 @@ export const NotificationCenter: React.FC = () => {
   };
 
   const getCategoryIcon = (category: string, severity: string) => {
-    if (category === "SECURITY") return <ShieldAlert className="w-4 h-4 text-purple-400" />;
-    if (category === "INTEGRATION") return <Radio className="w-4 h-4 text-cyan-400" />;
-    if (severity === "CRITICAL" || severity === "ERROR") return <AlertCircle className="w-4 h-4 text-rose-400" />;
-    if (severity === "WARNING") return <AlertTriangle className="w-4 h-4 text-amber-400" />;
-    return <Info className="w-4 h-4 text-blue-500" />;
+    if (category === "SECURITY") return <ShieldAlert className="w-4 h-4 text-orange-600" />;
+    if (category === "INTEGRATION") return <Radio className="w-4 h-4 text-orange-600" />;
+    if (severity === "CRITICAL" || severity === "ERROR") return <AlertCircle className="w-4 h-4 text-rose-600" />;
+    if (severity === "WARNING") return <AlertTriangle className="w-4 h-4 text-amber-600" />;
+    return <Info className="w-4 h-4 text-orange-600" />;
   };
 
   return (
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 rounded-lg text-stone-600 hover:text-stone-900 hover:bg-stone-200/60 transition-colors"
+        className="relative p-2 rounded-lg text-stone-600 hover:text-stone-900 hover:bg-stone-100 transition-colors"
         title="Notifications"
       >
         <Bell className="w-4 h-4" />
         {unreadCount > 0 && (
-          <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-stone-50 animate-pulse" />
+          <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-orange-600 ring-2 ring-white animate-pulse" />
         )}
       </button>
 
       {isOpen && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
-          <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-xl bg-stone-100 border border-stone-200 shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150">
-            <div className="px-4 py-3 border-b border-stone-200 flex items-center justify-between bg-stone-50/60">
+          <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-xl bg-white border border-stone-200 shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150">
+            <div className="px-4 py-3 border-b border-stone-200 flex items-center justify-between bg-stone-50/80">
               <div className="flex items-center gap-2">
                 <span className="text-sm font-semibold text-stone-900">Notifications</span>
                 {unreadCount > 0 && (
-                  <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30">
+                  <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-orange-50 text-orange-700 border border-orange-200">
                     {unreadCount} new
                   </span>
                 )}
@@ -102,7 +102,7 @@ export const NotificationCenter: React.FC = () => {
                 <button
                   onClick={markAllRead}
                   disabled={loading}
-                  className="inline-flex items-center gap-1 text-xs text-stone-600 hover:text-stone-800 transition-colors"
+                  className="inline-flex items-center gap-1 text-xs text-stone-500 hover:text-stone-800 transition-colors"
                 >
                   <CheckCheck className="w-3.5 h-3.5" />
                   <span>Mark all read</span>
@@ -110,16 +110,16 @@ export const NotificationCenter: React.FC = () => {
               )}
             </div>
 
-            <div className="max-h-[380px] overflow-y-auto divide-y divide-stone-200/50">
+            <div className="max-h-[380px] overflow-y-auto divide-y divide-stone-100">
               {notifications.length === 0 ? (
-                <div className="py-8 text-center text-xs text-stone-500">No notifications right now.</div>
+                <div className="py-8 text-center text-xs text-stone-400">No notifications right now.</div>
               ) : (
                 notifications.map((n) => (
                   <div
                     key={n.id}
                     onClick={() => markRead(n.id)}
-                    className={`p-3 text-xs transition-colors hover:bg-stone-200/50 cursor-pointer ${
-                      !n.is_read ? "bg-stone-200/20" : ""
+                    className={`p-3 text-xs transition-colors hover:bg-stone-50 cursor-pointer ${
+                      !n.is_read ? "bg-orange-50/20" : ""
                     }`}
                   >
                     <div className="flex items-start gap-2.5">
@@ -129,14 +129,14 @@ export const NotificationCenter: React.FC = () => {
                           <span className={`font-semibold truncate ${!n.is_read ? "text-stone-900" : "text-stone-700"}`}>
                             {n.title}
                           </span>
-                          {!n.is_read && <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" />}
+                          {!n.is_read && <span className="w-1.5 h-1.5 rounded-full bg-orange-600 shrink-0" />}
                         </div>
                         <p className="text-stone-600 line-clamp-2 leading-relaxed">{n.message}</p>
                         {n.link && (
                           <Link
                             href={n.link}
                             onClick={() => setIsOpen(false)}
-                            className="inline-block mt-1 text-blue-500 hover:text-blue-600 font-medium"
+                            className="inline-block mt-1 text-orange-600 hover:text-orange-700 font-medium"
                           >
                             View details &rarr;
                           </Link>
