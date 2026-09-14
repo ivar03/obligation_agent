@@ -54,7 +54,7 @@ jobs:
         env:
           APP_ENV: test
           AUTH_MODE: mock
-          DATABASE_URL: sqlite+aiosqlite:///:memory:
+          DATABASE_URL: "sqlite+aiosqlite:///:memory:"
           JWT_SECRET_KEY: test-ci-secret-key-32-chars-long-entropy
         run: |
           pytest -v --tb=short
@@ -64,7 +64,7 @@ jobs:
         env:
           APP_ENV: test
           AUTH_MODE: mock
-          DATABASE_URL: postgresql+asyncpg://test_user:test_password@localhost:5432/obligations_test
+          DATABASE_URL: "postgresql+asyncpg://test_user:test_password@localhost:5432/obligations_test"
           JWT_SECRET_KEY: test-ci-secret-key-32-chars-long-entropy
         run: |
           pytest tests/test_phase19_postgresql.py -v --tb=short || true

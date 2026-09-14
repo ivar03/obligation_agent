@@ -46,7 +46,7 @@ class Settings(BaseSettings):
     # LLM (Phase 20 Natural-Language Intelligence Layer)
     # -------------------------------------------------------------------------
     LLM_ENABLED: bool = True
-    LLM_PROVIDER: str = "mock"  # "mock" | "gemini"
+    LLM_PROVIDER: str = "mock"  # "mock" | "gemini" | "strands"
     LLM_MODEL: str = "gemini-1.5-flash"
     LLM_MAX_REQUESTS_PER_MINUTE: int = 60
     LLM_MAX_TOKENS_PER_REQUEST: int = 2048
@@ -55,6 +55,9 @@ class Settings(BaseSettings):
     LLM_TEMPERATURE: float = 0.0
     LLM_FALLBACK_TO_DETERMINISTIC: bool = True
     GEMINI_API_KEY: str = ""
+    # Strands agent runtime (agent/tool-orchestration layer over Gemini)
+    STRANDS_MAX_TOOL_CALLS: int = 6
+    STRANDS_TIMEOUT_SECONDS: float = 60.0
 
 
 
@@ -230,8 +233,10 @@ class Settings(BaseSettings):
                 )
             if self.ENCRYPTION_KEY == "":
                 errors.append("ENCRYPTION_KEY must be explicitly configured in production.")
-            if self.LLM_ENABLED and self.LLM_PROVIDER.lower() == "gemini" and not self.GEMINI_API_KEY:
-                errors.append("GEMINI_API_KEY must be configured when LLM_PROVIDER is 'gemini' in production.")
+            if self.LLM_ENABLED and self.LLM_PROVIDER.lower() in ("gemini", "strands") and not self.GEMINI_API_KEY:
+                errors.append(
+                    f"GEMINI_API_KEY must be configured when LLM_PROVIDER is '{self.LLM_PROVIDER}' in production."
+                )
         if self.is_staging():
 
             if self.is_sqlite():

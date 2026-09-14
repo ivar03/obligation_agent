@@ -10,6 +10,7 @@ from app.core.config import settings
 from app.services.llm.base import BaseLLMProvider
 from app.services.llm.mock_provider import MockLLMProvider
 from app.services.llm.gemini_provider import GeminiLLMProvider
+from app.services.llm.strands_provider import StrandsLLMProvider
 from app.schemas.llm import LLMProviderInfo
 
 
@@ -28,8 +29,13 @@ class LLMProviderRegistry:
         target = (name or cls._active_provider_name or "mock").lower()
         if target in cls._providers:
             provider = cls._providers[target]
-            # If Gemini was selected but is not configured with an API key, fall back gracefully
-            if target == "gemini" and isinstance(provider, GeminiLLMProvider) and not provider.is_configured():
+            # If Gemini/Strands was selected but is not configured with an API key,
+            # fall back gracefully. Both route to Gemini, so both need GEMINI_API_KEY.
+            needs_api_key = (
+                (target == "gemini" and isinstance(provider, GeminiLLMProvider))
+                or (target == "strands" and isinstance(provider, StrandsLLMProvider))
+            )
+            if needs_api_key and not provider.is_configured():
                 if settings.LLM_FALLBACK_TO_DETERMINISTIC and "mock" in cls._providers:
                     return cls._providers["mock"]
             return provider
@@ -75,13 +81,14 @@ class LLMProviderRegistry:
         elif active_name == "mock":
             service_status = "ready_mock"
             status_message = "Operating in offline deterministic mock mode."
-        elif active_name == "gemini":
+        elif active_name in ("gemini", "strands"):
             if has_api_key:
                 service_status = "ready"
-                status_message = f"Google Gemini provider active with model '{active_prov.model_name if active_prov else settings.LLM_MODEL}'."
+                label = "Google Gemini" if active_name == "gemini" else "Strands (Gemini)"
+                status_message = f"{label} provider active with model '{active_prov.model_name if active_prov else settings.LLM_MODEL}'."
             else:
                 service_status = "api_key_missing"
-                status_message = "Google Gemini provider selected but GEMINI_API_KEY is not set in environment."
+                status_message = f"'{active_name}' provider selected but GEMINI_API_KEY is not set in environment."
         else:
             service_status = "unknown_provider"
             status_message = f"Provider '{active_name}' is not recognized."
@@ -122,13 +129,15 @@ class LLMProviderRegistry:
 # Initialize providers in registry
 default_mock_provider = MockLLMProvider()
 default_gemini_provider = GeminiLLMProvider()
+default_strands_provider = StrandsLLMProvider()
 
 LLMProviderRegistry.register(default_mock_provider)
 LLMProviderRegistry.register(default_gemini_provider)
+LLMProviderRegistry.register(default_strands_provider)
 
 # Set active provider based on environment configuration
 configured_provider = (settings.LLM_PROVIDER or "mock").lower()
-if configured_provider in ["gemini", "mock"]:
+if configured_provider in ["gemini", "mock", "strands"]:
     LLMProviderRegistry.set_active_provider(configured_provider)
 else:
     LLMProviderRegistry.set_active_provider("mock")

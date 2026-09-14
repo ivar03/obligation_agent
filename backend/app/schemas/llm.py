@@ -127,6 +127,43 @@ class GroundedExplanationProposal(BaseModel):
     prompt_version: str = "v1"
 
 
+class AgentInvestigationSummary(BaseModel):
+    """Structured output of the Strands investigation agent."""
+    schema_version: str = "agent-investigation-summary-v1"
+    obligation_id: str
+    narrative: str = Field(..., description="Plain-language synthesis of why this obligation is at risk.")
+    root_cause_type: str = Field(..., description="One of DIRECT_CAUSE, UPSTREAM_CAUSE, CONTRIBUTING_FACTOR, UNCERTAINTY.")
+    confidence: float = Field(..., ge=0.0, le=1.0)
+    grounded_on: List[str] = Field(default_factory=list, description="Tool names the agent actually called before answering.")
+
+
+class InvestigateAgenticRequest(BaseModel):
+    obligation_id: str
+    workspace_id: Optional[str] = None
+
+
+class AgentRecommendation(BaseModel):
+    """A recommendation the agent proposes against an existing DecisionPlan.
+
+    Advisory only: acting on it requires human authorization through the
+    existing decision/execution flow.
+    """
+    schema_version: str = "agent-recommendation-v1"
+    obligation_id: str
+    decision_plan_id: Optional[str] = Field(None, description="The DecisionPlan this recommendation is made against.")
+    recommended_strategy: str = Field(..., description="The single strategy the agent recommends.")
+    rationale: str = Field(..., description="Why this strategy, grounded in retrieved facts.")
+    expected_outcome: str = Field(..., description="What the agent expects to change if a human authorizes it.")
+    confidence: float = Field(..., ge=0.0, le=1.0)
+    grounded_on: List[str] = Field(default_factory=list, description="Tool names the agent called before recommending.")
+    requires_human_authorization: bool = True
+
+
+class RecommendRequest(BaseModel):
+    obligation_id: str
+    workspace_id: Optional[str] = None
+
+
 # -----------------------------------------------------------------------------
 # Reconciliation Model (Hybrid Deterministic + LLM)
 # -----------------------------------------------------------------------------

@@ -7,8 +7,9 @@
 [![Next.js](https://img.shields.io/badge/Next.js-16.3-black.svg?logo=next.js&logoColor=white)](https://nextjs.org)
 [![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12-blue.svg?logo=python&logoColor=white)](https://www.python.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-3178C6.svg?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
-[![Google Gemini](https://img.shields.io/badge/LLM-Google%20Gemini%201.5%20Flash-4285F4.svg?logo=google&logoColor=white)](https://ai.google.dev/)
-[![Tests](https://img.shields.io/badge/Tests-566%20Passed-brightgreen.svg)]()
+[![Google Gemini](https://img.shields.io/badge/LLM-Google%20Gemini%202.5%20Flash-4285F4.svg?logo=google&logoColor=white)](https://ai.google.dev/)
+[![Strands](https://img.shields.io/badge/Agent%20Runtime-AWS%20Strands-FF9900.svg?logo=amazonaws&logoColor=white)](https://strandsagents.com)
+[![Tests](https://img.shields.io/badge/Tests-610%20Passed-brightgreen.svg)]()
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
 ---
@@ -244,7 +245,7 @@ Obligation Agent utilizes **Google Gemini** as its primary LLM intelligence engi
 ### Provider Modes
 
 1. **Gemini Live Mode (`LLM_PROVIDER=gemini`)**:
-   - Uses `gemini-1.5-flash` for high-throughput, low-latency extraction and reasoning.
+   - Uses `gemini-2.5-flash` for high-throughput, low-latency extraction and reasoning.
    - Requires `GEMINI_API_KEY`.
    - Structured JSON output schemas enforced with automatic validation against Pydantic models.
 
@@ -252,13 +253,19 @@ Obligation Agent utilizes **Google Gemini** as its primary LLM intelligence engi
    - Deterministic, offline provider utilizing rule-based semantic parsers and pre-calculated scenario mocks.
    - Default for local development, unit tests, and CI/CD pipelines. Zero API keys or network calls required.
 
+3. **Strands Agent Runtime (`LLM_PROVIDER=strands`)**:
+   - Uses the Strands agent SDK over Gemini for tool-using agentic workflows (investigation and recommendation).
+   - Requires `GEMINI_API_KEY` and `strands-agents` (already in `requirements.txt`). No AWS account or credentials are needed -- Strands is an open-source SDK here, not an AWS service.
+   - Gemini remains the model; Strands provides agent orchestration, tool calling and structured output.
+   - See `docs/operations/strands_runtime.md` for the full runtime operator guide.
+
 ### Gemini Configuration Example
 
 ```env
 # Enable Gemini LLM Layer
 LLM_ENABLED=true
 LLM_PROVIDER=gemini
-LLM_MODEL=gemini-1.5-flash
+LLM_MODEL=gemini-2.5-flash
 GEMINI_API_KEY=AIzaSyYourActualGeminiApiKeyHere
 
 # Rate Limiting & Safety Boundaries
@@ -266,6 +273,12 @@ LLM_MAX_REQUESTS_PER_MINUTE=60
 LLM_MAX_TOKENS_PER_REQUEST=2048
 LLM_TIMEOUT_SECONDS=5.0
 LLM_FALLBACK_TO_DETERMINISTIC=true
+```
+
+# Strands Agent Runtime (when LLM_PROVIDER=strands)
+```env
+STRANDS_MAX_TOOL_CALLS=6
+STRANDS_TIMEOUT_SECONDS=60.0
 ```
 
 ### Verifying LLM Runtime Status
@@ -276,11 +289,13 @@ Check live LLM engine status via the API:
 curl http://localhost:8000/api/intelligence/llm/status
 ```
 
+When `LLM_PROVIDER=strands` is active, the response reports `"provider_name": "strands"` (with `"registered_providers": ["mock", "gemini", "strands"]`). See `docs/operations/strands_runtime.md` for the full response shape and the `api_key_configured` signal to watch during cutover.
+
 Expected response:
 ```json
 {
   "provider": "gemini",
-  "model": "gemini-1.5-flash",
+  "model": "gemini-2.5-flash",
   "is_ready": true,
   "rate_limiter": {
     "requests_this_minute": 1,
@@ -386,7 +401,7 @@ Configuration is managed via environment variables and loaded through `pydantic-
 | **Google Gemini AI** | | | |
 | `LLM_ENABLED` | Optional | `true` | Enables the natural-language intelligence layer |
 | `LLM_PROVIDER` | Optional | `mock` | Active provider: `mock` (offline/test) or `gemini` (live Google Gemini) |
-| `LLM_MODEL` | Optional | `gemini-1.5-flash` | Target Gemini model identifier |
+| `LLM_MODEL` | Optional | `gemini-2.5-flash` | Target Gemini model identifier |
 | `GEMINI_API_KEY` | Required if Gemini | `AIzaSy...` | Google AI Studio API key |
 | `LLM_MAX_REQUESTS_PER_MINUTE`| Optional | `60` | Client rate limit for Gemini API calls |
 | `LLM_TIMEOUT_SECONDS` | Optional | `5.0` | Timeout threshold for LLM requests |
@@ -620,7 +635,7 @@ curl -X POST http://localhost:8000/api/obligations/import/csv/commit \
    ```env
    LLM_ENABLED=true
    LLM_PROVIDER=gemini
-   LLM_MODEL=gemini-1.5-flash
+   LLM_MODEL=gemini-2.5-flash
    GEMINI_API_KEY=your_gemini_api_key_here
    ```
 
@@ -644,7 +659,9 @@ The backend provides a fully documented REST API. Access interactive documentati
 | `/api/events/simulate` | `POST` | Deterministic event scenario simulator |
 | `/api/reconciliation` | `GET` | List multi-provider reconciliation records |
 | `/api/reconciliation/refresh` | `POST` | Re-evaluate cross-provider contradictions for workspace |
-| `/api/intelligence/llm/status` | `GET` | Live Gemini / LLM provider runtime health |
+| `/api/intelligence/llm/status` | `GET` | Live Gemini / Strands provider runtime health |
+| `/api/intelligence/llm/investigate` | `POST` | Agentic investigation: the agent calls read-only tools to gather the obligation's state, dependency chain, evidence and risk, then returns a grounded structured summary |
+| `/api/intelligence/llm/recommend` | `POST` | Agentic recommendation against the existing DecisionPlan. Advisory only — acting on it requires human authorization |
 | `/api/intelligence/decisions/generate`| `POST` | Generate fact-grounded decision plans |
 | `/api/integrations` | `GET` | Status of all registered integration adapters |
 | `/api/integrations/jira/projects` | `GET`, `POST` | Discover and select Jira Cloud projects |
@@ -742,6 +759,7 @@ docker compose logs -f backend
 * Confirm `GEMINI_API_KEY` is a valid Google AI Studio key without surrounding quotes or whitespace.
 * Check runtime status: `curl http://localhost:8000/api/intelligence/llm/status`.
 * If no external internet access is available, set `LLM_PROVIDER=mock` for local development.
+* Note: `LLM_PROVIDER=strands` also requires `GEMINI_API_KEY` (Strands runs over Gemini). Without it, Strands degrades silently to the mock provider. See `docs/operations/strands_runtime.md`.
 
 ### 4. Jira Connection Failure
 * Confirm you are using **Jira Cloud** (e.g., `https://your-domain.atlassian.net`). Jira Server / Data Center is not supported.
