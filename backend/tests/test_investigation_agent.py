@@ -87,7 +87,7 @@ async def test_investigate_passes_the_configured_tool_budget(db_session, monkeyp
     )
     captured = {}
 
-    def spy_build_tools(session, workspace_id, max_calls=None):
+    def spy_build_tools(session, workspace_id, max_calls=None, counter=None):
         captured["workspace_id"] = workspace_id
         captured["max_calls"] = max_calls
         return []

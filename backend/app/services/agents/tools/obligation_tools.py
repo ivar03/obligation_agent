@@ -27,18 +27,29 @@ _BUDGET_EXHAUSTED = {
 
 
 def build_obligation_tools(
-    session: AsyncSession, workspace_id: str, max_calls: Optional[int] = None
+    session: AsyncSession,
+    workspace_id: str,
+    max_calls: Optional[int] = None,
+    counter: Optional[Dict[str, int]] = None,
 ) -> List[Callable]:
-    """Returns Strands tools scoped to one session + workspace."""
-    budget = {"remaining": max_calls}
+    """Returns Strands tools scoped to one session + workspace.
+
+    `counter`, when given, is populated with {"calls": N} as tools run, so the
+    caller can record how much tool work an agent actually did.
+    """
+    budget = {"remaining": max_calls, "used": 0}
+    if counter is not None:
+        counter["calls"] = 0
 
     def _spend_call() -> bool:
         """Consumes one unit of the call budget. Returns True if it was already spent."""
-        if budget["remaining"] is None:
-            return False
-        if budget["remaining"] <= 0:
-            return True
-        budget["remaining"] -= 1
+        if budget["remaining"] is not None:
+            if budget["remaining"] <= 0:
+                return True
+            budget["remaining"] -= 1
+        budget["used"] += 1
+        if counter is not None:
+            counter["calls"] = budget["used"]
         return False
 
     def _not_found(obligation_id: str) -> Dict[str, Any]:

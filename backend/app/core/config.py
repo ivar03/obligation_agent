@@ -57,6 +57,7 @@ class Settings(BaseSettings):
     GEMINI_API_KEY: str = ""
     # Strands agent runtime (agent/tool-orchestration layer over Gemini)
     STRANDS_MAX_TOOL_CALLS: int = 6
+    STRANDS_TIMEOUT_SECONDS: float = 60.0
 
 
 

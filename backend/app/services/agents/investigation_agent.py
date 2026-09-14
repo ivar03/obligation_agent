@@ -7,10 +7,13 @@ service to consult before producing a grounded natural-language investigation
 summary. The agent never mutates state, and its output is a validated
 AgentInvestigationSummary, not a free-form message.
 """
+import asyncio
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
 from app.services.agents import runtime
+from app.services.agents.agent_run_recorder import record_agent_run
 from app.services.agents.tools.obligation_tools import build_obligation_tools
 from app.schemas.llm import AgentInvestigationSummary
 
@@ -33,13 +36,22 @@ class InvestigationAgentService:
     async def investigate(
         self, session: AsyncSession, obligation_id: str, workspace_id: str
     ) -> AgentInvestigationSummary:
-        tools = build_obligation_tools(
-            session, workspace_id, max_calls=settings.STRANDS_MAX_TOOL_CALLS
-        )
-        agent = self._agent_factory(INVESTIGATION_SYSTEM_PROMPT, tools=tools)
+        counter: dict = {}
+        async with record_agent_run(
+            session, workspace_id=workspace_id, agent_name="investigation",
+            obligation_id=obligation_id, counter=counter,
+        ):
+            tools = build_obligation_tools(
+                session, workspace_id,
+                max_calls=settings.STRANDS_MAX_TOOL_CALLS, counter=counter,
+            )
+            agent = self._agent_factory(INVESTIGATION_SYSTEM_PROMPT, tools=tools)
 
-        prompt = (
-            f"Investigate obligation '{obligation_id}' in this workspace. "
-            f"Use your tools to gather evidence before answering."
-        )
-        return await agent.structured_output_async(AgentInvestigationSummary, prompt)
+            prompt = (
+                f"Investigate obligation '{obligation_id}' in this workspace. "
+                f"Use your tools to gather evidence before answering."
+            )
+            return await asyncio.wait_for(
+                agent.structured_output_async(AgentInvestigationSummary, prompt),
+                timeout=settings.STRANDS_TIMEOUT_SECONDS,
+            )
