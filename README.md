@@ -252,6 +252,12 @@ Obligation Agent utilizes **Google Gemini** as its primary LLM intelligence engi
    - Deterministic, offline provider utilizing rule-based semantic parsers and pre-calculated scenario mocks.
    - Default for local development, unit tests, and CI/CD pipelines. Zero API keys or network calls required.
 
+3. **Strands Agent Runtime (`LLM_PROVIDER=strands`)**:
+   - Uses the Strands agent SDK over Gemini for tool-using agentic workflows (investigation and recommendation).
+   - Requires `GEMINI_API_KEY` and the Strands package (`strands-agents`, `strands-agents-tools`).
+   - Gemini remains the model; Strands provides agent orchestration, tool calling and structured output.
+   - See `docs/operations/strands_runtime.md` for the full runtime operator guide.
+
 ### Gemini Configuration Example
 
 ```env
@@ -268,6 +274,12 @@ LLM_TIMEOUT_SECONDS=5.0
 LLM_FALLBACK_TO_DETERMINISTIC=true
 ```
 
+# Strands Agent Runtime (when LLM_PROVIDER=strands)
+```env
+STRANDS_MAX_TOOL_CALLS=6
+STRANDS_TIMEOUT_SECONDS=60.0
+```
+
 ### Verifying LLM Runtime Status
 
 Check live LLM engine status via the API:
@@ -275,6 +287,8 @@ Check live LLM engine status via the API:
 ```bash
 curl http://localhost:8000/api/intelligence/llm/status
 ```
+
+When `LLM_PROVIDER=strands` is active, the response reports `"provider_name": "strands"` (with `"registered_providers": ["mock", "gemini", "strands"]`). See `docs/operations/strands_runtime.md` for the full response shape and the `api_key_configured` signal to watch during cutover.
 
 Expected response:
 ```json
@@ -742,6 +756,7 @@ docker compose logs -f backend
 * Confirm `GEMINI_API_KEY` is a valid Google AI Studio key without surrounding quotes or whitespace.
 * Check runtime status: `curl http://localhost:8000/api/intelligence/llm/status`.
 * If no external internet access is available, set `LLM_PROVIDER=mock` for local development.
+* Note: `LLM_PROVIDER=strands` also requires `GEMINI_API_KEY` (Strands runs over Gemini). Without it, Strands degrades silently to the mock provider. See `docs/operations/strands_runtime.md`.
 
 ### 4. Jira Connection Failure
 * Confirm you are using **Jira Cloud** (e.g., `https://your-domain.atlassian.net`). Jira Server / Data Center is not supported.
