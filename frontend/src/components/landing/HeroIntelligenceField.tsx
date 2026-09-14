@@ -141,7 +141,7 @@ export const HeroIntelligenceField: React.FC = () => {
         {/* ========================================================================= */}
         <div className="mt-16 max-w-5xl mx-auto relative">
           {/* Floating Telemetry Chips (Constellation around the preview) */}
-          <div
+          {/* <div
             style={calcParallax(-0.15)}
             className="hidden lg:flex absolute -top-8 -left-8 z-20 items-center gap-2 px-3 py-1.5 rounded-xl bg-white/85 backdrop-blur-md border border-stone-200/90 shadow-md text-xs font-mono font-medium text-stone-800"
           >
@@ -181,7 +181,7 @@ export const HeroIntelligenceField: React.FC = () => {
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
             <span className="text-stone-500 text-[10px] uppercase font-bold tracking-wider">GOVERNANCE:</span>
             <span>Human Authorization Required</span>
-          </div>
+          </div> */}
 
           {/* Interactive Miniature Product Preview Card */}
           <div

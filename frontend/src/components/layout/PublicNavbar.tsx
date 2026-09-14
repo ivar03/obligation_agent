@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { ShieldCheck, ArrowRight, Menu, X, Sparkles, LayoutDashboard } from "lucide-react";
+import Image from "next/image";
+import { ArrowRight, Menu, X, Sparkles, LayoutDashboard } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
 export const PublicNavbar: React.FC = () => {
@@ -21,18 +22,15 @@ export const PublicNavbar: React.FC = () => {
     <header className="sticky top-0 z-50 bg-white/50 backdrop-blur-md border-b border-stone-200/50 shadow-2xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Brand Logo */}
-        <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="w-9 h-9 rounded-xl bg-orange-600 flex items-center justify-center text-white shadow-sm shadow-orange-500/20 group-hover:bg-orange-700 transition-colors">
-            <ShieldCheck className="w-5 h-5 text-white" />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-base font-bold tracking-tight text-slate-900 leading-tight">
-              Obligation<span className="text-orange-600">Agent</span>
-            </span>
-            <span className="text-[10px] font-medium text-slate-500 tracking-wide">
-              Intelligent Workplace Commitments
-            </span>
-          </div>
+        <Link href="/" className="flex items-center group" aria-label="Obligation Agent home">
+          <Image
+            src="/logo.png"
+            alt="Obligation Agent"
+            width={241}
+            height={61}
+            priority
+            className="h-11 w-auto object-contain"
+          />
         </Link>
 
         {/* Desktop Navigation */}

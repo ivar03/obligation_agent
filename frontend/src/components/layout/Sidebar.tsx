@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
@@ -129,16 +130,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ counts }) => {
     <aside className="w-64 shrink-0 border-r border-slate-200 bg-white flex flex-col justify-between hidden md:flex min-h-screen select-none">
       <div className="p-4 space-y-5">
         {/* Brand Header */}
-        <Link href="/" className="flex items-center gap-3 px-2 py-1 group">
-          <div className="w-9 h-9 rounded-xl bg-orange-600 flex items-center justify-center shadow-sm shadow-orange-500/20 group-hover:bg-orange-700 transition-colors">
-            <ShieldCheck className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <div className="text-sm font-bold tracking-tight text-slate-900 flex items-center gap-1">
-              Obligation<span className="text-orange-600">Agent</span>
-            </div>
-            <div className="text-[10px] text-slate-600 font-medium">Commitment Intelligence</div>
-          </div>
+        <Link href="/" className="flex items-center px-2 py-1 group" aria-label="Obligation Agent home">
+          <Image
+            src="/logo.png"
+            alt="Obligation Agent"
+            width={241}
+            height={61}
+            priority
+            className="h-12 w-auto max-w-full object-contain"
+          />
         </Link>
 
         {/* Workspace Switcher */}

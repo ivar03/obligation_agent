@@ -2,8 +2,9 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Sparkles, Activity, Search, UploadCloud, ShieldCheck } from "lucide-react";
+import { Sparkles, Activity, Search, UploadCloud } from "lucide-react";
 import { obligationsApi } from "@/lib/api/obligations";
 import { NotificationCenter } from "./NotificationCenter";
 import { CsvImportModal } from "../obligations/CsvImportModal";
@@ -34,12 +35,14 @@ export const Header: React.FC = () => {
         {/* Left: Mobile Brand & Search */}
         <div className="flex items-center gap-4 flex-1 max-w-md">
           <Link href="/" className="md:hidden flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-orange-600 flex items-center justify-center font-bold text-white text-sm shadow-xs">
-              <ShieldCheck className="w-4 h-4 text-white" />
-            </div>
-            <span className="font-bold text-slate-900 text-sm">
-              Obligation<span className="text-orange-600">Agent</span>
-            </span>
+            <Image
+              src="/logo.png"
+              alt="Obligation Agent"
+              width={241}
+              height={61}
+              priority
+              className="h-10 w-auto object-contain"
+            />
           </Link>
 
           <form onSubmit={handleSearch} className="relative w-full hidden sm:block">
