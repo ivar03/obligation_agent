@@ -37,6 +37,17 @@ class RecommendationAgentService:
     def __init__(self, agent_factory=runtime.build_gemini_agent):
         self._agent_factory = agent_factory
 
+    @staticmethod
+    async def _run_grounded(agent, prompt, schema_cls):
+        """Run the tool-calling loop, then shape the result into schema_cls.
+
+        structured_output_async() alone never invokes tools, so the model would
+        answer from nothing. invoke_async() drives the loop; the follow-up
+        structured call reads the conversation the tools produced.
+        """
+        await agent.invoke_async(prompt)
+        return await agent.structured_output_async(schema_cls)
+
     async def recommend(
         self, session: AsyncSession, obligation_id: str, workspace_id: str
     ) -> AgentRecommendation:
@@ -73,11 +84,13 @@ class RecommendationAgentService:
                 f"Use your tools to verify before recommending."
             )
             recommendation = await asyncio.wait_for(
-                agent.structured_output_async(AgentRecommendation, prompt),
+                self._run_grounded(agent, prompt, AgentRecommendation),
                 timeout=settings.STRANDS_TIMEOUT_SECONDS,
             )
 
         # Authorization is this service's to assert, never the model's.
+        recommendation.grounded_on = counter.get("names", [])
+        recommendation.schema_version = "agent-recommendation-v1"
         recommendation.decision_plan_id = plan.id
         recommendation.obligation_id = obligation_id
         recommendation.requires_human_authorization = True

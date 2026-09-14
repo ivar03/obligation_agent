@@ -33,6 +33,17 @@ class InvestigationAgentService:
     def __init__(self, agent_factory=runtime.build_gemini_agent):
         self._agent_factory = agent_factory
 
+    @staticmethod
+    async def _run_grounded(agent, prompt, schema_cls):
+        """Run the tool-calling loop, then shape the result into schema_cls.
+
+        structured_output_async() alone never invokes tools, so the model would
+        answer from nothing. invoke_async() drives the loop; the follow-up
+        structured call reads the conversation the tools produced.
+        """
+        await agent.invoke_async(prompt)
+        return await agent.structured_output_async(schema_cls)
+
     async def investigate(
         self, session: AsyncSession, obligation_id: str, workspace_id: str
     ) -> AgentInvestigationSummary:
@@ -51,7 +62,19 @@ class InvestigationAgentService:
                 f"Investigate obligation '{obligation_id}' in this workspace. "
                 f"Use your tools to gather evidence before answering."
             )
-            return await asyncio.wait_for(
-                agent.structured_output_async(AgentInvestigationSummary, prompt),
+            # Two steps on purpose. structured_output_async() is a one-shot
+            # schema fill: it does NOT run the tool-calling loop even when tools
+            # are attached, so calling it alone makes the model invent its
+            # answer. invoke_async() runs the loop; the structured call then
+            # shapes what the tools actually returned.
+            result = await asyncio.wait_for(
+                self._run_grounded(agent, prompt, AgentInvestigationSummary),
                 timeout=settings.STRANDS_TIMEOUT_SECONDS,
             )
+
+        # grounded_on is evidence, not narration: report the tools that actually
+        # ran, never the names the model claims it used.
+        result.grounded_on = counter.get("names", [])
+        result.obligation_id = obligation_id
+        result.schema_version = "agent-investigation-summary-v1"
+        return result

@@ -15,9 +15,13 @@ class _FakeAgent:
         self._response = response
         self._captured = captured
 
+    async def invoke_async(self, prompt=None):
+        """The agents run the tool loop here; the prompt arrives with this call."""
+        self._captured["prompt"] = prompt
+        return None
+
     async def structured_output_async(self, output_model, prompt=None):
         self._captured["output_model"] = output_model
-        self._captured["prompt"] = prompt
         return self._response
 
 

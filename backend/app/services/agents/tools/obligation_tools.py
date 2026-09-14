@@ -40,8 +40,9 @@ def build_obligation_tools(
     budget = {"remaining": max_calls, "used": 0}
     if counter is not None:
         counter["calls"] = 0
+        counter["names"] = []
 
-    def _spend_call() -> bool:
+    def _spend_call(name: str = "") -> bool:
         """Consumes one unit of the call budget. Returns True if it was already spent."""
         if budget["remaining"] is not None:
             if budget["remaining"] <= 0:
@@ -50,6 +51,8 @@ def build_obligation_tools(
         budget["used"] += 1
         if counter is not None:
             counter["calls"] = budget["used"]
+            if name and name not in counter["names"]:
+                counter["names"].append(name)
         return False
 
     def _not_found(obligation_id: str) -> Dict[str, Any]:
@@ -59,7 +62,8 @@ def build_obligation_tools(
         }
 
     @tool
-    async def get_obligation_snapshot(obligation_id: str) -> Dict[str, Any]:
+    async def get_obligation_snapshot(obligation_id: str) -> Dict[str, Any]:  # noqa: D401
+        _TOOL_NAME = "get_obligation_snapshot"
         """
         Fetch the current state of one obligation: owner, beneficiary,
         action, deadline, status, and risk.
@@ -67,7 +71,7 @@ def build_obligation_tools(
         Args:
             obligation_id: The obligation's ID.
         """
-        if _spend_call():
+        if _spend_call(_TOOL_NAME):
             return _BUDGET_EXHAUSTED
         obligation = await ObligationService.get_by_id(
             session, obligation_id, workspace_id=workspace_id
@@ -77,14 +81,15 @@ def build_obligation_tools(
         return {"status": "success", "content": [{"text": obligation.model_dump_json()}]}
 
     @tool
-    async def get_dependency_chain(obligation_id: str) -> Dict[str, Any]:
+    async def get_dependency_chain(obligation_id: str) -> Dict[str, Any]:  # noqa: D401
+        _TOOL_NAME = "get_dependency_chain"
         """
         Fetch the upstream prerequisites and root blockers for one obligation.
 
         Args:
             obligation_id: The obligation's ID.
         """
-        if _spend_call():
+        if _spend_call(_TOOL_NAME):
             return _BUDGET_EXHAUSTED
         obligation = await ObligationService.get_by_id(
             session, obligation_id, workspace_id=workspace_id
@@ -100,7 +105,8 @@ def build_obligation_tools(
         return {"status": "success", "content": [{"text": json.dumps(payload)}]}
 
     @tool
-    async def get_root_cause_summary(obligation_id: str) -> Dict[str, Any]:
+    async def get_root_cause_summary(obligation_id: str) -> Dict[str, Any]:  # noqa: D401
+        _TOOL_NAME = "get_root_cause_summary"
         """
         Run the deterministic root-cause analysis engine for one obligation and
         return its structured findings: direct causes, upstream causes,
@@ -109,7 +115,7 @@ def build_obligation_tools(
         Args:
             obligation_id: The obligation's ID.
         """
-        if _spend_call():
+        if _spend_call(_TOOL_NAME):
             return _BUDGET_EXHAUSTED
         try:
             result = await RootCauseAnalysisEngine.analyze(
@@ -120,7 +126,8 @@ def build_obligation_tools(
         return {"status": "success", "content": [{"text": result.model_dump_json()}]}
 
     @tool
-    async def get_related_evidence(obligation_id: str) -> Dict[str, Any]:
+    async def get_related_evidence(obligation_id: str) -> Dict[str, Any]:  # noqa: D401
+        _TOOL_NAME = "get_related_evidence"
         """
         Fetch the evidence records attached to one obligation: what was
         observed, from which provider, and whether a human confirmed it.
@@ -128,7 +135,7 @@ def build_obligation_tools(
         Args:
             obligation_id: The obligation's ID.
         """
-        if _spend_call():
+        if _spend_call(_TOOL_NAME):
             return _BUDGET_EXHAUSTED
         obligation = await ObligationService.get_by_id(
             session, obligation_id, workspace_id=workspace_id
@@ -142,7 +149,8 @@ def build_obligation_tools(
         return {"status": "success", "content": [{"text": json.dumps(payload)}]}
 
     @tool
-    async def get_risk_assessment(obligation_id: str) -> Dict[str, Any]:
+    async def get_risk_assessment(obligation_id: str) -> Dict[str, Any]:  # noqa: D401
+        _TOOL_NAME = "get_risk_assessment"
         """
         Fetch the deterministic risk assessment for one obligation: its risk
         score, level, and the reasons the risk engine gave.
@@ -150,7 +158,7 @@ def build_obligation_tools(
         Args:
             obligation_id: The obligation's ID.
         """
-        if _spend_call():
+        if _spend_call(_TOOL_NAME):
             return _BUDGET_EXHAUSTED
         obligation = await ObligationService.get_by_id(
             session, obligation_id, workspace_id=workspace_id
@@ -165,7 +173,8 @@ def build_obligation_tools(
         return {"status": "success", "content": [{"text": assessment.model_dump_json()}]}
 
     @tool
-    async def get_downstream_impact(obligation_id: str) -> Dict[str, Any]:
+    async def get_downstream_impact(obligation_id: str) -> Dict[str, Any]:  # noqa: D401
+        _TOOL_NAME = "get_downstream_impact"
         """
         Fetch the obligations that would be affected if this one slips: every
         downstream dependent, with how many hops away it sits.
@@ -173,7 +182,7 @@ def build_obligation_tools(
         Args:
             obligation_id: The obligation's ID.
         """
-        if _spend_call():
+        if _spend_call(_TOOL_NAME):
             return _BUDGET_EXHAUSTED
         obligation = await ObligationService.get_by_id(
             session, obligation_id, workspace_id=workspace_id
@@ -190,7 +199,8 @@ def build_obligation_tools(
         return {"status": "success", "content": [{"text": json.dumps(payload)}]}
 
     @tool
-    async def get_related_obligations(obligation_id: str) -> Dict[str, Any]:
+    async def get_related_obligations(obligation_id: str) -> Dict[str, Any]:  # noqa: D401
+        _TOOL_NAME = "get_related_obligations"
         """
         Fetch obligations linked to this one for context (LINKED edges), which
         are related work but not prerequisites.
@@ -198,7 +208,7 @@ def build_obligation_tools(
         Args:
             obligation_id: The obligation's ID.
         """
-        if _spend_call():
+        if _spend_call(_TOOL_NAME):
             return _BUDGET_EXHAUSTED
         obligation = await ObligationService.get_by_id(
             session, obligation_id, workspace_id=workspace_id
@@ -210,7 +220,8 @@ def build_obligation_tools(
         return {"status": "success", "content": [{"text": json.dumps(payload)}]}
 
     @tool
-    async def get_recent_events(obligation_id: str) -> Dict[str, Any]:
+    async def get_recent_events(obligation_id: str) -> Dict[str, Any]:  # noqa: D401
+        _TOOL_NAME = "get_recent_events"
         """
         Fetch recent external signals ingested into this workspace from Slack,
         Gmail, Calendar or Jira, newest first.
@@ -223,7 +234,7 @@ def build_obligation_tools(
             obligation_id: The obligation being investigated, for context only.
                 It does not filter the results.
         """
-        if _spend_call():
+        if _spend_call(_TOOL_NAME):
             return _BUDGET_EXHAUSTED
         events = await EventIngestionService.list_events(
             session, limit=20, workspace_id=workspace_id
