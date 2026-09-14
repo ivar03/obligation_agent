@@ -28,6 +28,8 @@ from app.schemas.llm import (
     EventSemanticProposal,
     AgentInvestigationSummary,
     InvestigateAgenticRequest,
+    AgentRecommendation,
+    RecommendRequest,
 )
 from app.models.llm_analysis import LLMAnalysisRecord
 from app.services.llm.provider_registry import LLMProviderRegistry
@@ -36,6 +38,7 @@ from app.services.llm.semantic_event_interpreter import SemanticEventInterpreter
 from app.services.llm.grounded_explanation_service import GroundedExplanationService
 from app.services.llm.rate_limiter import LLMRateLimiter
 from app.services.agents.investigation_agent import InvestigationAgentService
+from app.services.agents.recommendation_agent import RecommendationAgentService
 
 router = APIRouter(prefix="/api/intelligence/llm", tags=["LLM Intelligence"])
 
@@ -200,6 +203,42 @@ async def investigate_obligation_agentic(
         metrics.increment("llm.failure_total", labels={"type": "investigate"})
         logger.error(f"Error in /api/intelligence/llm/investigate: {e}")
         raise HTTPException(status_code=500, detail=f"Agentic investigation failed: {str(e)}")
+
+
+@router.post("/recommend", response_model=AgentRecommendation)
+async def recommend_resolution_agentic(
+    req: RecommendRequest,
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Runs the Strands recommendation agent over one obligation.
+
+    Returns an advisory strategy grounded in the deterministic DecisionPlan and
+    read-only tool output. Advisory only: acting on it requires human
+    authorization through the existing decision and execution flow.
+    """
+    workspace_id = req.workspace_id or "ws-default"
+
+    if not LLMRateLimiter.check_and_record(workspace_id):
+        metrics.increment("llm.rate_limited_total", labels={"workspace": workspace_id})
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail=f"LLM request rate limit exceeded for workspace '{workspace_id}'.",
+        )
+
+    metrics.increment("llm.requests_total", labels={"type": "recommend", "workspace": workspace_id})
+
+    service = RecommendationAgentService()
+    try:
+        result = await service.recommend(db, req.obligation_id, workspace_id=workspace_id)
+        metrics.increment("llm.success_total", labels={"type": "recommend"})
+        return result
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        metrics.increment("llm.failure_total", labels={"type": "recommend"})
+        logger.error(f"Error in /api/intelligence/llm/recommend: {e}")
+        raise HTTPException(status_code=500, detail=f"Agentic recommendation failed: {str(e)}")
 
 
 @router.get("/history", response_model=List[Dict[str, Any]])
