@@ -1,4 +1,23 @@
 import os
+
+# Isolate the suite from whatever is in a developer's .env BEFORE any app module
+# is imported. Environment variables outrank .env in pydantic-settings, so these
+# win. Without them a populated .env makes the suite call real LLM APIs and makes
+# the webhook tests fail on signature/token checks they were written without.
+os.environ["LLM_PROVIDER"] = "mock"
+for _unset in (
+    "GEMINI_API_KEY",
+    "GMAIL_PUBSUB_VERIFICATION_TOKEN",
+    "GOOGLE_CALENDAR_WEBHOOK_SECRET",
+    "SLACK_SIGNING_SECRET",
+    "JIRA_WEBHOOK_SECRET",
+    "GMAIL_CLIENT_ID",
+    "GMAIL_CLIENT_SECRET",
+    "GOOGLE_CALENDAR_CLIENT_ID",
+    "GOOGLE_CALENDAR_CLIENT_SECRET",
+):
+    os.environ[_unset] = ""
+
 import pytest
 import pytest_asyncio
 from httpx import AsyncClient, ASGITransport
