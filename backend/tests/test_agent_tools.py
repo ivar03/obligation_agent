@@ -91,7 +91,7 @@ async def test_tool_call_budget_is_enforced(db_session):
     )
 
     tools = build_obligation_tools(db_session, workspace_id="ws-alpha", max_calls=1)
-    get_obligation_snapshot, get_dependency_chain, _ = tools
+    get_obligation_snapshot, get_dependency_chain, *_ = tools
 
     first = await get_obligation_snapshot(obligation_id=created.id)
     second = await get_dependency_chain(obligation_id=created.id)
@@ -109,4 +109,9 @@ async def test_tools_expose_expected_names(db_session):
         "get_obligation_snapshot",
         "get_dependency_chain",
         "get_root_cause_summary",
+        "get_related_evidence",
+        "get_risk_assessment",
+        "get_downstream_impact",
+        "get_related_obligations",
+        "get_recent_events",
     ]

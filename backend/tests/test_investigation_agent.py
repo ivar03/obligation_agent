@@ -58,6 +58,11 @@ async def test_investigate_wires_tools_and_returns_summary(db_session):
         "get_obligation_snapshot",
         "get_dependency_chain",
         "get_root_cause_summary",
+        "get_related_evidence",
+        "get_risk_assessment",
+        "get_downstream_impact",
+        "get_related_obligations",
+        "get_recent_events",
     ]
     assert captured["output_model"] is AgentInvestigationSummary
     assert created.id in captured["prompt"]

@@ -18,6 +18,7 @@ from strands import tool
 from app.services.obligation_service import ObligationService
 from app.services.graph_service import GraphService
 from app.services.intelligence.root_cause_engine import RootCauseAnalysisEngine
+from app.services.event_ingestion_service import EventIngestionService
 
 _BUDGET_EXHAUSTED = {
     "status": "error",
@@ -107,4 +108,126 @@ def build_obligation_tools(
             return {"status": "error", "content": [{"text": str(e)}]}
         return {"status": "success", "content": [{"text": result.model_dump_json()}]}
 
-    return [get_obligation_snapshot, get_dependency_chain, get_root_cause_summary]
+    @tool
+    async def get_related_evidence(obligation_id: str) -> Dict[str, Any]:
+        """
+        Fetch the evidence records attached to one obligation: what was
+        observed, from which provider, and whether a human confirmed it.
+
+        Args:
+            obligation_id: The obligation's ID.
+        """
+        if _spend_call():
+            return _BUDGET_EXHAUSTED
+        obligation = await ObligationService.get_by_id(
+            session, obligation_id, workspace_id=workspace_id
+        )
+        if obligation is None:
+            return _not_found(obligation_id)
+        evidence = await ObligationService.get_evidence(
+            session, obligation_id, workspace_id=workspace_id
+        )
+        payload = [e.model_dump(mode="json") for e in evidence]
+        return {"status": "success", "content": [{"text": json.dumps(payload)}]}
+
+    @tool
+    async def get_risk_assessment(obligation_id: str) -> Dict[str, Any]:
+        """
+        Fetch the deterministic risk assessment for one obligation: its risk
+        score, level, and the reasons the risk engine gave.
+
+        Args:
+            obligation_id: The obligation's ID.
+        """
+        if _spend_call():
+            return _BUDGET_EXHAUSTED
+        obligation = await ObligationService.get_by_id(
+            session, obligation_id, workspace_id=workspace_id
+        )
+        if obligation is None:
+            return _not_found(obligation_id)
+        assessment = await ObligationService.get_risk_assessment(
+            session, obligation_id, workspace_id=workspace_id
+        )
+        if assessment is None:
+            return {"status": "success", "content": [{"text": json.dumps({})}]}
+        return {"status": "success", "content": [{"text": assessment.model_dump_json()}]}
+
+    @tool
+    async def get_downstream_impact(obligation_id: str) -> Dict[str, Any]:
+        """
+        Fetch the obligations that would be affected if this one slips: every
+        downstream dependent, with how many hops away it sits.
+
+        Args:
+            obligation_id: The obligation's ID.
+        """
+        if _spend_call():
+            return _BUDGET_EXHAUSTED
+        obligation = await ObligationService.get_by_id(
+            session, obligation_id, workspace_id=workspace_id
+        )
+        if obligation is None:
+            return _not_found(obligation_id)
+        downstream = await GraphService.get_downstream_impact(session, obligation_id)
+        payload = [
+            {"obligation_id": item["obligation"].id,
+             "action": item["obligation"].action,
+             "hop_distance": item.get("hop_distance")}
+            for item in downstream
+        ]
+        return {"status": "success", "content": [{"text": json.dumps(payload)}]}
+
+    @tool
+    async def get_related_obligations(obligation_id: str) -> Dict[str, Any]:
+        """
+        Fetch obligations linked to this one for context (LINKED edges), which
+        are related work but not prerequisites.
+
+        Args:
+            obligation_id: The obligation's ID.
+        """
+        if _spend_call():
+            return _BUDGET_EXHAUSTED
+        obligation = await ObligationService.get_by_id(
+            session, obligation_id, workspace_id=workspace_id
+        )
+        if obligation is None:
+            return _not_found(obligation_id)
+        linked = await GraphService.get_linked_obligations(session, obligation_id)
+        payload = [{"obligation_id": o.id, "action": o.action} for o in linked]
+        return {"status": "success", "content": [{"text": json.dumps(payload)}]}
+
+    @tool
+    async def get_recent_events(obligation_id: str) -> Dict[str, Any]:
+        """
+        Fetch recent external signals ingested into this workspace from Slack,
+        Gmail, Calendar or Jira, newest first.
+
+        Args:
+            obligation_id: The obligation being investigated, for context.
+        """
+        if _spend_call():
+            return _BUDGET_EXHAUSTED
+        events = await EventIngestionService.list_events(
+            session, limit=20, workspace_id=workspace_id
+        )
+        payload = [
+            {"event_id": e.id, "provider": e.provider,
+             "semantic_role": getattr(e.semantic_role, "value", e.semantic_role),
+             "source_ref": e.source_ref, "sender": e.sender,
+             "content": (e.content or "")[:500]}
+            for e in events.items
+        ]
+        return {"status": "success", "content": [{"text": json.dumps(payload)}]}
+
+    return [
+        get_obligation_snapshot,
+        get_dependency_chain,
+        get_root_cause_summary,
+        get_related_evidence,
+        get_risk_assessment,
+        get_downstream_impact,
+        get_related_obligations,
+        get_recent_events,
+    ]
