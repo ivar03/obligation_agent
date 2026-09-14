@@ -40,10 +40,16 @@ class RecommendationAgentService:
     async def recommend(
         self, session: AsyncSession, obligation_id: str, workspace_id: str
     ) -> AgentRecommendation:
-        # Raises ValueError for an unknown or foreign-workspace obligation.
-        plan = await IntelligenceOrchestrator.generate_decision_plan(
-            session, obligation_id, workspace_id=workspace_id
-        )
+        # Translate the orchestrator's not-found ValueError into LookupError so the
+        # route can map it to 404 without also swallowing configuration errors --
+        # build_gemini_agent raises a plain ValueError when GEMINI_API_KEY is absent,
+        # and reporting that as "obligation not found" misdirects operators at cutover.
+        try:
+            plan = await IntelligenceOrchestrator.generate_decision_plan(
+                session, obligation_id, workspace_id=workspace_id
+            )
+        except ValueError as e:
+            raise LookupError(str(e)) from e
 
         counter: dict = {}
         async with record_agent_run(

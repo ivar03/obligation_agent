@@ -215,8 +215,13 @@ def build_obligation_tools(
         Fetch recent external signals ingested into this workspace from Slack,
         Gmail, Calendar or Jira, newest first.
 
+        These are workspace-wide and are NOT filtered to one obligation. Do not
+        assume a returned event relates to the obligation you are investigating
+        unless its content says so.
+
         Args:
-            obligation_id: The obligation being investigated, for context.
+            obligation_id: The obligation being investigated, for context only.
+                It does not filter the results.
         """
         if _spend_call():
             return _BUDGET_EXHAUSTED

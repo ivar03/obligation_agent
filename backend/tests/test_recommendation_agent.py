@@ -101,5 +101,32 @@ async def test_recommend_rejects_foreign_workspace(db_session):
     service = RecommendationAgentService(
         agent_factory=lambda system_prompt, tools=None: _FakeAgent(None, {})
     )
-    with pytest.raises(ValueError):
+    # LookupError, not ValueError: a foreign-workspace obligation is "not found",
+    # which the route maps to 404. Configuration failures stay ValueError -> 500.
+    with pytest.raises(LookupError):
         await service.recommend(db_session, created.id, workspace_id="ws-beta")
+
+@pytest.mark.asyncio
+async def test_unconfigured_runtime_is_not_reported_as_not_found(db_session, monkeypatch):
+    """A missing GEMINI_API_KEY is a server misconfiguration, not a missing
+    obligation. Reporting it as 404 sends operators hunting the wrong thing at
+    exactly the moment of cutover."""
+    from app.services.agents import runtime
+    created = await _make_obligation(db_session)
+
+    def unconfigured_factory(system_prompt, tools=None):
+        raise ValueError("Strands runtime is not configured: GEMINI_API_KEY is missing.")
+
+    service = RecommendationAgentService(agent_factory=unconfigured_factory)
+
+    with pytest.raises(ValueError, match="not configured"):
+        await service.recommend(db_session, created.id, workspace_id="ws-alpha")
+
+
+@pytest.mark.asyncio
+async def test_missing_obligation_raises_lookup_error(db_session):
+    service = RecommendationAgentService(
+        agent_factory=lambda sp, tools=None: _FakeAgent(None, {})
+    )
+    with pytest.raises(LookupError):
+        await service.recommend(db_session, "no-such-obligation", workspace_id="ws-alpha")

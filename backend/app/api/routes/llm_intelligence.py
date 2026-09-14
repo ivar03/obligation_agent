@@ -233,7 +233,7 @@ async def recommend_resolution_agentic(
         result = await service.recommend(db, req.obligation_id, workspace_id=workspace_id)
         metrics.increment("llm.success_total", labels={"type": "recommend"})
         return result
-    except ValueError as e:
+    except LookupError as e:
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
         metrics.increment("llm.failure_total", labels={"type": "recommend"})
