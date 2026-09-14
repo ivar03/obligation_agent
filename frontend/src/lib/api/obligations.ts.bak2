@@ -125,6 +125,13 @@ function normalizeApiEndpoint(endpoint: string): string {
   return endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
 }
 
+async function apiClient<T>(
+  endpoint: string,
+  options: RequestInit = {}
+): Promise<T> {
+  const normalizedEndpoint = normalizeApiEndpoint(endpoint);
+  const url = `${API_BASE_URL}${normalizedEndpoint}`;
+
 let activeWorkspaceId: string | null = null;
 let authToken: string | null = null;
 
@@ -133,28 +140,14 @@ if (typeof window !== "undefined") {
   authToken = localStorage.getItem("obligation_auth_token");
 }
 
-export function setApiAuth(
-  token: string | null,
-  workspaceId: string | null
-) {
+export function setApiAuth(token: string | null, workspaceId: string | null) {
   authToken = token;
   activeWorkspaceId = workspaceId;
-
   if (typeof window !== "undefined") {
-    if (token) {
-      localStorage.setItem("obligation_auth_token", token);
-    } else {
-      localStorage.removeItem("obligation_auth_token");
-    }
-
-    if (workspaceId) {
-      localStorage.setItem(
-        "obligation_active_workspace_id",
-        workspaceId
-      );
-    } else {
-      localStorage.removeItem("obligation_active_workspace_id");
-    }
+    if (token) localStorage.setItem("obligation_auth_token", token);
+    else localStorage.removeItem("obligation_auth_token");
+    if (workspaceId) localStorage.setItem("obligation_active_workspace_id", workspaceId);
+    else localStorage.removeItem("obligation_active_workspace_id");
   }
 }
 
@@ -163,8 +156,7 @@ export function getActiveWorkspaceId(): string | null {
 }
 
 async function apiClient<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  const normalizedEndpoint = normalizeApiEndpoint(endpoint);
-  const url = `${API_BASE_URL}${normalizedEndpoint}`;
+  const url = `${API_BASE_URL}${endpoint}`;
   
   const authHeaders: Record<string, string> = {};
   if (authToken) {

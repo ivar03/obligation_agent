@@ -223,28 +223,28 @@ export default function IntegrationsPage() {
   };
 
   const copySlackWebhookUrl = () => {
-    const url = `${window.location.origin.replace(":3000", ":8000")}/api/webhooks/slack`;
+    const url = `${window.location.origin}/api/webhooks/slack`;
     navigator.clipboard.writeText(url);
     setCopiedSlackWebhook(true);
     setTimeout(() => setCopiedSlackWebhook(false), 2500);
   };
 
   const copyGmailWebhookUrl = () => {
-    const url = `${window.location.origin.replace(":3000", ":8000")}/api/webhooks/gmail`;
+    const url = `${window.location.origin}/api/webhooks/gmail`;
     navigator.clipboard.writeText(url);
     setCopiedGmailWebhook(true);
     setTimeout(() => setCopiedGmailWebhook(false), 2500);
   };
 
   const copyCalWebhookUrl = () => {
-    const url = `${window.location.origin.replace(":3000", ":8000")}/api/webhooks/google-calendar`;
+    const url = `${window.location.origin}/api/webhooks/google-calendar`;
     navigator.clipboard.writeText(url);
     setCopiedCalWebhook(true);
     setTimeout(() => setCopiedCalWebhook(false), 2500);
   };
 
   const copyJiraWebhookUrl = () => {
-    const url = `${window.location.origin.replace(":3000", ":8000")}/api/webhooks/jira`;
+    const url = `${window.location.origin}/api/webhooks/jira`;
     navigator.clipboard.writeText(url);
     setCopiedJiraWebhook(true);
     setTimeout(() => setCopiedJiraWebhook(false), 2500);
@@ -416,7 +416,7 @@ export default function IntegrationsPage() {
                     </button>
                   </div>
                   <code className="block text-[11px] font-mono text-stone-700 bg-white p-1.5 rounded border border-stone-200 truncate">
-                    http://localhost:8000/api/webhooks/slack
+                    /api/webhooks/slack
                   </code>
                 </div>
               </div>
@@ -522,7 +522,7 @@ export default function IntegrationsPage() {
                     </button>
                   </div>
                   <code className="block text-[11px] font-mono text-stone-700 bg-white p-1.5 rounded border border-stone-200 truncate">
-                    http://localhost:8000/api/webhooks/gmail
+                    /api/webhooks/gmail
                   </code>
                 </div>
               </div>
@@ -770,7 +770,7 @@ export default function IntegrationsPage() {
                     </button>
                   </div>
                   <code className="block text-[11px] font-mono text-stone-700 bg-white p-1.5 rounded border border-stone-200 truncate">
-                    http://localhost:8000/api/webhooks/jira
+                    /api/webhooks/jira
                   </code>
                 </div>
               </div>
